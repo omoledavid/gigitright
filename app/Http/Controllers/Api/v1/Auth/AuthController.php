@@ -18,7 +18,6 @@ class AuthController extends Controller
         $validatedData = request()->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users',
-            'country' => 'required|string|max:255',
             'password' => 'required|string|min:6|confirmed',
         ]);
         if (preg_match("/[^a-zA-Z0-9_ ]/", $request->name)) {

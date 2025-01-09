@@ -20,7 +20,6 @@ class UserResource extends JsonResource
             'attributes' => [
                 'name' => $this->name,
                 'email' => $this->email,
-                'country' => $this->country,
                 'email_verified' => ($this->ev === 0) ? 'unverified' : 'verified',
                 'sms_verified' => ($this->sv === 0) ? 'unverified' : 'verified',
                 'role' => $this->role,
