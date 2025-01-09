@@ -17,7 +17,7 @@ Route::controller(ForgotPasswordController::class)->group(function () {
     Route::post('password/reset', 'reset');
 });
 
-Route::middleware('check.status')->group(function () {
+Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::post('logout', AuthController::class . '@logout');
     //authorization
     Route::controller(AuthorizationController::class)->group(function () {
