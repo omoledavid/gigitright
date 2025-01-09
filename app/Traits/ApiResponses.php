@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 trait ApiResponses {
-    public function ok($message, $data)
+    public function ok($message, $data = [])
     {
         return $this->success($message, $data);
     }
@@ -15,11 +15,12 @@ trait ApiResponses {
             'data' => $data
         ], $status);
     }
-    protected function error($message, $status = 400)
+    protected function error($message, $status = 400, $err = [])
     {
         return response()->json([
+            'status' => $status,
             'message' => $message,
-            'status' => $status
+            'error' => $err
         ], $status);
     }
 }
