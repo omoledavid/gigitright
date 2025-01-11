@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\v1\Auth\AuthController;
 use App\Http\Controllers\Api\v1\Auth\AuthorizationController;
 use App\Http\Controllers\Api\v1\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\v1\UserController;
+use App\Http\Controllers\Api\v1\PortfolioController;
+use App\Http\Controllers\Api\v1\CertificationController;
 use App\Http\Controllers\Api\v1\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +29,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
         Route::post('verify-mobile', 'mobileVerification');
     });
     Route::apiResource('user', UserController::class);
-    Route::apiResource('profile', UserProfileController::class);
+    Route::apiResource('portfolio', PortfolioController::class);
+    Route::apiResource('certification', CertificationController::class);
 });
 

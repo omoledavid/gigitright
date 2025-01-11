@@ -109,6 +109,7 @@ class FileManager
 
         //get the filename
         if (!$this->filename) {
+//            dd($this->filename);
             $this->filename = $this->getFileName();
         }
 

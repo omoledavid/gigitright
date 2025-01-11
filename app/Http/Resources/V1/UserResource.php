@@ -38,7 +38,11 @@ class UserResource extends JsonResource
 //                    ],
 //                    'links' => 'later'
 //                ]
-            'profile' => $this->profile
+                'profile' => $this->profile,
+                'portfolios' => $this->portfolio,
+                'certifications' => $this->certificate,
+                'experiences' => $this->experience,
+                'education' => $this->education
             ]
         ];
     }

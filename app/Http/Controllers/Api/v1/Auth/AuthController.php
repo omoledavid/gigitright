@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\v1\Auth;
 
+use App\Enums\Status;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\LoginUserRequest;
 use App\Models\User;
@@ -25,6 +27,9 @@ class AuthController extends Controller
             return $this->error($response, 400);
         }
         $validatedData['username'] = generateUniqueUsername($validatedData['name']);
+
+        $validatedData['status'] = Status::ACTIVE;
+        $validatedData['sv'] = Status::ACTIVE;
 
 
         $user = User::create($validatedData);
