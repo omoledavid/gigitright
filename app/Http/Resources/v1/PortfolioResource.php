@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\V1;
+namespace App\Http\Resources\v1;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -23,7 +23,7 @@ class PortfolioResource extends JsonResource
                 'link' => $this->link,
                 'technologies' => $this->technologies,
                 'date' => $this->date,
-                'status' => ($this->status === 0) ? 'inactive' : 'active',
+                'status' => ($this->status === 0) ? 'Inactive' : 'Active',
                 'created_at' => $this->created_at,
                 'updated_at' => $this->updated_at
 //                $this->mergeWhen($request->routeIs('users.*'), [

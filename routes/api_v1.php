@@ -6,7 +6,9 @@ use App\Http\Controllers\Api\v1\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\v1\UserController;
 use App\Http\Controllers\Api\v1\PortfolioController;
 use App\Http\Controllers\Api\v1\CertificationController;
-use App\Http\Controllers\Api\v1\UserProfileController;
+use App\Http\Controllers\Api\v1\ExperienceController;
+use App\Http\Controllers\Api\v1\EducationController;
+use App\Http\Controllers\Api\v1\JobController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
@@ -31,5 +33,8 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::apiResource('user', UserController::class);
     Route::apiResource('portfolio', PortfolioController::class);
     Route::apiResource('certification', CertificationController::class);
+    Route::apiResource('experience', ExperienceController::class);
+    Route::apiResource('education', EducationController::class);
+    Route::apiResource('job', JobController::class);
 });
 

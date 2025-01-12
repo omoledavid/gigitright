@@ -151,3 +151,7 @@ function getFileExt($key)
 {
     return fileManager()->$key()->extensions;
 }
+function resourceStatus ($data)
+{
+    return ($data === 0) ? 'Inactive' : 'Active';
+}

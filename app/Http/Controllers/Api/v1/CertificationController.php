@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\V1\CertificateResource;
+use App\Http\Resources\v1\CertificateResource;
 use App\Models\Certification;
 use App\Rules\FileTypeValidate;
 use App\Traits\ApiResponses;
@@ -20,7 +20,7 @@ class CertificationController extends Controller
     {
         $user = auth()->user();
         $certifications = $user->certificate;
-        return $this->ok('',CertificateResource::collection($certifications));
+        return $this->ok('success',CertificateResource::collection($certifications));
     }
 
     /**

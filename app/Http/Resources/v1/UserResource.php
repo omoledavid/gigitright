@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\V1;
+namespace App\Http\Resources\v1;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -20,8 +20,8 @@ class UserResource extends JsonResource
             'attributes' => [
                 'name' => $this->name,
                 'email' => $this->email,
-                'email_verified' => ($this->ev === 0) ? 'unverified' : 'verified',
-                'sms_verified' => ($this->sv === 0) ? 'unverified' : 'verified',
+                'email_verified' => ($this->ev === 0) ? 'Unverified' : 'Verified',
+                'sms_verified' => ($this->sv === 0) ? 'Unverified' : 'Verified',
                 'role' => $this->role,
                 $this->mergeWhen($request->routeIs('users.*'), [
                         'emailVerifiedAt' => $this->email_verified_at,

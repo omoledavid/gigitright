@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\V1\PortfolioResource;
+use App\Http\Resources\v1\PortfolioResource;
 use App\Models\Portfolio;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
@@ -26,7 +26,7 @@ class PortfolioController extends Controller
     public function index()
     {
         $name = $this->user->name;
-       return $this->ok("Retrieved portfolios for $name", PortfolioResource::collection($this->portfolio));
+       return $this->ok("success", PortfolioResource::collection($this->portfolio));
 
     }
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\V1\UserResource;
+use App\Http\Resources\v1\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ class UserController extends Controller
     public function index()
     {
         $user = auth()->user();
-        return new UserResource($user);
+        return $this->ok('success', new UserResource($user));
     }
 
 
