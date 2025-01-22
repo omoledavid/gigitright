@@ -14,6 +14,26 @@ class JobResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'type' => 'job',
+            'id' => $this->id,
+            'attributes' => [
+                'title' => $this->title,
+                'description' => $this->description,
+                'category_id' => $this->category_id,
+                'sub_category_id' => $this->sub_category_id,
+                'budget' => $this->budget,
+                'duration' => $this->duration,
+                'job_type' => $this->job_type,
+                'deadline' => $this->deadline,
+                'visibility' => $this->visibility,
+                'location' => $this->location,
+                'skill_requirements' => $this->skill_requirements,
+                'no_applicants' => count($this->applicants)
+            ],
+            'relationships' => [
+                'applicants' => $this->applicants
+            ]
+        ];
     }
 }

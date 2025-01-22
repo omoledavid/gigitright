@@ -155,3 +155,18 @@ function resourceStatus ($data)
 {
     return ($data === 0) ? 'Inactive' : 'Active';
 }
+function loadValidRelationships($model, $relationship, array $validRelationships)
+{
+    if (is_array($relationship) && count($relationship) === 1) {
+        // Extract and split the relationships
+        $relationships = explode(',', $relationship[0]);
+
+        // Filter only valid relationships
+        $relationships = array_intersect($relationships, $validRelationships);
+
+        // Load the valid relationships if any
+        if (!empty($relationships)) {
+            $model->load($relationships);
+        }
+    }
+}

@@ -11,14 +11,22 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     use ApiResponses;
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
+        $relationship = $request->get('relationship'); // Array with a single string
+
+        $validRelationships = ['portfolio', 'profile', 'certificate', 'experience', 'education'];
+
+        loadValidRelationships($user, $relationship, $validRelationships);
+
         return $this->ok('success', new UserResource($user));
     }
+
 
 
 

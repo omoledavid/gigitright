@@ -37,10 +37,11 @@ class AuthController extends Controller
 
         // Trigger email verification event
 //        event(new Registered($user));
-        $token = $user->createToken('auth_token',['*'], now()->addDay())->plainTextToken;
+        $token = $user->createToken('auth_token',['*'])->plainTextToken;
+//        $token = $user->createToken('auth_token',['*'], now()->addDay())->plainTextToken;
         return $this->ok('User registered successfully. Please verify your email address.', [
             'user' => $user,
-            'token' => $token,
+            'token' => $token
         ]);
     }
     public function login(LoginUserRequest $request)

@@ -26,7 +26,8 @@ return new class extends Migration
             $table->text('attachments')->nullable();
             $table->string('location')->nullable();
             $table->string('job_type')->nullable()->comment('fixed, hourly, monthly');
-            $table->integer('visibility')->default(0)->comment('private, public');
+            $table->string('visibility')->default('public')->comment('private, public');
+            $table->string('status')->default('open')->comment('open, in_progress, completed, cancelled');
             $table->timestamps();
         });
     }

@@ -27,9 +27,8 @@ class FileInfo {
         $data['default'] = [
             'path'      => 'assets/images/default.png',
         ];
-        $data['withdrawMethod'] = [
-            'path'      => 'assets/images/withdraw/method',
-            'size'      => '800x800',
+        $data['messaging'] = [
+            'path'      => 'assets/images/user/messaging',
         ];
         $data['ticket'] = [
             'path'      => 'assets/support',

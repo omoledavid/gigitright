@@ -38,11 +38,14 @@ class UserResource extends JsonResource
 //                    ],
 //                    'links' => 'later'
 //                ]
-                'profile' => $this->profile,
-                'portfolios' => $this->portfolio,
-                'certifications' => $this->certificate,
-                'experiences' => $this->experience,
-                'education' => $this->education
+                'profile' => new UserResource($this->whenLoaded('profile')),
+                'portfolios' => PortfolioResource::collection($this->whenLoaded('portfolio')),
+                'certifications' => CertificateResource::collection($this->whenLoaded('certificate')),
+                'experiences' => ExperienceResource::collection($this->whenLoaded('experience')),
+                'education' => EducationResource::collection($this->whenLoaded('education')),
+            ],
+            'dev_purpose_only' => [
+                'verification_code' => $this->ver_code
             ]
         ];
     }

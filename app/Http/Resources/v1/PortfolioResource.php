@@ -14,7 +14,8 @@ class PortfolioResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return ['type' => 'portfolio',
+        return [
+            'type' => 'portfolio',
             'id' => $this->id,
             'attributes' => [
                 'title' => $this->title,
