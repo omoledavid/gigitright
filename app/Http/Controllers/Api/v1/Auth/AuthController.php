@@ -31,7 +31,6 @@ class AuthController extends Controller
         $validatedData['status'] = Status::ACTIVE;
         $validatedData['sv'] = Status::ACTIVE;
 
-
         $user = User::create($validatedData);
 
 
