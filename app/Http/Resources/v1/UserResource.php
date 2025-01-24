@@ -20,8 +20,8 @@ class UserResource extends JsonResource
             'attributes' => [
                 'name' => $this->name,
                 'email' => $this->email,
-                'email_verified' => ($this->ev === 0) ? 'Unverified' : 'Verified',
-                'sms_verified' => ($this->sv === 0) ? 'Unverified' : 'Verified',
+                'email_verified' => !(($this->ev === 0)),
+                'sms_verified' => !(($this->sv === 0)),
                 'role' => $this->role,
                 $this->mergeWhen($request->routeIs('users.*'), [
                         'emailVerifiedAt' => $this->email_verified_at,

@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "laravel-echo": "^1.18.0",
+    "pusher-js": "^8.4.0-rc2"
+  },
+  "scripts": {
+    "dev": "nodemon echo.js"
+  }
+}

@@ -21,6 +21,7 @@ class AuthController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'role' => 'required',
         ]);
         if (preg_match("/[^a-zA-Z0-9_ ]/", $request->name)) {
             $response[] = 'No special characters or capital letters are allowed in the name field.';
