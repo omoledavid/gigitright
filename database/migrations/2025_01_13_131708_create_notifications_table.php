@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('user')->cascadeOnDelete(); // User receiving the notification
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete(); // User receiving the notification
             $table->string('type'); // Type of notification (e.g., 'new_post', 'comment', 'mention')
             $table->json('data'); // Additional data (e.g., post title, community name)
             $table->boolean('is_read')->default(false);
