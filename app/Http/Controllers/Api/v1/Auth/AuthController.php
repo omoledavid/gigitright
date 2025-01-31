@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\LoginUserRequest;
 use App\Models\User;
 use App\Traits\ApiResponses;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,8 +32,15 @@ class AuthController extends Controller
 
         $validatedData['status'] = Status::ACTIVE;
         $validatedData['sv'] = Status::ACTIVE;
-
+        //create user
+        $verificationCode = verificationCode(6);
         $user = User::create($validatedData);
+        $user->ver_code         = $verificationCode;
+        $user->ver_code_send_at = Carbon::now();
+        $user->save();
+        notify($user, 'EVER_CODE', [
+            'code' => $user->ver_code,
+        ], ['email']);
 
 
         // Trigger email verification event
@@ -41,7 +49,8 @@ class AuthController extends Controller
 //        $token = $user->createToken('auth_token',['*'], now()->addDay())->plainTextToken;
         return $this->ok('User registered successfully. Please verify your email address.', [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
+            'verification_code' => $verificationCode,
         ]);
     }
     public function login(LoginUserRequest $request)
