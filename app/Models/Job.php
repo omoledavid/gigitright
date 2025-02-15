@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Http\Filters\v1\QueryFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -17,6 +19,10 @@ class Job extends Model
         'skill_requirements' => 'array',
         'attachments' => 'array'
     ];
+    public function scopeFilter(Builder $builder, QueryFilter $filters)
+    {
+        return $filters->apply($builder);
+    }
     public function applicants(): HasMany
     {
         return $this->hasMany(JobApplicants::class);

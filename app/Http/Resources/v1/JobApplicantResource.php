@@ -20,6 +20,9 @@ class JobApplicantResource extends JsonResource
             'attributes' => [
                 'job_id' => $this->job_id,
                 'user_id' => $this->user_id,
+                'name' => $this->applicants->name,
+                'email' => $this->applicants->email,
+                'country' => $this->applicants->country,
                 'resume' => $this->resume,
                 'cover_letter' => $this->cover_letter,
                 'status' => ($this->status === 0) ? 'pending' : (($this->status === 1) ? 'accepted' : 'rejected'),

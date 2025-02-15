@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\v1\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\v1\ConversationController;
 use App\Http\Controllers\Api\v1\GeneralController;
 use App\Http\Controllers\Api\v1\MessageController;
+use App\Http\Controllers\Api\v1\NotificationController;
 use App\Http\Controllers\Api\v1\PostController;
 use App\Http\Controllers\Api\v1\UserController;
 use App\Http\Controllers\Api\v1\PortfolioController;
@@ -38,19 +39,46 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
         Route::post('verify-email', 'emailVerification');
         Route::post('verify-mobile', 'mobileVerification');
     });
+    //User Account
     Route::apiResource('user', UserController::class);
+    Route::post('change-password', AuthController::class . '@changePassword');
+    Route::post('change-email', AuthController::class . '@changeEmail');
+    Route::controller(NotificationController::class)->group(function () {
+        Route::get('notifications', 'index');
+        Route::post('notifications/read/{id}', 'read');
+        Route::post('notifications/all', 'readAll');
+    });
     Route::apiResource('portfolio', PortfolioController::class);
     Route::apiResource('certification', CertificationController::class);
     Route::apiResource('experience', ExperienceController::class);
     Route::apiResource('education', EducationController::class);
-    Route::apiResource('job', JobController::class);
+
+    //Jobs
+    Route::prefix('job')->group(function () {
+            Route::apiResource('/', JobController::class);
+            Route::controller(JobController::class)->group(function () {
+                Route::get('all', 'allJobs');
+            });
+    });
     //community
     Route::prefix('community')->group(function () {
-        Route::apiResource('/', CommunityController::class);
+        Route::apiResource('', CommunityController::class)->names([
+            'index' => 'community.index',  // Avoid conflict
+            'store' => 'community.store',
+            'show' => 'community.show',
+            'update' => 'community.update',
+            'destroy' => 'community.destroy',
+        ]);
+
         Route::apiResource('post', PostController::class);
-        Route::get('member/{community}', CommunityController::class . '@member');
-        Route::post('join', CommunityController::class . '@joinCommunity');
+
+        Route::get('member/{community}', [CommunityController::class, 'member'])->name('community.member');
+        Route::post('join', [CommunityController::class, 'joinCommunity'])->name('community.join');
+        Route::get('all', [CommunityController::class, 'viewAllCommunities'])->name('community.all');
+        Route::get('suggested', [CommunityController::class, 'suggestedCommunities'])->name('community.all');
     });
+
+
     Route::controller(JobController::class)->group(function () {
         Route::post('job-application', 'jobApplication');
         Route::get('job-application/{id}', 'viewJobApplication');
@@ -63,6 +91,10 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::controller(MessageController::class)->group(function () {
         Route::post('message', 'createMessage');
         Route::get('message', 'viewMessage');
+    });
+    //Generals
+    Route::controller(GeneralController::class)->group(function () {
+        Route::get('talents', 'talents');
     });
 });
 

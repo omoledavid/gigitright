@@ -23,6 +23,7 @@ class CommunityResource extends JsonResource
                 'slug' => $this->slug,
                 'description' => $this->description,
                 'status' => ($this->is_private === CommunityStatus::PUBLIC) ? 'public' : 'private',
+                'total_members' => $this->members_count,
                 'created_at' => $this->created_at,
                 'updated_at' => $this->cover_image,
             ],

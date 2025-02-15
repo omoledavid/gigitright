@@ -3,17 +3,21 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Http\Filters\v1\QueryFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use MannikJ\Laravel\Wallet\Traits\HasWallet;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens, HasWallet;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +25,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $guarded = ['id'];
+    protected $appends = ['wallet', 'escrow_wallet'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -53,6 +58,69 @@ class User extends Authenticatable
         ];
     }
 
+    public function scopeFilter(Builder $builder, QueryFilter $filters)
+    {
+        return $filters->apply($builder);
+    }
+
+    public function wallet(): Attribute
+    {
+        return new Attribute(
+            function () {
+                $account = $this->accounts->where('name', 'main')->first();
+
+                if (!$account) {
+                    $account = $this->accounts()->create([
+                        'user_id' => $this->getKey(),
+                        'name' => 'main',
+                    ]);
+                }
+
+                return $account->wallet;
+            }
+        );
+    }
+
+    public function escrowWallet(): Attribute
+    {
+        return new Attribute(
+            function () {
+                $account = $this->accounts->where('name', 'escrow')->first();
+
+                if (!$account) {
+                    $account = $this->accounts()->create([
+                        'user_id' => $this->getKey(),
+                        'name' => 'escrow',
+                    ]);
+                }
+
+                return $account->wallet;
+            }
+        );
+    }
+    public function griftis(): Attribute
+    {
+        return new Attribute(
+            function () {
+                $account = $this->accounts->where('name', 'griftis')->first();
+
+                if (!$account) {
+                    $account = $this->accounts()->create([
+                        'user_id' => $this->getKey(),
+                        'name' => 'griftis',
+                    ]);
+                }
+
+                return $account->wallet;
+            }
+        );
+    }
+
+    public function accounts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Account::class);
+    }
+
     public function profile(): HasOne
     {
         return $this->hasOne(UserProfile::class);
@@ -81,4 +149,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class);
     }
+
+    public function communities()
+    {
+        return $this->belongsToMany(Community::class, 'community_members');
+    }
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
+
 }

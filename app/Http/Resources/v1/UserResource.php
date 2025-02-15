@@ -22,6 +22,7 @@ class UserResource extends JsonResource
                 'email' => $this->email,
                 'email_verified' => !(($this->ev === 0)),
                 'sms_verified' => !(($this->sv === 0)),
+                'status' => $this->status,
                 'role' => $this->role,
                 $this->mergeWhen($request->routeIs('users.*'), [
                         'emailVerifiedAt' => $this->email_verified_at,
@@ -29,6 +30,11 @@ class UserResource extends JsonResource
 
                     ]
                 )
+            ],
+            'Accounts' => [
+                'main_wallet' => $this->wallet->balance,
+                'escrow_wallet' => $this->escrow_wallet->balance,
+                'griftis' => $this->griftis->balance
             ],
             'relationships' => [
 //                'author' => [

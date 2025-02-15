@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -61,7 +62,8 @@ class AuthController extends Controller
         }
 
         $user = User::firstWhere('email', $request->email);
-        $token = $user->createToken('auth_token',['*'], now()->addDay())->plainTextToken;
+        // $token = $user->createToken('auth_token',['*'], now()->addDay())->plainTextToken;
+        $token = $user->createToken('auth_token',['*'])->plainTextToken;
 
         return $this->ok(
             'Authenticated',
@@ -78,5 +80,35 @@ class AuthController extends Controller
     public function verify($id)
     {
         return $id;
+    }
+    public function changePassword(Request $request)
+    {
+        $validatedData = $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+        $user = Auth::user();
+        try {
+            if(Hash::check($validatedData['current_password'], $user->password))
+            {
+                $user->password = Hash::make($validatedData['password']);
+                $user->save();
+                return $this->ok('Password changed');
+            }else{
+                return $this->error('Wrong current password', 401);
+            }
+        }catch (\Exception $exception){
+            return $this->error($exception->getMessage(), 401);
+        }
+    }
+    public function changeEmail(Request $request)
+    {
+        $validatedData = $request->validate([
+            'email' => 'required|string|email|max:255|unique:users',
+        ]);
+        $user = Auth::user();
+        $user->email = $validatedData['email'];
+        $user->save();
+        return $this->ok('Email changed');
     }
 }

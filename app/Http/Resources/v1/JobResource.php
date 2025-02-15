@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\v1;
 
+use App\Models\JobApplicants;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -32,7 +33,7 @@ class JobResource extends JsonResource
                 'no_applicants' => count($this->applicants)
             ],
             'relationships' => [
-                'applicants' => $this->applicants
+                'applicants' => JobApplicantResource::collection($this->applicants)
             ]
         ];
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\JobStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Filters\v1\JobFilter;
 use App\Http\Resources\v1\JobApplicantResource;
 use App\Http\Resources\v1\JobResource;
 use App\Http\Resources\v1\UserResource;
@@ -132,5 +133,9 @@ class JobController extends Controller
     {
         $jobApplication = JobApplicants::query()->findOrFail($id);
         return $this->ok('success', new JobApplicantResource($jobApplication));
+    }
+    public function allJobs(JobFilter $filter)
+    {
+        return $this->ok('success', JobResource::collection(Job::query()->filter($filter)->get()));
     }
 }

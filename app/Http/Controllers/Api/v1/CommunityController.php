@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\CommunityRoleStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Filters\v1\CommunityFilter;
 use App\Http\Resources\v1\CommunityMemberResource;
 use App\Http\Resources\v1\CommunityResource;
 use App\Models\Community;
@@ -108,6 +109,48 @@ class CommunityController extends Controller
         $validatedData['user_id'] = auth()->id();
         $validatedData['role'] = CommunityRoleStatus::MEMBER;
         $communityMember = CommunityMember::create($validatedData);
+        $community = Community::query()->findOrFail($communityMember->community_id);
+        $community->members_count = $community->members_count + 1;
+        $community->save();
         return $this->ok('community member created', ['communityMember' => new CommunityMemberResource($communityMember)]);
+    }
+    public function viewAllCommunities(CommunityFilter $filter)
+    {
+        return $this->ok('success', ['communities' => CommunityResource::collection(Community::filter($filter)->paginate())]);
+    }
+
+    public function suggestedCommunities()
+    {
+        $user = auth()->user();
+
+        // 1. Get communities the user has already joined
+        $joinedCommunityIds = $user->communities()->pluck('communities.id')->toArray();
+
+        // 2. Suggest popular communities (most members)
+        $popularCommunities = Community::whereNotIn('id', $joinedCommunityIds)
+            ->orderByDesc('members_count')
+            ->limit(5)
+            ->get();
+
+        // 3. Suggest new & trending communities (latest created)
+        $newCommunities = Community::whereNotIn('id', $joinedCommunityIds)
+            ->orderByDesc('created_at')
+            ->limit(5)
+            ->get();
+
+        // 4. Suggest communities joined by friends
+//        $friends = $user->friends ?? []; // Assuming `friends()` is a relationship in User model
+//        $friendCommunityIds = Community::whereHas('users', function ($query) use ($friends) {
+//            $query->whereIn('users.id', $friends);
+//        })->pluck('id');
+//
+//        $friendCommunities = Community::whereIn('id', $friendCommunityIds)
+//            ->whereNotIn('id', $joinedCommunityIds)
+//            ->limit(5)
+//            ->get();
+        return $this->ok('success', [
+            'popular_communities' => CommunityResource::collection($popularCommunities),
+            'new_communities' => CommunityResource::collection($newCommunities),
+        ]);
     }
 }
