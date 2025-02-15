@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\v1\Auth\AuthController;
 use App\Http\Controllers\Api\v1\Auth\AuthorizationController;
 use App\Http\Controllers\Api\v1\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\v1\ConversationController;
+use App\Http\Controllers\Api\v1\FinanceController;
 use App\Http\Controllers\Api\v1\GeneralController;
 use App\Http\Controllers\Api\v1\MessageController;
 use App\Http\Controllers\Api\v1\NotificationController;
@@ -69,13 +70,13 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
             'update' => 'community.update',
             'destroy' => 'community.destroy',
         ]);
-
+        //post
         Route::apiResource('post', PostController::class);
 
         Route::get('member/{community}', [CommunityController::class, 'member'])->name('community.member');
         Route::post('join', [CommunityController::class, 'joinCommunity'])->name('community.join');
         Route::get('all', [CommunityController::class, 'viewAllCommunities'])->name('community.all');
-        Route::get('suggested', [CommunityController::class, 'suggestedCommunities'])->name('community.all');
+        Route::get('suggested', [CommunityController::class, 'suggestedCommunities'])->name('community.suggested');
     });
 
 
@@ -95,6 +96,16 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     //Generals
     Route::controller(GeneralController::class)->group(function () {
         Route::get('talents', 'talents');
+        Route::get('posts', 'posts');
+        Route::post('posts/{postId}/like', 'toggleLike');
+        Route::post('posts/comments', 'postComment');
+    });
+
+    //Finance
+    Route::controller(FinanceController::class)->group(function () {
+        Route::get('bank-accounts', 'bankAccounts');
+        Route::post('add-account', 'addAccount');
+        Route::post('withdraw', 'withdraw');
     });
 });
 

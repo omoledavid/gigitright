@@ -85,4 +85,5 @@ class PostController extends Controller
         $post->delete();
         return $this->ok('post deleted successfully');
     }
+
 }

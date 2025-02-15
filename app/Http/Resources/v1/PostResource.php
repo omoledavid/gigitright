@@ -22,12 +22,19 @@ class PostResource extends JsonResource
                 'content' => $this->content,
                 'image' => $this->image,
                 'status' => $this->status,
+                'post_likes' => count($this->likes),
+                'post_comments' => count($this->comments),
                 'created_at' => $this->created_at,
                 'updated_at' => $this->updated_at,
             ],
+            'author' => [
+                'name' => $this->user->name,
+                'email' => $this->user->email,
+            ],
             'relationships' => [
-                'user' => new UserResource($this->whenLoaded('user')),
                 'community' => new CommunityResource($this->whenLoaded('community')),
+                'post_comments' => PostCommentResource::collection($this->whenLoaded('comments')),
+
             ]
         ];
     }
