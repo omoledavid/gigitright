@@ -30,6 +30,8 @@ Route::controller(ForgotPasswordController::class)->group(function () {
 Route::controller(GeneralController::class)->group(function () {
     Route::get('categories', 'categories');
 });
+Route::post('verify-email', [AuthorizationController::class, 'emailVerification']);
+Route::post('verify-mobile', [AuthorizationController::class, 'mobileVerification']);
 
 Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::post('logout', AuthController::class . '@logout');
@@ -37,8 +39,6 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::controller(AuthorizationController::class)->group(function () {
         Route::get('authorization', 'authorization');
         Route::get('resend-verify/{type}', 'sendVerifyCode');
-        Route::post('verify-email', 'emailVerification');
-        Route::post('verify-mobile', 'mobileVerification');
     });
     //User Account
     Route::apiResource('user', UserController::class);

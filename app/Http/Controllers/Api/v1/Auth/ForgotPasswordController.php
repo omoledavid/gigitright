@@ -52,7 +52,6 @@ class ForgotPasswordController extends Controller
         ], ['email']);
 
         $email = $user->email;
-        $response[] = 'Verification code sent to mail';
         return $this->ok('Verification code sent to mail', [
             'email' => $email,
         ]);
