@@ -21,7 +21,7 @@ class CommunityController extends Controller
      */
     public function index()
     {
-        $communities = Community::paginate(10);
+        $communities = Community::query()->where('created_by', auth()->id())->paginate(10);
 
         return $this->ok('success', ['communities' => CommunityResource::collection($communities)]);
     }

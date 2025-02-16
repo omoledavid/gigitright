@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\UserResource;
+use App\Models\User;
 use App\Traits\ApiResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -96,6 +97,7 @@ class AuthorizationController extends Controller {
     public function emailVerification(Request $request) {
         $validator = Validator::make($request->all(), [
             'code' => 'required',
+            'email' => 'required|email|exists:users',
         ]);
 
         if ($validator->fails()) {
@@ -106,7 +108,7 @@ class AuthorizationController extends Controller {
             ]);
         }
 
-        $user = auth()->user();
+        $user = User::query()->where('email', $request->email)->first();
 
         if ($user->ver_code == $request->code) {
             $user->ev               = 1;

@@ -30,7 +30,7 @@ Route::controller(ForgotPasswordController::class)->group(function () {
 Route::controller(GeneralController::class)->group(function () {
     Route::get('categories', 'categories');
 });
-Route::post('verify-email', [AuthorizationController::class, 'emailVerification'])->middleware('auth:sanctum');
+Route::post('verify-email', [AuthorizationController::class, 'emailVerification']);
 Route::post('verify-mobile', [AuthorizationController::class, 'mobileVerification']);
 
 Route::middleware(['auth:sanctum', 'check.status'])->group(function () {

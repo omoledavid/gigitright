@@ -32,9 +32,9 @@ class UserResource extends JsonResource
                 )
             ],
             'Accounts' => [
-                'main_wallet' => $this->wallet->balance,
-                'escrow_wallet' => $this->escrow_wallet->balance,
-                'griftis' => $this->griftis->balance
+                'main_wallet' => $this->wallet?->balance,
+                'escrow_wallet' => $this->escrow_wallet?->balance,
+                'griftis' => $this->griftis?->balance
             ],
             'relationships' => [
 //                'author' => [
