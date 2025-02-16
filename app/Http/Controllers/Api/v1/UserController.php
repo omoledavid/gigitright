@@ -93,7 +93,7 @@ class UserController extends Controller
         $user->save();
 
         // Return updated user data
-        return $this->ok('User profile updated successfully',);
+        return $this->ok('User profile updated successfully', new UserResource($user));
     }
 
 
