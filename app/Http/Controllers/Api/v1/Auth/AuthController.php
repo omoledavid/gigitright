@@ -23,6 +23,7 @@ class AuthController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'country' => 'required',
             'role' => 'required',
         ]);
         if (preg_match("/[^a-zA-Z0-9_ ]/", $request->name)) {

@@ -114,19 +114,9 @@ class AuthorizationController extends Controller {
             $user->ver_code         = null;
             $user->save();
             $notify[] = 'Email verified successfully';
-            return response()->json([
-                'remark'  => 'email_verified',
-                'status'  => 'success',
-                'message' => ['success' => $notify],
-            ]);
+            return $this->ok('Email verified successfully', new UserResource($user));
         }
-
-        $notify[] = 'Verification code doesn\'t match';
-        return response()->json([
-            'remark'  => 'validation_error',
-            'status'  => 'error',
-            'message' => ['error' => $notify],
-        ]);
+        return $this->error('Verification code is incorrect');
     }
 
     public function mobileVerification(Request $request) {

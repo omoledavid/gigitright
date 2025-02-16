@@ -25,7 +25,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $guarded = ['id'];
-    protected $appends = ['wallet', 'escrow_wallet'];
+    protected $appends = ['wallet', 'escrow_wallet', 'griftis'];
 
     /**
      * The attributes that should be hidden for serialization.

@@ -30,7 +30,7 @@ Route::controller(ForgotPasswordController::class)->group(function () {
 Route::controller(GeneralController::class)->group(function () {
     Route::get('categories', 'categories');
 });
-Route::post('verify-email', [AuthorizationController::class, 'emailVerification']);
+Route::post('verify-email', [AuthorizationController::class, 'emailVerification'])->middleware('auth:sanctum');
 Route::post('verify-mobile', [AuthorizationController::class, 'mobileVerification']);
 
 Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
@@ -55,12 +55,13 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::apiResource('education', EducationController::class);
 
     //Jobs
-    Route::prefix('job')->group(function () {
-            Route::apiResource('/', JobController::class);
-            Route::controller(JobController::class)->group(function () {
-                Route::get('all', 'allJobs');
-            });
+    Route::apiResource('job', JobController::class);
+    Route::prefix('jobs')->group(function () {
+        Route::controller(JobController::class)->group(function () {
+            Route::get('/', 'allJobs');
+        });
     });
+
     //community
     Route::prefix('community')->group(function () {
         Route::apiResource('', CommunityController::class)->names([
