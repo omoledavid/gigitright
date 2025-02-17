@@ -30,6 +30,8 @@ class PostResource extends JsonResource
             'author' => [
                 'name' => $this->user->name,
                 'email' => $this->user->email,
+                'user_title' => $this->user->profile->user_title,
+                'profile_image' => $this->user->profile->profile_image,
             ],
             'relationships' => [
                 'community' => new CommunityResource($this->whenLoaded('community')),

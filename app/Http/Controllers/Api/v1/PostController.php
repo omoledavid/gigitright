@@ -40,6 +40,10 @@ class PostController extends Controller
         ]);
         $validatedData['user_id'] = $request->user()->id;
         $validatedData['status'] = PostStatus::APPROVED;
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('posts-images', 'public');
+            $validatedData['image'] = url('storage/' . $path);
+        }
         $post = Post::create($validatedData);
         $post->load('user', 'community');
         return $this->ok('post created successfully', new PostResource($post));

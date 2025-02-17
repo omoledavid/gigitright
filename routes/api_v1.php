@@ -108,5 +108,6 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
         Route::post('add-account', 'addAccount');
         Route::post('withdraw', 'withdraw');
     });
+
 });
 
