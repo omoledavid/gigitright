@@ -39,7 +39,7 @@ class PostController extends Controller
             'community_id.exists' => 'This community does not exist'
         ]);
         $validatedData['user_id'] = $request->user()->id;
-        $validatedData['status'] = PostStatus::PENDING;
+        $validatedData['status'] = PostStatus::APPROVED;
         $post = Post::create($validatedData);
         $post->load('user', 'community');
         return $this->ok('post created successfully', new PostResource($post));
