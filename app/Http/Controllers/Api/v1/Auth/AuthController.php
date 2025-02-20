@@ -40,13 +40,13 @@ class AuthController extends Controller
         $user->ver_code         = $verificationCode;
         $user->ver_code_send_at = Carbon::now();
         $user->save();
-//        notify($user, 'EVER_CODE', [
-//            'code' => $user->ver_code,
-//        ], ['email']);
+        notify($user, 'EVER_CODE', [
+            'code' => $user->ver_code,
+        ], ['email']);
 
 
         // Trigger email verification event
-//        event(new Registered($user));
+        //event(new Registered($user));
         $token = $user->createToken('auth_token',['*'])->plainTextToken;
 //        $token = $user->createToken('auth_token',['*'], now()->addDay())->plainTextToken;
         return $this->ok('User registered successfully. Please verify your email address.', [

@@ -58,17 +58,17 @@ class AuthorizationController extends Controller {
     public function sendVerifyCode($type) {
         $user = auth()->user();
 
-        if ($this->checkCodeValidity($user)) {
-            $targetTime = $user->ver_code_send_at->addMinutes(2)->timestamp;
-            $delay      = $targetTime - time();
-
-            $notify[] = 'Please try after ' . $delay . ' seconds';
-            return response()->json([
-                'remark'  => 'validation_error',
-                'status'  => 'error',
-                'message' => ['error' => $notify],
-            ]);
-        }
+//        if ($this->checkCodeValidity($user)) {
+//            $targetTime = $user->ver_code_send_at->addMinutes(2)->timestamp;
+//            $delay      = $targetTime - time();
+//
+//            $notify[] = 'Please try after ' . $delay . ' seconds';
+//            return response()->json([
+//                'remark'  => 'validation_error',
+//                'status'  => 'error',
+//                'message' => ['error' => $notify],
+//            ]);
+//        }
 
         $user->ver_code         = verificationCode(6);
         $user->ver_code_send_at = Carbon::now();

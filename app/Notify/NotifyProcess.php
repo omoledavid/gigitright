@@ -2,26 +2,22 @@
 
 namespace App\Notify;
 
-use App\Constants\Status;
-use App\Enums\TemplateStatus;
-use App\Models\AdminNotification;
-use App\Models\NotificationLog;
+use App\Contracts\Enums\Status;
 use App\Models\NotificationTemplate;
-use phpDocumentor\Reflection\DocBlock\Tags\Template;
 
-class NotifyProcess {
-
+class NotifyProcess
+{
     /*
-    |--------------------------------------------------------------------------
-    | Notification Process
-    |--------------------------------------------------------------------------
-    |
-    | This is the core processor to send a notification to receiver. In this
-    | class, find the notification template from database and build the final
-    | message replacing the short codes and provide this to the method to send
-    | the notification. Also notification log and error is creating here.
-    |
-     */
+        |--------------------------------------------------------------------------
+        | Notification Process
+        |--------------------------------------------------------------------------
+        |
+        | This is the core processor to send a notification to receiver. In this
+        | class, find the notification template from database and build the final
+        | message replacing the short codes and provide this to the method to send
+        | the notification. Also notification log and error is creating here.
+        |
+         */
 
     /**
      * Template name, which contain the short codes and messages
@@ -142,22 +138,23 @@ class NotifyProcess {
      *
      * @return string
      */
-    protected function getMessage() {
-        $this->prevConfiguration();
+    protected function getMessage()
+    {
         $this->setSetting();
+        $this->prevConfiguration();
 
-        $body           = $this->body;
-        $user           = $this->user;
+        $body = $this->body;
+        $user = $this->user;
         $globalTemplate = $this->globalTemplate;
 
-        //finding the notification template=
-        $template       = NotificationTemplate::where('act', $this->templateName)->where($this->statusField, TemplateStatus::ENABLE)->first();
+        //finding the notification template
+        $template = NotificationTemplate::where('act', $this->templateName)->where($this->statusField, 1)->first();
         $this->template = $template;
 
         //Getting the notification message from database if use and template exist
         //If not exist, get the message which have sent via method
         if ($user && $template) {
-            $message = $this->replaceShortCode($user->name, $user->username, $this->setting->$globalTemplate, $template->$body);
+            $message = $this->replaceShortCode($user->fullname, $user->username, $this->setting->$globalTemplate, $template->$body);
             if (empty($message)) {
                 $message = $template->$body;
             }
@@ -191,9 +188,9 @@ class NotifyProcess {
      *
      * @return string
      */
-    protected function replaceShortCode($name, $username, $template, $body) {
+    protected function replaceShortCode($name, $username, $template, $body)
+    {
         $message = str_replace("{{fullname}}", $name, $template);
-        $message = str_replace("{{username}}", $username, $message);
         $message = str_replace("{{message}}", $body, $message);
         return $message;
     }
@@ -203,7 +200,8 @@ class NotifyProcess {
      *
      * @return void
      */
-    protected function getSubject() {
+    protected function getSubject()
+    {
         if ($this->template) {
             $subject = $this->template->subj;
             if ($this->shortCodes) {
@@ -220,7 +218,8 @@ class NotifyProcess {
      *
      * @return void
      */
-    protected function setSetting() {
+    protected function setSetting()
+    {
         if (!$this->setting) {
             $this->setting = gs();
         }
@@ -231,35 +230,37 @@ class NotifyProcess {
      *
      * @return void
      */
-    public function createErrorLog($message) {
-        $adminNotification            = new AdminNotification();
-        $adminNotification->user_id   = 0;
-        $adminNotification->title     = $message;
-        $adminNotification->click_url = '#';
-        $adminNotification->save();
-    }
+//    public function createErrorLog($message)
+//    {
+//        $adminNotification = new AdminNotification();
+//        $adminNotification->user_id = 0;
+//        $adminNotification->title = $message;
+//        $adminNotification->click_url = '#';
+//        $adminNotification->save();
+//    }
 
     /**
      * Create the error log
      *
      * @return void
      */
-    public function createLog($type) {
-        $userColumn = $this->userColumn;
-        if ($this->user && $this->createLog) {
-            $notifyConfig    = $this->notifyConfig;
-            $config          = $this->setting->$notifyConfig;
-            $notificationLog = new NotificationLog();
-            if (@$this->user->id) {
-                $notificationLog->$userColumn = $this->user->id;
-            }
-            $notificationLog->notification_type = $type;
-            $notificationLog->sender            = @$config->name ? @$config->name : trans('Firebase');
-            $notificationLog->sent_from         = $this->setting->email_from;
-            $notificationLog->sent_to           = is_array($this->toAddress) ? json_encode($this->toAddress) : $this->toAddress;
-            $notificationLog->subject           = $this->subject;
-            $notificationLog->message           = $type == 'email' ? $this->finalMessage : strip_tags($this->finalMessage);
-            $notificationLog->save();
-        }
-    }
+//    public function createLog($type)
+//    {
+//        $userColumn = $this->userColumn;
+//        if ($this->user && $this->createLog) {
+//            $notifyConfig = $this->notifyConfig;
+//            $config = $this->setting->$notifyConfig;
+//            $notificationLog = new NotificationLog();
+//            if (@$this->user->id) {
+//                $notificationLog->$userColumn = $this->user->id;
+//            }
+//            $notificationLog->notification_type = $type;
+//            $notificationLog->sender = @$config->name ? @$config->name : trans('Firebase');
+//            $notificationLog->sent_from = $this->setting->email_from;
+//            $notificationLog->sent_to = is_array($this->toAddress) ? json_encode($this->toAddress) : $this->toAddress;
+//            $notificationLog->subject = $this->subject;
+//            $notificationLog->message = $type == 'email' ? $this->finalMessage : strip_tags($this->finalMessage);
+//            $notificationLog->save();
+//        }
+//    }
 }

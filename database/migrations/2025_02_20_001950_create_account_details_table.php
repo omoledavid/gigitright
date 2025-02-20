@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('account_details', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Links to users table
+            $table->string('bank_name');
+            $table->string('account_number');
+            $table->string('account_name');
+            $table->string('swift_code')->nullable(); // Optional for international transfers
+            $table->string('currency')->default('NGN');
             $table->timestamps();
         });
     }

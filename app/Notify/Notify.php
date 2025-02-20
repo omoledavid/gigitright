@@ -2,18 +2,19 @@
 
 namespace App\Notify;
 
-class Notify {
+class Notify
+{
     /*
-    |--------------------------------------------------------------------------
-    | Send Notification
-    |--------------------------------------------------------------------------
-    |
-    | The notification will go via some methods which were implemented. Different
-    | classes are available for a particular method. But we need a central position
-    | to serve a notification via every method which is selected. This is
-    | the class that is serving this perspective.
-    |
-     */
+        |--------------------------------------------------------------------------
+        | Send Notification
+        |--------------------------------------------------------------------------
+        |
+        | The notification will go via some methods which were implemented. Different
+        | classes are available for a particular method. But we need a central position
+        | to serve a notification via every method which is selected. This is
+        | the class that is serving this perspective.
+        |
+         */
 
     /**
      * Template name, which contain the short codes and messages
@@ -78,7 +79,8 @@ class Notify {
      * @param null $sendVia
      * @return void
      */
-    public function __construct($sendVia = null) {
+    public function __construct($sendVia = null)
+    {
         $this->sendVia = $sendVia;
         $this->setting = gs();
     }
@@ -90,7 +92,8 @@ class Notify {
      *
      * @return void
      */
-    public function send() {
+    public function send()
+    {
         $methods = [];
         //get the notification method classes which are selected
         if ($this->sendVia) {
@@ -103,14 +106,14 @@ class Notify {
 
         //send the notification via methods one by one
         foreach ($methods as $method) {
-            $notify               = new $method;
+            $notify = new $method;
             $notify->templateName = $this->templateName;
-            $notify->shortCodes   = $this->shortCodes;
-            $notify->user         = $this->user;
-            $notify->setting      = $this->setting;
-            $notify->createLog    = $this->createLog;
-            $notify->userColumn   = $this->userColumn;
-            $notify->clickValue   = $this->clickValue;
+            $notify->shortCodes = $this->shortCodes;
+            $notify->user = $this->user;
+            $notify->setting = $this->setting;
+            $notify->createLog = $this->createLog;
+            $notify->userColumn = $this->userColumn;
+            $notify->clickValue = $this->clickValue;
             $notify->send();
         }
     }
@@ -121,11 +124,10 @@ class Notify {
      * @param array|null $sendVia
      * @return array|string
      */
-    protected function notifyMethods($sendVia = null) {
+    protected function notifyMethods($sendVia = null)
+    {
         $methods = [
-            'email'             => Email::class,
-            'sms'               => Sms::class,
-            'push_notification' => PushNotification::class,
+            'email' => Email::class,
         ];
         if ($sendVia) {
             return $methods[$sendVia];

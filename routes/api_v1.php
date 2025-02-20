@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\v1\AccountDetailController;
 use App\Http\Controllers\Api\v1\DepositController;
 use App\Http\Controllers\Api\v1\PaystackController;
 use App\Http\Controllers\Api\v1\Auth\AuthController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\Api\v1\EducationController;
 use App\Http\Controllers\Api\v1\JobController;
 use App\Http\Controllers\Api\v1\CommunityController;
 use App\Http\Controllers\Api\v1\WishlistController;
+use App\Http\Controllers\Api\v1\WithdrawController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
@@ -107,10 +109,16 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     });
 
     //Finance
-    Route::controller(FinanceController::class)->group(function () {
-        Route::get('bank-accounts', 'bankAccounts');
-        Route::post('add-account', 'addAccount');
-        Route::post('withdraw', 'withdraw');
+    Route::controller(AccountDetailController::class)->group(function () {
+        Route::get('bank-account', 'show');
+        Route::post('add-account', 'store');
+        Route::put('update-account', 'update');
+        Route::delete('delete-account', 'destroy');
+    });
+    //
+    Route::controller(WithdrawController::class)->group(function () {
+        Route::get('withdraw', 'index');
+        Route::post('withdraw', 'store');
     });
     //Review
     Route::apiResource('reviews', ReviewController::class);
