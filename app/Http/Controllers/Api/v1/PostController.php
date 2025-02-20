@@ -17,10 +17,9 @@ class PostController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
-        $post = $user->posts()->get();
-        $post->load('community');
-        return $this->ok('success', ['posts' => PostResource::collection($post)]);
+        $posts = Post::query()->where('user_id', auth()->id())->orderBy('id', 'desc')->get();
+        $posts->load('community');
+        return $this->ok('success', ['posts' => PostResource::collection($posts)]);
     }
 
 

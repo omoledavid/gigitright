@@ -30,7 +30,8 @@ class JobResource extends JsonResource
                 'visibility' => $this->visibility,
                 'location' => $this->location,
                 'skill_requirements' => $this->skill_requirements,
-                'no_applicants' => count($this->applicants)
+                'no_applicants' => count($this->applicants),
+                'created_at' => $this->created_at->diffForHumans(),
             ],
             'relationships' => [
                 'applicants' => JobApplicantResource::collection($this->applicants)

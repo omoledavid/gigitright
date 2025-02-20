@@ -5,7 +5,7 @@ namespace App\Http\Resources\v1;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PostCommentResource extends JsonResource
+class WishlistResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,16 +15,15 @@ class PostCommentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'type' => 'comment',
+            'type' => 'wishlist',
             'id' => $this->id,
             'attributes' => [
-                'comment' => $this->comment,
-            ],
-            'user' => [
-                'id' => $this->id,
-                'name' => $this->postUser->name,
-                'profile_image' => $this->postUser->profile->profile_image,
-                'email' => $this->postUser->email
+                'user' => [
+                    'id' => $this->user->id,
+                    'name' => $this->user->name,
+                ],
+                'job' => new JobResource($this->job),
+                'added_at' => $this->created_at->diffForHumans(),
             ]
         ];
     }

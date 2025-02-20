@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\v1\DepositController;
+use App\Http\Controllers\Api\v1\PaystackController;
 use App\Http\Controllers\Api\v1\Auth\AuthController;
 use App\Http\Controllers\Api\v1\Auth\AuthorizationController;
 use App\Http\Controllers\Api\v1\Auth\ForgotPasswordController;
@@ -9,6 +11,7 @@ use App\Http\Controllers\Api\v1\GeneralController;
 use App\Http\Controllers\Api\v1\MessageController;
 use App\Http\Controllers\Api\v1\NotificationController;
 use App\Http\Controllers\Api\v1\PostController;
+use App\Http\Controllers\Api\v1\ReviewController;
 use App\Http\Controllers\Api\v1\UserController;
 use App\Http\Controllers\Api\v1\PortfolioController;
 use App\Http\Controllers\Api\v1\CertificationController;
@@ -16,6 +19,7 @@ use App\Http\Controllers\Api\v1\ExperienceController;
 use App\Http\Controllers\Api\v1\EducationController;
 use App\Http\Controllers\Api\v1\JobController;
 use App\Http\Controllers\Api\v1\CommunityController;
+use App\Http\Controllers\Api\v1\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
@@ -108,6 +112,13 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
         Route::post('add-account', 'addAccount');
         Route::post('withdraw', 'withdraw');
     });
-
+    //Review
+    Route::apiResource('reviews', ReviewController::class);
+    //Wishlist
+    Route::apiResource('wishlists', WishlistController::class);
+    //Deposit
+    Route::post('deposit', [DepositController::class, 'initiate']);
+    Route::post('buy-griftis', [DepositController::class, 'buyGriftis']);
 });
+Route::get('payment/verify/{gateway}', [DepositController::class, 'verify']);
 

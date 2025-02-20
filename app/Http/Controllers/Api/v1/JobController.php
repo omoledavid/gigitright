@@ -22,7 +22,7 @@ class JobController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $jobs = $user->jobs;
+        $jobs = $user->jobs()->orderBy('created_at', 'desc')->get();
         return $this->ok('success', JobResource::collection($jobs));
     }
 
@@ -60,7 +60,10 @@ class JobController extends Controller
     public function show(string $id)
     {
         $job = Job::query()->findOrFail($id);
-        return $this->ok('success', new JobResource($job));
+        return $this->ok('success', [
+            'job' => new JobResource($job),
+            'related_jobs' => JobResource::collection($job->relatedJobs)
+        ]);
     }
 
 

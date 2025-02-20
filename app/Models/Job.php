@@ -27,4 +27,11 @@ class Job extends Model
     {
         return $this->hasMany(JobApplicants::class);
     }
+    public function relatedJobs()
+    {
+        return $this->hasMany(Job::class, 'category_id', 'category_id')
+            ->where('id', '!=', $this->id)
+            ->latest()
+            ->limit(5);
+    }
 }
