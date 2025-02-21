@@ -89,11 +89,10 @@ class Email extends NotifyProcess implements Notifiable
         $config = $general->mail_config;
         //Server settings
         $mail->isSMTP();
-        $mail->Host = "gigitright.com";
+        $mail->Host = "mail.gigitright.com";
         $mail->SMTPAuth = true;
         $mail->Username = "support@gigitright.com";
         $mail->Password = ",[R%X1+m@@xy";
-
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
         $mail->CharSet = 'UTF-8';

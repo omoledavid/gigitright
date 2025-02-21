@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\DepositStatus;
+use App\Http\Resources\v1\UserResource;
 use App\Models\User;
+use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
@@ -14,6 +16,7 @@ use App\Services\PaymentGateways\StripeService;
 
 class DepositController extends Controller
 {
+    use ApiResponses;
     public function initiate(Request $request)
     {
         $request->validate([
@@ -100,8 +103,23 @@ class DepositController extends Controller
     }
     public function buyGriftis(Request $request)
     {
-        $request->validate([
-            'amount' => 'required|numeric|min:1',
+        $validatedData = $request->validate([
+            'amount' => 'required|numeric|min:10',
         ]);
+        $rate = 10;
+        $griftis = $request->amount * $rate;
+        //pay for grifts
+        $user = auth()->user();
+        //check balance
+        if($user->balance < $griftis){
+            return $this->error('Insufficient Balance');
+        }
+        try {
+            $user->wallet->withdraw($griftis);
+            $user->griftis->deposit($validatedData['amount']);
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+        return $this->ok('Deposit of griftis was successfully', new UserResource($user));
     }
 }
