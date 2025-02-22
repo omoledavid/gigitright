@@ -39,7 +39,7 @@ class AccountDetailController extends Controller
         $account = AccountDetail::where('user_id', Auth::id())->first();
 
         if (!$account) {
-            return $this->error('Account not found', Response::HTTP_NOT_FOUND);
+            return $this->ok('Account not found',[]);
         }
         return $this->ok('Bank details retrieved successfully.', new AccountDetailResource($account), Response::HTTP_OK);
     }
