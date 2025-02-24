@@ -44,7 +44,7 @@ class UserResource extends JsonResource
 //                    ],
 //                    'links' => 'later'
 //                ]
-                'profile' => $this->profile,
+                'profile' => $this->whenLoaded('profile'),
                 'portfolios' => PortfolioResource::collection($this->whenLoaded('portfolio')),
                 'certifications' => CertificateResource::collection($this->whenLoaded('certificate')),
                 'experiences' => ExperienceResource::collection($this->whenLoaded('experience')),

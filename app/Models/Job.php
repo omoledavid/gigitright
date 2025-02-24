@@ -34,4 +34,8 @@ class Job extends Model
             ->latest()
             ->limit(5);
     }
+    public function milestones()
+    {
+        return $this->hasMany(Milestone::class);
+    }
 }

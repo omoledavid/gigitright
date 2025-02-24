@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\v1\AccountDetailController;
 use App\Http\Controllers\Api\v1\DepositController;
+use App\Http\Controllers\Api\v1\GigController;
+use App\Http\Controllers\Api\v1\MilestoneController;
 use App\Http\Controllers\Api\v1\PaystackController;
 use App\Http\Controllers\Api\v1\Auth\AuthController;
 use App\Http\Controllers\Api\v1\Auth\AuthorizationController;
@@ -129,6 +131,14 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::post('deposit', [DepositController::class, 'initiate']);
     Route::get('transactions', [DepositController::class, 'transactions']);
     Route::post('buy-griftis', [DepositController::class, 'buyGriftis']);
+
+    //Gigs
+    Route::apiResource('gigs', GigController::class);
+
+    //Job Milestone
+    Route::post('/milestones', [MilestoneController::class, 'store']);
+    Route::put('/milestones/{milestone}', [MilestoneController::class, 'update']);
+    Route::delete('/milestones/{milestone}', [MilestoneController::class, 'destroy']);
 });
 Route::get('payment/verify/{gateway}', [DepositController::class, 'verify']);
 

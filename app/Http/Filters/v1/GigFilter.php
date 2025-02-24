@@ -2,18 +2,19 @@
 
 namespace App\Http\Filters\v1;
 
-class UserFilter extends QueryFilter
+class GigFilter extends QueryFilter
 {
     public function include($value)
     {
-        // Ensure $value is an array
-        $includes = is_array($value) ? $value : explode(',', $value);
-
-        return $this->builder->with($includes);
+        return $this->builder->with($value);
     }
     public function country($value)
     {
         return $this->builder->where('country', $value);
+    }
+    public function userid($value)
+    {
+        return $this->builder->where('user_id', $value);
     }
     public function id($value)
     {

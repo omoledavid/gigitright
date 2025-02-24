@@ -6,11 +6,18 @@ class JobFilter extends QueryFilter
 {
     public function include($value)
     {
-        return $this->builder->with($value);
+        // Ensure $value is an array
+        $includes = is_array($value) ? $value : explode(',', $value);
+
+        return $this->builder->with($includes);
     }
     public function status($value)
     {
         return $this->builder->where('is_private', $value);
+    }
+    public function userid($value)
+    {
+        return $this->builder->where('user_id', $value);
     }
     public function id($value)
     {

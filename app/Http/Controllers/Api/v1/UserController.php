@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Filters\v1\UserFilter;
 use App\Http\Resources\v1\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponses;
@@ -16,14 +17,16 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(UserFilter $filter)
     {
-        $user = auth()->user();
-        $relationship = $request->get('relationship'); // Array with a single string
-
-        $validRelationships = ['portfolio', 'profile', 'certificate', 'experience', 'education'];
-
-        loadValidRelationships($user, $relationship, $validRelationships);
+        $userId = auth()->id();
+        $user = User::query()->where('id', $userId)->filter($filter)->first();
+//        return $user;
+//        $relationship = $request->get('relationship'); // Array with a single string
+//
+//        $validRelationships = ['portfolio', 'profile', 'certificate', 'experience', 'education'];
+//
+//        loadValidRelationships($user, $relationship, $validRelationships);
 
         return $this->ok('success', new UserResource($user));
     }
@@ -67,6 +70,7 @@ class UserController extends Controller
             'location' => 'nullable|string|max:50',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'bio' => 'nullable|string|max:255',
+            'pay_rate' => 'nullable|string|max:255',
             'extra_info' => 'nullable|string|max:255',
         ]);
 

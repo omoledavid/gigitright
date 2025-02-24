@@ -34,7 +34,8 @@ class JobResource extends JsonResource
                 'created_at' => $this->created_at->diffForHumans(),
             ],
             'relationships' => [
-                'applicants' => JobApplicantResource::collection($this->applicants)
+                'applicants' => JobApplicantResource::collection($this->whenLoaded('applicants')),
+                'milestones' => MilestoneResource::collection($this->whenLoaded('milestones')),
             ]
         ];
     }

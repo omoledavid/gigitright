@@ -19,10 +19,9 @@ class JobController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(JobFilter $filter)
     {
-        $user = auth()->user();
-        $jobs = $user->jobs()->orderBy('created_at', 'desc')->get();
+        $jobs = Job::query()->filter($filter)->orderBy('created_at', 'desc')->get();
         return $this->ok('success', JobResource::collection($jobs));
     }
 
