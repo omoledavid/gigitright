@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1\Admin;
 
 use App\Enums\PaymentStatus;
+use App\Enums\TransactionSource;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\TransactionResource;
@@ -43,26 +44,29 @@ class WalletController extends Controller
         }
 
         // Process the refund logic (integrate payment gateway refund if applicable)
-        $transaction->update(['status' => PaymentStatus::REFUNDED]);
+        if ($transaction->transaction_source === TransactionSource::WALLET && $transaction->transaction_type === TransactionType::CREDIT) {
+            $transaction->update(['status' => PaymentStatus::REFUNDED]);
+            $transaction->user->wallet->deposit($transaction->amount);
+            return $this->ok('Wallet refund', new TransactionResource($transaction));
+        }
+        return $this->error('Wallet refund failed');
 
-        return response()->json(['message' => 'Transaction refunded successfully']);
     }
 
     public function setRates(Request $request)
     {
         $request->validate([
-            'griftis_to_dollars' => 'required|numeric',
-            'buyer_percentage' => 'required|numeric|min:0|max:100',
-            'seller_percentage' => 'required|numeric|min:0|max:100',
+            'griftis_to_naira' => 'required|numeric',
+            'buyer_percentage' => 'nullable|numeric|min:0|max:100',
+            'seller_percentage' => 'nullable|numeric|min:0|max:100',
         ]);
 
         // Assuming we store these values in a settings table
-        setting(['griftis_to_dollars' => $request->griftis_to_dollars]);
-        setting(['buyer_percentage' => $request->buyer_percentage]);
-        setting(['seller_percentage' => $request->seller_percentage]);
-        setting()->save();
+        set_setting('griftis_to_naira', $request->griftis_to_naira);
+//        set_setting('buyer_percentage', $request->buyer_percentage);
+//        set_setting('seller_percentage', $request->seller_percentage);
 
-        return response()->json(['message' => 'Rates updated successfully']);
+        return $this->ok('Rates updated successfully');
     }
 }
 

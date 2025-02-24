@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Setting;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Cache;
 use App\Models\GeneralSetting;
@@ -184,4 +185,15 @@ function createTransaction($userId, $transactionType, $amount, $currency, $payme
         'transaction_source'           => $source,
         'reference'        => Str::uuid(), // Generates a unique reference
     ]);
+}
+
+function setting($key, $default = null)
+{
+    $setting = Setting::where('key', $key)->first();
+    return $setting ? $setting->value : $default;
+}
+
+function set_setting($key, $value)
+{
+    return Setting::updateOrCreate(['key' => $key], ['value' => $value]);
 }

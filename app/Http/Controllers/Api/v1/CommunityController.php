@@ -114,6 +114,19 @@ class CommunityController extends Controller
         $community->save();
         return $this->ok('community member created', ['communityMember' => new CommunityMemberResource($communityMember)]);
     }
+    public function leaveCommunity($id)
+    {
+        $community = Community::query()->find($id);
+        if (!$community) {
+            return $this->error("Community not found");
+        }
+        $alreadyJoined = CommunityMember::query()->where('community_id', $id)->where('user_id', auth()->id())->exists();
+        if (!$alreadyJoined) {
+            return $this->error("You're not a part of this community!");
+        }
+        $communityMember = CommunityMember::query()->where('community_id', $id)->where('user_id', auth()->id())->delete();
+        return $this->ok('You left this community!');
+    }
     public function viewAllCommunities(CommunityFilter $filter)
     {
         return $this->ok('success', ['communities' => CommunityResource::collection(Community::filter($filter)->paginate())]);
