@@ -153,4 +153,10 @@ class CommunityController extends Controller
             'new_communities' => CommunityResource::collection($newCommunities),
         ]);
     }
+    public function joinedCommunities()
+    {
+        $user = auth()->user();
+        $joinedCommunity = $user->communities()->get();
+        return $this->ok('success', CommunityResource::collection($joinedCommunity));
+    }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Cache;
 use App\Models\GeneralSetting;
 use App\Notify\Notify;
@@ -169,4 +170,18 @@ function loadValidRelationships($model, $relationship, array $validRelationships
             $model->load($relationships);
         }
     }
+}
+
+function createTransaction($userId, $transactionType, $amount, $currency, $paymentMethod, $status = 'pending', $source = 'wallet')
+{
+    return Transaction::create([
+        'user_id'          => $userId,
+        'transaction_type' => $transactionType,
+        'amount'           => $amount,
+        'currency'         => $currency,
+        'payment_method'   => $paymentMethod,
+        'status'           => $status,
+        'transaction_source'           => $source,
+        'reference'        => Str::uuid(), // Generates a unique reference
+    ]);
 }

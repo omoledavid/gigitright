@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\DepositStatus;
+use App\Enums\PaymentStatus;
+use App\Enums\TransactionSource;
+use App\Enums\TransactionType;
+use App\Http\Resources\v1\TransactionResource;
 use App\Http\Resources\v1\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponses;
@@ -94,6 +98,7 @@ class DepositController extends Controller
             ]);
             //Deposit money to wallet
             $user->wallet->deposit($paymentStatus['amount']);
+            createTransaction($user->id,TransactionType::CREDIT,$paymentStatus['amount'],'NGN',$gateway,PaymentStatus::COMPLETED, TransactionSource::WALLET);
 
             //return response()->json(['message' => 'Payment verified successfully'], 200);
             return redirect($callbackURL);
@@ -115,11 +120,18 @@ class DepositController extends Controller
             return $this->error('Insufficient Balance');
         }
         try {
-            $user->wallet->withdraw($griftis);
+            $user->wallet->withdraw($validatedData['amount']);
+            createTransaction($user->id,TransactionType::DEBIT,$validatedData['amount'],'NGN','wallet',PaymentStatus::COMPLETED, TransactionSource::WALLET);
             $user->griftis->deposit($validatedData['amount']);
+            createTransaction($user->id,TransactionType::CREDIT,$griftis,'GFT','wallet',PaymentStatus::COMPLETED, TransactionSource::GRIFTIS);
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         }
         return $this->ok('Deposit of griftis was successfully', new UserResource($user));
+    }
+    public function transactions()
+    {
+        $user = auth()->user();
+        return TransactionResource::collection($user->transactions()->get());
     }
 }

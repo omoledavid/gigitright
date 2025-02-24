@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\MessageResource;
 use App\Models\MediaFile;
@@ -17,43 +18,37 @@ class MessageController extends Controller
         $validatedData = $request->validate([
             'conversation_id' => 'required|exists:conversations,id',
             'message' => 'required|string|max:255',
-            'files' => 'nullable',
-        ],
-        [
+            'files' => 'nullable|array',
+            'files.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,doc,docx|max:2048',
+        ], [
             'conversation_id.exists' => 'This conversation does not exist',
         ]);
-        $validatedData['sender_id'] = $request->user()->id;
+
+        $validatedData['sender_id'] = auth()->id();
         $validatedData['read'] = false;
-        $message = Message::query()->create($validatedData);
+
+        $message = Message::create($validatedData);
+
+        // Handle file uploads
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
                 try {
-                    $location = getFilePath('messaging');
-                    $path = fileUploader($file, $location);
+                    $path = fileUploader($file, 'messaging');
                     MediaFile::create([
-                    'message_id' => $message->id,
-                    'file_path' => $path,
-                    'file_type' => $file->getMimeType(),
-                    'original_name' => $file->getClientOriginalName(),
-                ]);
-                }catch (\Exception $exception){
+                        'message_id' => $message->id,
+                        'file_path' => $path,
+                        'file_type' => $file->getMimeType(),
+                        'original_name' => $file->getClientOriginalName(),
+                    ]);
+                } catch (\Exception $exception) {
                     return $this->error($exception->getMessage());
                 }
             }
-
         }
-//        if ($request->hasFile('files')) {
-//            foreach ($request->file('files') as $file) {
-//                $path = $file->store('media_files');
-//
-//                MediaFile::create([
-//                    'message_id' => $message->id,
-//                    'file_path' => $path,
-//                    'file_type' => $file->getMimeType(),
-//                    'original_name' => $file->getClientOriginalName(),
-//                ]);
-//            }
-//        }
-        return $this->ok('message sent successfully.', new MessageResource($message));
+
+        // **Broadcast the message to the conversation participants**
+        broadcast(new MessageSent($message))->toOthers();
+
+        return $this->ok('Message sent successfully.', new MessageResource($message));
     }
 }

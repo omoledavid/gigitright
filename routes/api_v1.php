@@ -84,6 +84,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
         Route::post('join', [CommunityController::class, 'joinCommunity'])->name('community.join');
         Route::get('all', [CommunityController::class, 'viewAllCommunities'])->name('community.all');
         Route::get('suggested', [CommunityController::class, 'suggestedCommunities'])->name('community.suggested');
+        Route::get('joined', [CommunityController::class, 'joinedCommunities'])->name('community.joined');
     });
 
 
@@ -126,6 +127,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::apiResource('wishlists', WishlistController::class);
     //Deposit
     Route::post('deposit', [DepositController::class, 'initiate']);
+    Route::get('transactions', [DepositController::class, 'transactions']);
     Route::post('buy-griftis', [DepositController::class, 'buyGriftis']);
 });
 Route::get('payment/verify/{gateway}', [DepositController::class, 'verify']);
