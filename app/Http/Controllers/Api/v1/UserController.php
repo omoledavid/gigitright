@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\v1\UserFilter;
 use App\Http\Resources\v1\UserResource;
@@ -30,8 +31,6 @@ class UserController extends Controller
 
         return $this->ok('success', new UserResource($user));
     }
-
-
 
 
     /**
@@ -112,6 +111,18 @@ class UserController extends Controller
         return $this->ok('User profile updated successfully', new UserResource($user));
     }
 
+    public function switch()
+    {
+        $user = auth()->user();
+        if ($user->role === UserRole::FREELANCER) {
+            $user->role = UserRole::CLIENT;
+            $user->save();
+            return $this->ok('User role changed to Client');
+        }
+        $user->role = UserRole::FREELANCER;
+        $user->save();
+        return $this->ok('User role changed to Freelance');
+    }
 
 
     /**

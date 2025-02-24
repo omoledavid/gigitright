@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use phpDocumentor\Reflection\Types\Integer;
 
-class Transaction extends Model
+class PaymentMethod extends Model
 {
     protected $guarded = ['id'];
+
     protected $casts = [
-        'amount' => 'decimal:2',
+        'transaction_fee' => 'decimal:2'
     ];
 }

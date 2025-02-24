@@ -61,6 +61,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::apiResource('certification', CertificationController::class);
     Route::apiResource('experience', ExperienceController::class);
     Route::apiResource('education', EducationController::class);
+    Route::post('/user-switch', [UserController::class, 'switch']);
 
     //Jobs
     Route::apiResource('job', JobController::class);
@@ -94,6 +95,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
         Route::post('job-application', 'jobApplication');
         Route::get('job-application/{id}', 'viewJobApplication');
     });
+
     //conversation
     Route::apiResource('conversation', ConversationController::class);
     Route::prefix('conversation')->group(function () {
@@ -103,6 +105,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
         Route::post('message', 'createMessage');
         Route::get('message', 'viewMessage');
     });
+
     //Generals
     Route::controller(GeneralController::class)->group(function () {
         Route::get('talents', 'talents');

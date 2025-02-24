@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\Status;
+use App\Enums\UserStatus;
 use App\Http\Filters\v1\QueryFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -61,6 +63,10 @@ class User extends Authenticatable
     public function scopeFilter(Builder $builder, QueryFilter $filters)
     {
         return $filters->apply($builder);
+    }
+    public function scopeActive($query)
+    {
+        return $query->where('status', UserStatus::ACTIVE)->where('ev', Status::ACTIVE)->where('sv', Status::ACTIVE);
     }
 
     public function wallet(): Attribute
