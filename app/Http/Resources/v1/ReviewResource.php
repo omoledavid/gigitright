@@ -21,10 +21,12 @@ class ReviewResource extends JsonResource
                 'reviewer' => [
                     'id' => $this->reviewer->id,
                     'name' => $this->reviewer->name,
+                    'profile_image' => $this->reviewer->profile->profile_image,
                 ],
                 'reviewee' => [
                     'id' => $this->reviewee->id,
                     'name' => $this->reviewee->name,
+                    'profile_image' => $this->reviewer->profile->profile_image,
                 ],
                 'rating' => $this->rating,
                 'review' => $this->review,
