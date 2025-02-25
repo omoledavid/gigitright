@@ -133,6 +133,6 @@ class DepositController extends Controller
     public function transactions(TransactionFilter $filter)
     {
         $user = auth()->user();
-        return TransactionResource::collection($user->transactions()->filter($filter)->get());
+        return TransactionResource::collection($user->transactions()->filter($filter)->paginate());
     }
 }
