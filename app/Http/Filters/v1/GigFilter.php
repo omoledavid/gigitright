@@ -6,7 +6,10 @@ class GigFilter extends QueryFilter
 {
     public function include($value)
     {
-        return $this->builder->with($value);
+        // Ensure $value is an array
+        $includes = is_array($value) ? $value : explode(',', $value);
+
+        return $this->builder->with($includes);
     }
     public function country($value)
     {

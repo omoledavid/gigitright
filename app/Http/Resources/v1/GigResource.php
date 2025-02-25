@@ -29,7 +29,8 @@ class GigResource extends JsonResource
             'updated_at' => $this->updated_at,
         ],
         'relationships' => [
-            'plans' => json_decode($this->plans, true)
+            'plans' => json_decode($this->plans, true),
+            'reviews' => ReviewResource::collection($this->whenLoaded('reviews')),
 //            'created_by' => new UserResource($this->user), // Assuming a `creator` relation exists
 //            'plans' => GigPlanResource::collection($this->plans), // Assuming a `plans` relation
         ]
