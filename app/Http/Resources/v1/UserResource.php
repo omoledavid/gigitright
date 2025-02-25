@@ -50,6 +50,7 @@ class UserResource extends JsonResource
                 'certifications' => CertificateResource::collection($this->whenLoaded('certificate')),
                 'experiences' => ExperienceResource::collection($this->whenLoaded('experience')),
                 'education' => EducationResource::collection($this->whenLoaded('education')),
+                'reviews' => ReviewResource::collection($this->whenLoaded('reviews')),
             ],
             'dev_purpose_only' => [
                 'verification_code' => $this->ver_code
