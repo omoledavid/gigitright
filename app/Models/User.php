@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\ReviewType;
 use App\Enums\Status;
 use App\Enums\UserStatus;
 use App\Http\Filters\v1\QueryFilter;
@@ -170,6 +171,6 @@ class User extends Authenticatable
     }
     public function reviews(): HasMany
     {
-        return $this->hasMany(Review::class, 'reviewee_id');
+        return $this->hasMany(Review::class, 'reviewee_id')->where('type', ReviewType::USER);
     }
 }

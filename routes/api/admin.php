@@ -20,4 +20,9 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->name('admin')->gr
     Route::get('wallet/transaction/{id}', [WalletController::class, 'show']);
     Route::post('wallet/refund/{id}', [WalletController::class, 'refund']);
     Route::post('wallet/set-rates', [WalletController::class, 'setRates']);
+
+    //User Management
+    Route::get('/users', [ManageUserController::class, 'index']); // List users
+    Route::post('/users/{user}/suspend', [ManageUserController::class, 'suspend']); // Suspend user
+    Route::post('/users/{user}/send-email', [ManageUserController::class, 'sendEmail']); // Send email
 });

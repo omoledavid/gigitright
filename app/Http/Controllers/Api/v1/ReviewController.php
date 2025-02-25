@@ -20,6 +20,7 @@ class ReviewController extends Controller
         $validatedData = $request->validate([
             'reviewer_id' => 'required|exists:users,id',
             'reviewee_id' => 'required|exists:users,id',
+            'type' => 'required|in:freelancer,gig,job,client',
             'rating' => 'required|integer|min:1|max:5',
             'review' => 'required|string',
         ]);

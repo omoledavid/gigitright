@@ -15,6 +15,10 @@ class UserFilter extends QueryFilter
     {
         return $this->builder->where('country', $value);
     }
+    public function role($value)
+    {
+        return $this->builder->where('role', $value);
+    }
     public function id($value)
     {
         return $this->builder->whereIn('id', explode(',', $value));
