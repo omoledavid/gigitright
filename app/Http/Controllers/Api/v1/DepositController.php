@@ -111,7 +111,7 @@ class DepositController extends Controller
         $validatedData = $request->validate([
             'amount' => 'required|numeric|min:10',
         ]);
-        $rate = 10;
+        $rate = setting('griftis_to_naira',);
         $griftis = $request->amount * $rate;
         //pay for grifts
         $user = auth()->user();

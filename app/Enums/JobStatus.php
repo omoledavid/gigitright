@@ -2,9 +2,10 @@
 
 namespace App\Enums;
 
-enum JobStatus: int
+enum JobStatus: string
 {
-    const PENDING = 0;
-    const ACCEPTED = 1;
-    const REJECTED = 2;
+    const OPEN = 'open';
+    const IN_PROGRESS = 'in_progress';
+    const COMPLETED = 'completed';
+    const CANCELLED = 'cancelled';
 }

@@ -13,7 +13,7 @@ class JobFilter extends QueryFilter
     }
     public function status($value)
     {
-        return $this->builder->where('is_private', $value);
+        return $this->builder->where('status', $value);
     }
     public function userid($value)
     {

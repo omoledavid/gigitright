@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Enums\JobStatus;
+use App\Enums\JobApplicantStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\v1\JobFilter;
 use App\Http\Resources\v1\JobApplicantResource;
@@ -116,7 +116,7 @@ class JobController extends Controller
         $validatedData['user_id'] = $user['id'];
         $validatedData['resume'] = $resume;
         $validatedData['cover_letter'] = $coverLetter;
-        $validatedData['status'] = JobStatus::PENDING;
+        $validatedData['status'] = JobApplicantStatus::PENDING;
         if(!empty($validatedData['milestones'])){
 //            $milestones = json_decode($validatedData['milestones']);
             $milestones = [];
