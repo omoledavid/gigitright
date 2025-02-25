@@ -23,4 +23,8 @@ class Community extends Model
     {
         return $this->hasMany(CommunityMember::class, 'community_id');
     }
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class, 'community_id');
+    }
 }

@@ -28,7 +28,8 @@ class CommunityResource extends JsonResource
                 'updated_at' => $this->cover_image,
             ],
             'relationships' => [
-                'created_by' => new UserResource($this->creator),
+                'created_by' => new UserResource($this->whenLoaded('creator')),
+                'posts' => $this->whenLoaded('posts')
             ]
         ];
     }
