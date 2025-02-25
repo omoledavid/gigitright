@@ -48,4 +48,8 @@ abstract class QueryFilter
             $this->builder->orderBy($sortAttribute, $direction);
         }
     }
+    protected function paginate($value)
+    {
+        $this->builder->paginate($value);
+    }
 }
