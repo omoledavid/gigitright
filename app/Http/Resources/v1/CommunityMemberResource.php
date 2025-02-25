@@ -21,8 +21,9 @@ class CommunityMemberResource extends JsonResource
                 'attributes' => [
                     'name' => $this->user->name,
                     'role' => $this->role,
-                    'created_at' => $this->created_at,
-                    'updated_at' => $this->updated_at,
+                    'profile_image' => $this->user->profile->profile_image,
+                    'created_at' => $this->created_at->toDateTimeString(),
+                    'updated_at' => $this->updated_at->toDateTimeString(),
                 ]
             ];
     }

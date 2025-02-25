@@ -31,6 +31,7 @@ class UserResource extends JsonResource
                     ]
                 )
             ],
+            'links' => '',
             'Accounts' => [
                 'main_wallet' => $this->wallet?->balance,
                 'escrow_wallet' => $this->escrow_wallet?->balance,
