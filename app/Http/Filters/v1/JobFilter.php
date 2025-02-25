@@ -27,6 +27,14 @@ class JobFilter extends QueryFilter
     {
         return $this->builder->where('title', 'like', '%' . $value . '%');
     }
+    public function location($value)
+    {
+        return $this->builder->where('location', 'like', '%' . $value . '%');
+    }
+    public function skill($value)
+    {
+        return $this->builder->where('skill_requirements', 'like', '%' . $value . '%');
+    }
     public function description($value)
     {
         return $this->builder->where('description', 'like', '%' . $value . '%');
