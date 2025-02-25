@@ -6,6 +6,7 @@ use App\Enums\DepositStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\TransactionSource;
 use App\Enums\TransactionType;
+use App\Http\Filters\v1\TransactionFilter;
 use App\Http\Resources\v1\TransactionResource;
 use App\Http\Resources\v1\UserResource;
 use App\Models\User;
@@ -129,9 +130,9 @@ class DepositController extends Controller
         }
         return $this->ok('Deposit of griftis was successfully', new UserResource($user));
     }
-    public function transactions()
+    public function transactions(TransactionFilter $filter)
     {
         $user = auth()->user();
-        return TransactionResource::collection($user->transactions()->get());
+        return TransactionResource::collection($user->transactions()->filter($filter)->get());
     }
 }
