@@ -29,7 +29,8 @@ class CommunityResource extends JsonResource
             ],
             'relationships' => [
                 'created_by' => new UserResource($this->whenLoaded('creator')),
-                'posts' => $this->whenLoaded('posts')
+                'posts' => PostResource::collection($this->whenLoaded('posts')),
+                'members' => CommunityMemberResource::collection($this->whenLoaded('members')),
             ]
         ];
     }
