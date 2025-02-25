@@ -7,6 +7,7 @@ use App\Http\Resources\v1\GigResource;
 use App\Models\Gig;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class GigController extends Controller
 {
@@ -33,8 +34,13 @@ class GigController extends Controller
             'previous_works_companies' => 'nullable|array',
             'language' => 'nullable|string|max:255',
             'unique_selling_point' => 'nullable|string',
-            'plans' => 'nullable|array'
+            'plans' => 'nullable|json',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('images/gigs', 'public');
+            $image = url('storage/' . $path);
+        }
 
         $gig = Gig::create([
             'title' => $request->title,
@@ -42,13 +48,14 @@ class GigController extends Controller
             'description' => $request->description,
             'skills' => json_encode($request->skills),
             'location' => $request->location,
+            'image' => $image,
             'previous_works_companies' => json_encode($request->previous_works_companies),
             'language' => $request->language,
             'unique_selling_point' => $request->unique_selling_point,
             'plans' => json_encode($request->plans)
         ]);
 
-        return response()->json(['message' => 'Gig created successfully', 'gig' => $gig], 201);
+        return $this->ok('Gig created successfully', new GigResource($gig), Response::HTTP_CREATED);
     }
 
     /**
