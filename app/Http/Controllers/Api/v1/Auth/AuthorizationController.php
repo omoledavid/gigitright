@@ -55,8 +55,9 @@ class AuthorizationController extends Controller {
 
     }
 
-    public function sendVerifyCode($type) {
-        $user = auth()->user();
+    public function sendVerifyCode(Request $request, $type) {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+        $user = User::query()->where('email', $request->email)->first();
 
 //        if ($this->checkCodeValidity($user)) {
 //            $targetTime = $user->ver_code_send_at->addMinutes(2)->timestamp;

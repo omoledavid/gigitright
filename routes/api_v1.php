@@ -41,13 +41,12 @@ Route::controller(GeneralController::class)->group(function () {
 Route::post('verify-email', [AuthorizationController::class, 'emailVerification']);
 Route::post('verify-mobile', [AuthorizationController::class, 'mobileVerification']);
 
+//authorization
+Route::post('resend-verify/{type}', [AuthorizationController::class, 'sendVerifyCode']);
+
 Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
+    Route::get('authorization', [AuthorizationController::class, 'authorization']);
     Route::post('logout', AuthController::class . '@logout');
-    //authorization
-    Route::controller(AuthorizationController::class)->group(function () {
-        Route::get('authorization', 'authorization');
-        Route::get('resend-verify/{type}', 'sendVerifyCode');
-    });
     //User Account
     Route::apiResource('user', UserController::class);
     Route::post('change-password', AuthController::class . '@changePassword');
