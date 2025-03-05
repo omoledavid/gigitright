@@ -1,10 +1,12 @@
 <?php
 
+use App\Models\MailTemplate;
 use App\Models\Setting;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Cache;
 use App\Models\GeneralSetting;
 use App\Notify\Notify;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Lib\ClientInfo;
@@ -24,29 +26,51 @@ function gs($key = null)
     return $general;
 }
 
-function notify($user, $templateName, $shortCodes = null, $sendVia = null, $createLog = true, $clickValue = null)
+function notify($user, $templateName, $shortCodes = [], $sendVia = null, $createLog = true, $clickValue = null)
 {
-    $globalShortCodes = [
-        'site_name' => gs('site_name'),
-        'site_currency' => gs('cur_text'),
-        'currency_symbol' => gs('cur_sym'),
-    ];
+    try {
+        $template = MailTemplate::query()->where('name', $templateName)->first();
+        if (!$template) {
+            throw new \Exception("Mail template '$templateName' not found.");
+        }
 
-    if (gettype($user) == 'array') {
-        $user = (object)$user;
+        $globalTemplate = gs('email_template');
+        if (!$globalTemplate) {
+            throw new \Exception("Global email template not found.");
+        }
+
+        // Ensure $shortCodes is always an array
+        if (!is_array($shortCodes)) {
+            $shortCodes = [];
+        }
+
+        $globalShortCodes = [
+            '{{fullname}}' => $user->name,
+            '{{site_name}}' => gs('site_name'),
+        ];
+
+        // Replace placeholders in content
+        $content = str_replace(array_keys($shortCodes), array_values($shortCodes), $template->content);
+
+        // Replace placeholders in global template
+        $globalTemplate = str_replace(array_keys($globalShortCodes), array_values($globalShortCodes), $globalTemplate);
+
+        // Final email body
+        $finalEmailBody = str_replace('{{message}}', $content, $globalTemplate);
+
+        // Send the email
+        Mail::html($finalEmailBody, function ($message) use ($user, $template) {
+            $message->to($user->email)
+                ->from(gs('email_from'), gs('site_name'))
+                ->subject($template->subject);
+        });
+
+
+    } catch (\Exception $e) {
+        return response($e->getMessage(), 500);
     }
-
-    $shortCodes = array_merge($shortCodes ?? [], $globalShortCodes);
-
-    $notify = new Notify($sendVia);
-    $notify->templateName = $templateName;
-    $notify->shortCodes = $shortCodes;
-    $notify->user = $user;
-    $notify->createLog = $createLog;
-    $notify->userColumn = isset($user->id) ? $user->getForeignKey() : 'user_id';
-    $notify->clickValue = $clickValue;
-    $notify->send();
 }
+
 
 function verificationCode($length)
 {
@@ -55,9 +79,10 @@ function verificationCode($length)
     }
 
     $min = pow(10, $length - 1);
-    $max = (int) ($min - 1) . '9';
+    $max = (int)($min - 1) . '9';
     return random_int($min, $max);
 }
+
 function generateUniqueUsername($fullName)
 {
     // Start with a username based on the user's full name (e.g., first name + last name)
@@ -81,6 +106,7 @@ function generateUniqueUsername($fullName)
     // Return the unique username
     return $existingUser ? $newUsername : $username;
 }
+
 function getIpInfo()
 {
     $ipInfo = ClientInfo::ipInfo();
@@ -153,10 +179,12 @@ function getFileExt($key)
 {
     return fileManager()->$key()->extensions;
 }
-function resourceStatus ($data)
+
+function resourceStatus($data)
 {
     return ($data === 0) ? 'Inactive' : 'Active';
 }
+
 function loadValidRelationships($model, $relationship, array $validRelationships)
 {
     if (is_array($relationship) && count($relationship) === 1) {
@@ -176,14 +204,14 @@ function loadValidRelationships($model, $relationship, array $validRelationships
 function createTransaction($userId, $transactionType, $amount, $currency, $paymentMethod, $status = 'pending', $source = 'wallet')
 {
     return Transaction::create([
-        'user_id'          => $userId,
+        'user_id' => $userId,
         'transaction_type' => $transactionType,
-        'amount'           => $amount,
-        'currency'         => $currency,
-        'payment_method'   => $paymentMethod,
-        'status'           => $status,
-        'transaction_source'           => $source,
-        'reference'        => Str::uuid(), // Generates a unique reference
+        'amount' => $amount,
+        'currency' => $currency,
+        'payment_method' => $paymentMethod,
+        'status' => $status,
+        'transaction_source' => $source,
+        'reference' => Str::uuid(), // Generates a unique reference
     ]);
 }
 

@@ -79,7 +79,7 @@ class Email extends NotifyProcess implements Notifiable
         $headers .= "Reply-To: $general->site_name <$general->email_from> \r\n";
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: text/html; charset=utf-8\r\n";
-        @mail($this->email, $this->subject, $this->finalMessage, $headers);
+        mail($this->email, $this->subject, $this->finalMessage, $headers);
     }
 
     protected function sendSmtpMail()

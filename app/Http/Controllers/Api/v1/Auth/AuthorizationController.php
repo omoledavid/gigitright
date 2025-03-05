@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api\v1\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\UserResource;
+use App\Mail\TestMail;
 use App\Models\User;
 use App\Traits\ApiResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use function App\Http\Controllers\Api\v1\verifyG2fa;
 
@@ -84,7 +86,7 @@ class AuthorizationController extends Controller {
         }
 
         notify($user, $notifyTemplate, [
-            'code' => $user->ver_code,
+            '{{code}}' => $user->ver_code,
         ], [$type]);
 
         $notify[] = 'Verification code sent successfully';
