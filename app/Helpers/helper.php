@@ -29,6 +29,7 @@ function gs($key = null)
 function notify($user, $templateName, $shortCodes = [], $sendVia = null, $createLog = true, $clickValue = null)
 {
     try {
+        $generalSettings = gs();
         $template = MailTemplate::query()->where('name', $templateName)->first();
         if (!$template) {
             throw new \Exception("Mail template '$templateName' not found.");
@@ -59,9 +60,9 @@ function notify($user, $templateName, $shortCodes = [], $sendVia = null, $create
         $finalEmailBody = str_replace('{{message}}', $content, $globalTemplate);
 
         // Send the email
-        Mail::html($finalEmailBody, function ($message) use ($user, $template) {
+        Mail::html($finalEmailBody, function ($message) use ($user, $template,$generalSettings) {
             $message->to($user->email)
-                ->from(gs('email_from'), gs('site_name'))
+                ->from($generalSettings->email_from, $generalSettings->site_name)
                 ->subject($template->subject);
         });
 
