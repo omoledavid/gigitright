@@ -67,11 +67,11 @@ function notify($user, $templateName, $shortCodes = [], $sendVia = null, $create
         $mailtrap = sendMailTrap($user, $template->subject, $finalEmailBody);
 
         // Send the email
-        Mail::html($finalEmailBody, function ($message) use ($user, $template, $generalSettings) {
-            $message->to($user->email)
-                ->from($generalSettings->email_from, $generalSettings->site_name)
-                ->subject($template->subject);
-        });
+//        Mail::html($finalEmailBody, function ($message) use ($user, $template, $generalSettings) {
+//            $message->to($user->email)
+//                ->from($generalSettings->email_from, $generalSettings->site_name)
+//                ->subject($template->subject);
+//        });
 
 
     } catch (\Exception $e) {
