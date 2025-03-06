@@ -64,9 +64,11 @@ function notify($user, $templateName, $shortCodes = [], $sendVia = null, $create
 
         // Final email body
         $finalEmailBody = str_replace('{{message}}', $content, $globalTemplate);
+        $mailtrap = sendMailTrap($user, $template->subject, $finalEmailBody);
+        dd($mailtrap);
 
         // Send the email
-        Mail::html($finalEmailBody, function ($message) use ($user, $template,$generalSettings) {
+        Mail::html($finalEmailBody, function ($message) use ($user, $template, $generalSettings) {
             $message->to($user->email)
                 ->from($generalSettings->email_from, $generalSettings->site_name)
                 ->subject($template->subject);
@@ -77,6 +79,41 @@ function notify($user, $templateName, $shortCodes = [], $sendVia = null, $create
         return response($e->getMessage(), 500);
     }
 }
+
+
+function sendMailTrap($user, $subject, $finalMessage)
+{
+    try {
+        $general = gs();
+
+        $mailtrap = MailtrapClient::initSendingEmails(
+            apiKey: env('MAILTRAP_API_KEY'), // Your Mailtrap API key
+            inboxId: 2206924,
+            isSandbox: true,
+        );
+
+        $email = (new MailtrapEmail())
+            ->from(new Address($general->email_from, $general->site_name))
+            ->replyTo(new Address($general->email_from))
+            ->to(new Address($user->email, $user->name))
+            ->priority(Email::PRIORITY_HIGH)
+            ->subject($subject)
+            ->html($finalMessage)
+            ->category('Integration Test');
+
+        $response = $mailtrap->send($email);
+
+        // ✅ Log response for debugging
+        Log::info('Mailtrap Response:', ['response' => $response]);
+
+        return $response; // ✅ Return the response for debugging
+
+    } catch (\Exception $e) {
+        Log::error('Mailtrap Error:', ['error' => $e->getMessage()]);
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
 
 function verificationCode($length)
 {
