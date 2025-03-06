@@ -65,7 +65,6 @@ function notify($user, $templateName, $shortCodes = [], $sendVia = null, $create
         // Final email body
         $finalEmailBody = str_replace('{{message}}', $content, $globalTemplate);
         $mailtrap = sendMailTrap($user, $template->subject, $finalEmailBody);
-        dd($mailtrap);
 
         // Send the email
         Mail::html($finalEmailBody, function ($message) use ($user, $template, $generalSettings) {
