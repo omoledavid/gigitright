@@ -86,9 +86,7 @@ function sendMailTrap($user, $subject, $finalMessage)
         $general = gs();
 
         $mailtrap = MailtrapClient::initSendingEmails(
-            apiKey: env('MAILTRAP_API_KEY'), // Your Mailtrap API key
-            inboxId: 2206924,
-            isSandbox: true,
+            apiKey: env('MAILTRAP_API_KEY'),
         );
 
         $email = (new MailtrapEmail())

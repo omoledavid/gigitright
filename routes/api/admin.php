@@ -22,7 +22,13 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->name('admin')->gr
     Route::post('wallet/set-rates', [WalletController::class, 'setRates']);
 
     //User Management
-    Route::get('/users', [ManageUserController::class, 'index']); // List users
-    Route::post('/users/{user}/suspend', [ManageUserController::class, 'suspend']); // Suspend user
-    Route::post('/users/{user}/send-email', [ManageUserController::class, 'sendEmail']); // Send email
+    Route::controller(ManageUserController::class)->group(function () {
+        Route::prefix('users')->group(function () {
+            Route::get('/', 'index')->name('users.index');
+            Route::get('stats', 'stats')->name('users.stats');
+            Route::post('revenue-chart', 'getRevenueChart')->name('users.revenue-chart');
+            Route::get('/{user}/suspend', 'suspend')->name('users.suspend');
+            Route::get('/{user}/send-email', 'sendEmail')->name('users.send-email');
+        });
+    });
 });
