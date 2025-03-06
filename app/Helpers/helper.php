@@ -86,7 +86,6 @@ function sendMailTrap($email, $userName, $subject, $finalMessage)
             apiKey: env('MAILTRAP_API_KEY') #your API token from here https://mailtrap.io/api-tokens
         );
 
-
         $email = (new MailtrapEmail())
             ->from(new Address($general->email_from, $general->site_name)) // <--- you should use your domain here that you installed in the mailtrap.io admin area (otherwise you will get 401)
             ->replyTo(new Address($general->email_from))
