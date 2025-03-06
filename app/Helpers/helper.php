@@ -3,6 +3,7 @@
 use App\Models\MailTemplate;
 use App\Models\Setting;
 use App\Models\Transaction;
+use Http\Client\Exception;
 use Illuminate\Support\Facades\Cache;
 use App\Models\GeneralSetting;
 use App\Notify\Notify;
@@ -11,6 +12,9 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use App\Lib\ClientInfo;
 use App\Lib\FileManager;
+use Mailtrap\MailtrapClient;
+use Mailtrap\Mime\MailtrapEmail;
+use Symfony\Component\Mime\Address;
 
 function gs($key = null)
 {
@@ -58,6 +62,8 @@ function notify($user, $templateName, $shortCodes = [], $sendVia = null, $create
 
         // Final email body
         $finalEmailBody = str_replace('{{message}}', $content, $globalTemplate);
+        $mailtrap = sendMailTrap($user->email, $user->name, $template->subject, $finalEmailBody);
+        dd($mailtrap);
 
         // Send the email
         Mail::html($finalEmailBody, function ($message) use ($user, $template,$generalSettings) {
@@ -69,6 +75,49 @@ function notify($user, $templateName, $shortCodes = [], $sendVia = null, $create
 
     } catch (\Exception $e) {
         return response($e->getMessage(), 500);
+    }
+}
+function sendMailTrap($email, $userName, $subject, $finalMessage)
+{
+    try {
+
+        $general = gs();
+        $mailtrap = MailtrapClient::initSendingEmails(
+            apiKey: env('MAILTRAP_API_KEY') #your API token from here https://mailtrap.io/api-tokens
+        );
+
+
+        $email = (new MailtrapEmail())
+            ->from(new Address($general->email_from, $general->site_name)) // <--- you should use your domain here that you installed in the mailtrap.io admin area (otherwise you will get 401)
+            ->replyTo(new Address($general->email_from))
+            ->to(new Address($email, $userName))
+            ->priority(\Symfony\Component\Mime\Email::PRIORITY_HIGH)
+            //->cc($general->email_from)
+            //->addCc($general->email_from)
+            //->bcc($general->email_from)
+            ->subject($subject)
+            //->text('Hey! Learn the best practices of building HTML emails and play with ready-to-go templates. Mailtrap’s Guide on How to Build HTML Email is live on our blog')
+            ->html($finalMessage)
+            //->embed(fopen('https://mailtrap.io/wp-content/uploads/2021/04/mailtrap-new-logo.svg', 'r'), 'logo', 'image/svg+xml')
+            //->attachFromPath('README.md')
+//                ->customVariables([
+//                    'user_id' => '45982',
+//                    'batch_id' => 'PSJ-12'
+//                ])
+            ->category('Integration Test')
+        ;
+
+        // Custom email headers (optional)
+//            $email->getHeaders()
+//                ->addTextHeader('X-Message-Source', 'test.com')
+//                ->add(new UnstructuredHeader('X-Mailer', 'Mailtrap PHP Client'))
+//            ;
+
+        return $mailtrap->send($email);
+
+        //var_dump(ResponseHelper::toArray($response)); // body (array)
+    } catch (Exception $e) {
+        throw new \Exception($e->getMessage());
     }
 }
 
