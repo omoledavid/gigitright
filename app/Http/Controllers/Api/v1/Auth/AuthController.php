@@ -6,6 +6,7 @@ use App\Enums\Status;
 use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\LoginUserRequest;
+use App\Http\Resources\v1\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponses;
 use Carbon\Carbon;
@@ -50,7 +51,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token',['*'])->plainTextToken;
 //        $token = $user->createToken('auth_token',['*'], now()->addDay())->plainTextToken;
         return $this->ok('User registered successfully. Please verify your email address.', [
-            'user' => $user,
+            'user' => new UserResource($user),
             'token' => $token,
             'verification_code' => $verificationCode,
         ]);

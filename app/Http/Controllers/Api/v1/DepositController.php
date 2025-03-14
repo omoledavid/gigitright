@@ -122,9 +122,9 @@ class DepositController extends Controller
         }
         try {
             $user->wallet->withdraw($validatedData['amount']);
-            createTransaction($user->id,TransactionType::DEBIT,$validatedData['amount'],'NGN','wallet',PaymentStatus::COMPLETED, TransactionSource::WALLET);
+            createTransaction($user->id,TransactionType::DEBIT,$griftis,'NGN','wallet',PaymentStatus::COMPLETED, TransactionSource::WALLET);
             $user->griftis->deposit($validatedData['amount']);
-            createTransaction($user->id,TransactionType::CREDIT,$griftis,'GFT','wallet',PaymentStatus::COMPLETED, TransactionSource::GRIFTIS);
+            createTransaction($user->id,TransactionType::CREDIT,$validatedData['amount'],'GFT','wallet',PaymentStatus::COMPLETED, TransactionSource::GRIFTIS);
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         }
