@@ -51,4 +51,13 @@ class MessageController extends Controller
 
         return $this->ok('Message sent successfully.', new MessageResource($message));
     }
+    public function getMessages($conversationId)
+    {
+        // Fetch messages for the given conversation
+        $messages = Message::where('conversation_id', $conversationId)
+            ->orderBy('created_at', 'asc') // Optional: Order messages by creation date
+            ->get(['message', 'created_at']); // Get only the 'message' and 'created_at' columns
+
+        return response()->json($messages);
+    }
 }

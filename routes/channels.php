@@ -1,7 +1,15 @@
 <?php
 
+use App\Models\Conversation;
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
-    return $user->conversations()->where('id', $conversationId)->exists();
+Broadcast::channel('private-chat.{conversationId}', function ($user, $conversationId) {
+    return Conversation::where('id', $conversationId)
+        ->where(function ($query) use ($user) {
+            $query->where('user_id', $user->id) // Check if the user is a participant
+            ->orWhere('client_id', $user->id); // Adjust based on your DB structure
+        })
+        ->exists();
 });
+
+
