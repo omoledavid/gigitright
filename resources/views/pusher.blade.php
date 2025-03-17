@@ -58,7 +58,7 @@
         });
 
     // Subscribe to the private channel
-    const channel = pusher.subscribe(`chat.${conversationId}`);
+    const channel = pusher.subscribe(`private-chat.${conversationId}`);
     channel.bind("MessageSent", function (data) {
         console.log('event received');
         const msg = document.createElement('div');
