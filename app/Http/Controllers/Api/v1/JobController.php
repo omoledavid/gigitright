@@ -111,7 +111,7 @@ class JobController extends Controller
         ]);
         $data = new UserResource(auth()->user());
         $user = $data->toArray(request());
-        $resume = $user['relationships']['profile']['resume'];
+        $resume = $user['relationships']['profile']['resume'] ?? null;
         $coverLetter = $user['relationships']['profile']['cover_letter'];
         $validatedData['user_id'] = $user['id'];
         $validatedData['resume'] = $resume;
