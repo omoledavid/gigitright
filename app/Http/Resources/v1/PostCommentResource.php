@@ -22,9 +22,9 @@ class PostCommentResource extends JsonResource
             ],
             'user' => [
                 'id' => $this->id,
-                'name' => $this->postUser->name,
+                'name' => $this->postUser->name ?? null,
                 'profile_image' => $this->postUser->profile->profile_image ?? null,
-                'email' => $this->postUser->email
+                'email' => $this->postUser->email ?? null
             ]
         ];
     }
