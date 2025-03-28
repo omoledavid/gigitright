@@ -84,10 +84,10 @@ class ForgotPasswordController extends Controller
         if ($validator->fails()) {
             return $this->error('Validation Error.', err: $validator->errors()->all());
         }
-        $reset = PasswordReset::where('token', $request->token)->orderBy('created_at', 'desc')->first();
-        if (!$reset) {
-            return $this->error('Invalid verification code');
-        }
+        $reset = PasswordReset::where('email', $request->email)->orderBy('created_at', 'desc')->first();
+//        if (!$reset) {
+//            return $this->error('Invalid verification code');
+//        }
 
         $user = User::where('email', $reset->email)->first();
         $user->password = bcrypt($request->password);
