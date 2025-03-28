@@ -114,7 +114,7 @@ class JobController extends Controller
         $resume = $user['relationships']['profile']['resume'] ?? null;
         $coverLetter = $user['relationships']['profile']['cover_letter'] ?? null;
         if(is_null($resume) && is_null($coverLetter)){
-            return $this->error('Kindly update your resume and cover letter first');
+            return $this->error('Kindly update your resume and cover letter');
         }
         $validatedData['user_id'] = $user['id'];
         $validatedData['resume'] = $resume;

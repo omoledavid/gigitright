@@ -23,7 +23,7 @@ class PostCommentResource extends JsonResource
             'user' => [
                 'id' => $this->id,
                 'name' => $this->postUser->name,
-                'profile_image' => $this->postUser->profile->profile_image,
+                'profile_image' => $this->postUser->profile->profile_image ?? null,
                 'email' => $this->postUser->email
             ]
         ];
