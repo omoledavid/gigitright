@@ -57,7 +57,12 @@ function notify($user, $templateName, $shortCodes = [], $sendVia = null, $create
         ];
 
         // Replace placeholders in content
-        $content = str_replace(array_keys($shortCodes), array_values($shortCodes), $template->content);
+        $content = $template->content;
+
+        foreach ($shortCodes as $key => $value) {
+            $content = str_replace('{{' .$key. '}}', $value, $content);
+        }
+
 
         // Replace placeholders in global template
         $globalTemplate = str_replace(array_keys($globalShortCodes), array_values($globalShortCodes), $globalTemplate);
