@@ -102,7 +102,7 @@ class DepositController extends Controller
             createTransaction($user->id,TransactionType::CREDIT,$paymentStatus['amount'],'NGN',$gateway,PaymentStatus::COMPLETED, TransactionSource::WALLET);
 
             //return response()->json(['message' => 'Payment verified successfully'], 200);
-            return redirect($callbackURL);
+            return redirect()->away($callbackURL ?? 'https://gigitright.com/dashboard/wallet');
         }
 
         return response()->json(['message' => 'Payment verification failed', 'error' => $paymentStatus], 400);
