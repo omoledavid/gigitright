@@ -62,8 +62,8 @@ class UserController extends Controller
         $validatedData = $request->validate([
             'name' => 'nullable|string|max:255',
             'user_title' => 'nullable|min:4',
-            'skills' => 'nullable|array|min:1|present',
-            'languages' => 'nullable|array|min:1|present',
+            'skills' => 'nullable|array|min:1',
+            'languages' => 'nullable|array|min:1',
             'resume' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
             'cover_letter' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:50',
