@@ -71,13 +71,6 @@ function notify($user, $templateName, $shortCodes = [], $sendVia = null, $create
         $finalEmailBody = str_replace('{{message}}', $content, $globalTemplate);
         $mailtrap = sendMailTrap($user, $template->subject, $finalEmailBody);
 
-        // Send the email
-//        Mail::html($finalEmailBody, function ($message) use ($user, $template, $generalSettings) {
-//            $message->to($user->email)
-//                ->from($generalSettings->email_from, $generalSettings->site_name)
-//                ->subject($template->subject);
-//        });
-
 
     } catch (\Exception $e) {
         return response($e->getMessage(), 500);
@@ -105,13 +98,10 @@ function sendMailTrap($user, $subject, $finalMessage)
 
         $response = $mailtrap->send($email);
 
-        // ✅ Log response for debugging
-        Log::info('Mailtrap Response:', ['response' => $response]);
 
         return $response; // ✅ Return the response for debugging
 
     } catch (\Exception $e) {
-        Log::error('Mailtrap Error:', ['error' => $e->getMessage()]);
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }

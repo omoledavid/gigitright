@@ -72,6 +72,7 @@ class UserController extends Controller
             'pay_rate' => 'nullable|string|max:255',
             'extra_info' => 'nullable|string|max:255',
         ]);
+        $validatedData['skills'] = json_encode($request->skills);
 
         // Preserve existing data if no file is uploaded
         $existingProfile = $user->profile;

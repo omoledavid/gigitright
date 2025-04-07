@@ -50,7 +50,7 @@ class PortfolioController extends Controller
             try {
                 $location = getFilePath('portfolio');
                 $path = fileUploader($request->image, $location);
-                $validatedData['image'] = url($location.'/'.$path);
+                $validatedData['image'] = $path;
             } catch (\Exception $exp) {
                 return $this->error('Could not upload your image');
             }
