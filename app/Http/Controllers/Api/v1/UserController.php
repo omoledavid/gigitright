@@ -73,6 +73,7 @@ class UserController extends Controller
             'extra_info' => 'nullable|string|max:255',
         ]);
         $validatedData['skills'] = json_encode($request->skills);
+        $validatedData['languages'] = json_encode($request->languages);
 
         // Preserve existing data if no file is uploaded
         $existingProfile = $user->profile;
