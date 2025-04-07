@@ -38,8 +38,9 @@ class GigController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('images/gigs', 'public');
-            $image = url('storage/' . $path);
+            $location = getFilePath('gigs');
+            $path = fileUploader($request->image, $location);
+            $image = $path;
         }
 
         $gig = Gig::create([

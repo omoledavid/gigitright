@@ -72,15 +72,17 @@ class UserController extends Controller
 
         // Handle file uploads
         if ($request->hasFile('profile_image')) {
-            $path = $request->file('profile_image')->store('profile-images', 'public');
-            $validatedData['profile_image'] = Storage::url($path);
+            $location = getFilePath('user_profile');
+            $path = fileUploader($request->profile_image, $location);
+            $validatedData['profile_image'] = $path;
         } else {
             $validatedData['profile_image'] = $existingProfile->profile_image ?? null;
         }
 
         if ($request->hasFile('resume')) {
-            $path = $request->file('resume')->store('resumes', 'public');
-            $validatedData['resume'] = Storage::url($path);
+            $location = getFilePath('resume');
+            $path = fileUploader($request->resume, $location);
+            $validatedData['resume'] = $path;
         } else {
             $validatedData['resume'] = $existingProfile->resume ?? null;
         }

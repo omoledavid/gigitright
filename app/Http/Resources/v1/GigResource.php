@@ -22,7 +22,7 @@ class GigResource extends JsonResource
                 'description' => $this->description,
                 'skills' => $this->skills, // Assuming it's stored as an array (JSON column)
                 'location' => $this->location,
-                'image' => $this->image,
+                'image' => $this->image ? url(getFilePath('gigs').'/'.$this->image) : null,
                 'previous_works_companies' => $this->previous_works_companies, // Array
                 'language' => $this->language,
                 'unique_selling_point' => $this->unique_selling_point,

@@ -59,12 +59,11 @@ class FileInfo {
         $data['beneficiaryTransfer'] = [
             'path' => 'assets/images/user/transfer/beneficiary'
         ];
-        $data['branchStaff'] = [
-            'path' => 'assets/branch/staff/resume'
+        $data['resume'] = [
+            'path' => 'assets/images/user/resume'
         ];
-        $data['branchStaffProfile'] = [
-            'path'      => 'assets/branch/staff/images/profile',
-            'size'      => '400x400',
+        $data['gigs'] = [
+            'path' => 'assets/images/user/gigs'
         ];
         return $data;
     }
