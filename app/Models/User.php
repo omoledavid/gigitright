@@ -45,6 +45,8 @@ class User extends Authenticatable
         'email_verified' => 'int',
         'mobile_verified' => 'int',
         'ver_code_send_at'  => 'datetime',
+        'skills' => 'array',
+        'languages' => 'array',
 
     ];
 
