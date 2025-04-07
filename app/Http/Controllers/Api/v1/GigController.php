@@ -47,10 +47,10 @@ class GigController extends Controller
             'title' => $request->title,
             'user_id' => auth()->id(),
             'description' => $request->description,
-            'skills' => json_encode($request->skills),
+            'skills' => $request->skills,
             'location' => $request->location,
             'image' => $image ?? null,
-            'previous_works_companies' => json_encode($request->previous_works_companies),
+            'previous_works_companies' => $request->previous_works_companies,
             'language' => $request->language,
             'unique_selling_point' => $request->unique_selling_point,
             'plans' => json_encode($request->plans)

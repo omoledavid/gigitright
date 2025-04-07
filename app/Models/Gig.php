@@ -12,6 +12,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Gig extends Model
 {
     protected $guarded = ['id'];
+    protected $casts = [
+        'skills' => 'array',
+        'previous_works_companies' => 'array',
+    ];
 
     public function scopeFilter(Builder $builder, QueryFilter $filters)
     {
