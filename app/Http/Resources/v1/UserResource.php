@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\v1;
 
+use App\Http\Resources\ProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -46,7 +47,7 @@ class UserResource extends JsonResource
 //                    ],
 //                    'links' => 'later'
 //                ]
-                'profile' => $this->whenLoaded('profile'),
+                'profile' => new ProfileResource($this->whenLoaded('profile')),
                 'portfolios' => PortfolioResource::collection($this->whenLoaded('portfolio')),
                 'certifications' => CertificateResource::collection($this->whenLoaded('certificate')),
                 'experiences' => ExperienceResource::collection($this->whenLoaded('experience')),
