@@ -22,12 +22,6 @@ class UserController extends Controller
     {
         $userId = auth()->id();
         $user = User::query()->where('id', $userId)->filter($filter)->first();
-//        return $user;
-//        $relationship = $request->get('relationship'); // Array with a single string
-//
-//        $validRelationships = ['portfolio', 'profile', 'certificate', 'experience', 'education'];
-//
-//        loadValidRelationships($user, $relationship, $validRelationships);
 
         return $this->ok('success', new UserResource($user));
     }
@@ -72,8 +66,6 @@ class UserController extends Controller
             'pay_rate' => 'nullable|string|max:255',
             'extra_info' => 'nullable|string|max:255',
         ]);
-        $validatedData['skills'] = json_encode($request->skills);
-        $validatedData['languages'] = json_encode($request->languages);
 
         // Preserve existing data if no file is uploaded
         $existingProfile = $user->profile;
