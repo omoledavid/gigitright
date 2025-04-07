@@ -24,7 +24,7 @@ class UserResource extends JsonResource
                 'sms_verified' => !(($this->sv === 0)),
                 'status' => $this->status,
                 'role' => $this->role,
-                'profile_image' => $this->profile?->profile_image ? url(getFilePath('profile_image').'/'.$this->profile?->profile_image) : null,
+                'profile_image' => $this->profile?->profile_image ? url(getFilePath('user_profile').'/'.$this->profile?->profile_image) : null,
                 $this->mergeWhen($request->routeIs('users.*'), [
                         'emailVerifiedAt' => $this->email_verified_at,
                         'updatedAt' => $this->updated_at
