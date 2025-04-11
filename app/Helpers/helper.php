@@ -6,9 +6,6 @@ use App\Models\Transaction;
 use Http\Client\Exception;
 use Illuminate\Support\Facades\Cache;
 use App\Models\GeneralSetting;
-use App\Notify\Notify;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Lib\ClientInfo;
@@ -35,7 +32,6 @@ function gs($key = null)
 function notify($user, $templateName, $shortCodes = [], $sendVia = null, $createLog = true, $clickValue = null)
 {
     try {
-        $generalSettings = gs();
         $template = MailTemplate::query()->where('name', $templateName)->first();
         if (!$template) {
             throw new \Exception("Mail template '$templateName' not found.");
@@ -60,7 +56,7 @@ function notify($user, $templateName, $shortCodes = [], $sendVia = null, $create
         $content = $template->content;
 
         foreach ($shortCodes as $key => $value) {
-            $content = str_replace('{{' .$key. '}}', $value, $content);
+            $content = str_replace($key, $value, $content);
         }
 
 
