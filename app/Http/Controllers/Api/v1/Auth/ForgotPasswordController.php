@@ -116,7 +116,7 @@ class ForgotPasswordController extends Controller
 //            $passwordValidation = $passwordValidation->mixedCase()->numbers()->symbols()->uncompromised();
 //        }
         return [
-            'token' => 'required',
+//            'token' => 'required',
             'email' => 'required|email',
             'password' => ['required', 'confirmed', $passwordValidation],
         ];
