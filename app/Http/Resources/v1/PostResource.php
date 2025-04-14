@@ -31,7 +31,7 @@ class PostResource extends JsonResource
                 'name' => $this->user->name,
                 'email' => $this->user->email,
                 'user_title' => $this->user->profile->user_title,
-                'profile_image' => $this->user->profile->profile_image,
+                'profile_image' => $this->user->profile->profile_image ? url(getFilePath('user_profile').'/'.$this->user->profile?->profile_image) : null,
             ],
             'relationships' => [
                 'community' => new CommunityResource($this->whenLoaded('community')),
