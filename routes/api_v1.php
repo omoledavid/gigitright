@@ -139,9 +139,15 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::apiResource('gigs', GigController::class);
 
     //Job Milestone
-    Route::post('/milestones', [MilestoneController::class, 'store']);
-    Route::put('/milestones/{milestone}', [MilestoneController::class, 'update']);
-    Route::delete('/milestones/{milestone}', [MilestoneController::class, 'destroy']);
+    Route::apiResource('milestones', MilestoneController::class);
+    // Talent
+    Route::prefix('talent')->group(function () {
+            Route::get('milestone/{milestoneId}', [MilestoneController::class, 'markAsCompleteByTalent']);
+    });
+    // Client
+    Route::prefix('client')->group(function () {
+            Route::get('milestone/{milestoneId}', [MilestoneController::class, 'markAsCompleteByClient']);
+    });
 });
 Route::get('payment/verify/{gateway}', [DepositController::class, 'verify']);
 

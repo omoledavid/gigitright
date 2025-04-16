@@ -25,7 +25,7 @@ class Job extends Model
     }
     public function applicants(): HasMany
     {
-        return $this->hasMany(JobApplicants::class);
+        return $this->hasMany(JobApplicants::class,'job_id','id');
     }
     public function relatedJobs()
     {
@@ -33,9 +33,5 @@ class Job extends Model
             ->where('id', '!=', $this->id)
             ->latest()
             ->limit(5);
-    }
-    public function milestones()
-    {
-        return $this->hasMany(Milestone::class);
     }
 }

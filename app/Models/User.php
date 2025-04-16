@@ -175,4 +175,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Review::class, 'reviewee_id')->where('type', ReviewType::USER);
     }
+    public function getBalAttribute()
+    {
+        return $this->wallet->balance ?? 0;
+    }
+    public function jobApplications(): HasMany
+    {
+        return $this->hasMany(JobApplicants::class, 'user_id');
+    }
+
 }

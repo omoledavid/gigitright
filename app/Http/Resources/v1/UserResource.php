@@ -3,6 +3,7 @@
 namespace App\Http\Resources\v1;
 
 use App\Http\Resources\ProfileResource;
+use App\Models\JobApplicants;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -53,6 +54,7 @@ class UserResource extends JsonResource
                 'experiences' => ExperienceResource::collection($this->whenLoaded('experience')),
                 'education' => EducationResource::collection($this->whenLoaded('education')),
                 'reviews' => ReviewResource::collection($this->whenLoaded('reviews')),
+                'jobs_applied_for' => JobApplicantResource::collection($this->whenLoaded('jobApplications')),
             ],
             'dev_purpose_only' => [
                 'verification_code' => $this->ver_code

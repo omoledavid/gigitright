@@ -30,14 +30,12 @@ class JobResource extends JsonResource
                 'visibility' => $this->visibility,
                 'location' => $this->location,
                 'skill_requirements' => $this->skill_requirements,
-                'no_applicants' => count($this->applicants),
                 'status' => $this->status,
                 'created_at' => $this->created_at->diffForHumans(),
             ],
-            'relationships' => [
-                'applicants' => JobApplicantResource::collection($this->whenLoaded('applicants')),
-                'milestones' => MilestoneResource::collection($this->whenLoaded('milestones')),
-            ]
+            'applicants' => JobApplicantResource::collection($this->whenLoaded('applicants')),
+            'milestones' => MilestoneResource::collection($this->whenLoaded('milestones')),
+            'related_jobs' => JobResource::collection($this->whenLoaded('relatedJobs'))
         ];
     }
 }

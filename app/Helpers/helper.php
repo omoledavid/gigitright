@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\PaymentMethod;
+use App\Enums\TransactionSource;
 use App\Models\MailTemplate;
 use App\Models\Setting;
 use App\Models\Transaction;
@@ -232,13 +234,14 @@ function loadValidRelationships($model, $relationship, array $validRelationships
     }
 }
 
-function createTransaction($userId, $transactionType, $amount, $currency, $paymentMethod, $status = 'pending', $source = 'wallet')
+function createTransaction($userId, $transactionType, $amount,$description = '', $paymentMethod = PaymentMethod::WALLET, $currency = 'NGN', $status = 'pending', $source = TransactionSource::WALLET)
 {
     return Transaction::create([
         'user_id' => $userId,
         'transaction_type' => $transactionType,
         'amount' => $amount,
         'currency' => $currency,
+        'description' => $description,
         'payment_method' => $paymentMethod,
         'status' => $status,
         'transaction_source' => $source,

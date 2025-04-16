@@ -20,18 +20,17 @@ class JobApplicantResource extends JsonResource
             'attributes' => [
                 'job_id' => $this->job_id,
                 'user_id' => $this->user_id,
-                'name' => $this->applicants->name,
-                'email' => $this->applicants->email,
-                'country' => $this->applicants->country,
+                'name' => $this->applicant->name,
+                'email' => $this->applicant->email,
+                'country' => $this->applicant->country,
                 'resume' => $this->resume,
                 'cover_letter' => $this->cover_letter,
                 'status' => ($this->status === 0) ? 'pending' : (($this->status === 1) ? 'accepted' : 'rejected'),
                 'updated_at' => $this->updated_at,
                 'created_at' => $this->created_at,
             ],
-            'relationships' => [
-                'job' => $this->job,
-            ]
+            'job' => new JobResource($this->whenLoaded('job')),
+            'milestones' => MilestoneResource::collection($this->whenLoaded('milestones')),
         ];
     }
 }

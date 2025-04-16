@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\MilestoneStatus;
+use App\Enums\TransactionSource;
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\MilestoneResource;
 use App\Models\Job;
@@ -10,10 +12,20 @@ use App\Models\Milestone;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class MilestoneController extends Controller
 {
     use ApiResponses;
+
+    public function index(Request $request)
+    {
+        $request->validate([
+            'job_id' => 'required|integer|exists:jobs,id',
+        ]);
+        $job = Job::query()->find($request->job_id);
+        return $job->load('milestones');
+    }
 
     public function store(Request $request)
     {
@@ -84,6 +96,50 @@ class MilestoneController extends Controller
         $milestone->update($data);
 
         return $this->ok('Milestone updated', new MilestoneResource($milestone), Response::HTTP_OK);
+    }
+
+    public function markAsCompleteByTalent($milestoneId)
+    {
+        $milestone = Milestone::query()->where('user_id', auth()->id())->find($milestoneId);
+        if (!$milestone) {
+            return $this->error('Milestone not found');
+        }
+        $milestone->update([
+            'is_marked_complete_by_talent' => true,
+        ]);
+        return $this->ok('Milestone marked as complete', new MilestoneResource($milestone), Response::HTTP_OK);
+    }
+
+    public function markAsCompleteByClient($milestoneId)
+    {
+        $milestone = Milestone::query()->whereHas('job', function ($query) {
+            $query->where('user_id', auth()->id());
+        })->find($milestoneId);
+        if (!$milestone) {
+            return $this->error('Milestone not found');
+        }
+        $milestone->update([
+            'is_marked_complete_by_client' => true,
+        ]);
+        if ($milestone->is_marked_complete_by_client === true && $milestone->is_marked_complete_by_talent === true) {
+            $client = $milestone->client;
+            $talent = $milestone->talent;
+            try {
+                DB::beginTransaction();
+                $client->escrow_wallet->withdraw($milestone->amount);
+                createTransaction(userId: $client->id, transactionType: TransactionType::DEBIT ,amount: $milestone->amount, description: 'Fund Transfer to talent', source: TransactionSource::ESCROW );
+                $talent->wallet->deposit($milestone->amount);
+                createTransaction(userId: $talent->id, transactionType: TransactionType::CREDIT ,amount: $milestone->amount, description: 'Fund received from client', source: TransactionSource::WALLET );
+                $milestone->update([
+                    'is_paid' => true,
+                ]);
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                return $this->error($th->getMessage());
+            }
+        }
+        return $this->ok('Milestone completion confirmed', new MilestoneResource($milestone), Response::HTTP_OK);
     }
 
 }

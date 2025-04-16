@@ -99,7 +99,7 @@ class DepositController extends Controller
             ]);
             //Deposit money to wallet
             $user->wallet->deposit($paymentStatus['amount']);
-            createTransaction($user->id,TransactionType::CREDIT,$paymentStatus['amount'],'NGN',$gateway,PaymentStatus::COMPLETED, TransactionSource::WALLET);
+            createTransaction(userId:$user->id,transactionType: TransactionType::CREDIT,amount: $paymentStatus['amount'],paymentMethod: $gateway,status: PaymentStatus::COMPLETED);
 
             //return response()->json(['message' => 'Payment verified successfully'], 200);
             return redirect()->away($callbackURL ?? 'https://gigitright.com/dashboard/wallet');
@@ -122,9 +122,9 @@ class DepositController extends Controller
         }
         try {
             $user->wallet->withdraw($validatedData['amount']);
-            createTransaction($user->id,TransactionType::DEBIT,$griftis,'NGN','wallet',PaymentStatus::COMPLETED, TransactionSource::WALLET);
+            createTransaction(userId: $user->id,transactionType: TransactionType::DEBIT,amount: $griftis,status: PaymentStatus::COMPLETED);
             $user->griftis->deposit($validatedData['amount']);
-            createTransaction($user->id,TransactionType::CREDIT,$validatedData['amount'],'GFT','wallet',PaymentStatus::COMPLETED, TransactionSource::GRIFTIS);
+            createTransaction(userId: $user->id,transactionType: TransactionType::CREDIT,amount: $validatedData['amount'],currency: 'GFT',status: PaymentStatus::COMPLETED,);
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         }
@@ -133,6 +133,6 @@ class DepositController extends Controller
     public function transactions(TransactionFilter $filter)
     {
         $user = auth()->user();
-        return TransactionResource::collection($user->transactions()->filter($filter)->get());
+        return TransactionResource::collection($user->transactions()->filter($filter)->latest()->get());
     }
 }

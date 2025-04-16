@@ -6,4 +6,5 @@ enum TransactionSource: string
 {
     const WALLET = 'wallet';
     const GRIFTIS = 'griftis';
+    const ESCROW = 'escrow';
 }

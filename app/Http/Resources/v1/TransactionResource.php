@@ -22,6 +22,7 @@ class TransactionResource extends JsonResource
                 'transaction_type' => $this->transaction_type, // credit or debit
                 'amount' => $this->amount,
                 'currency' => $this->currency,
+                'description' => $this->description ?? '',
                 'status' => $this->status, // pending, completed, failed, refunded
                 'payment_method' => $this->payment_method, // e.g., card, bank transfer
                 'transaction_source' => $this->transaction_source, // wallet, purchase
