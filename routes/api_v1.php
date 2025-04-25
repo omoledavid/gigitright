@@ -95,8 +95,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
 
 
     Route::controller(JobController::class)->group(function () {
-        Route::post('job-application', 'store');
-        Route::get('job-application', 'jobApplication');
+        Route::post('job-application', 'jobApplication');
         Route::get('job-application/{id}', 'viewJobApplication');
     });
 
