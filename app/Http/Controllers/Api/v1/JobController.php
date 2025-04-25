@@ -24,7 +24,7 @@ class JobController extends Controller
      */
     public function index(JobFilter $filter)
     {
-        $jobs = Job::query()->filter($filter)->orderBy('created_at', 'desc')->latest()->get();
+        $jobs = Job::query()->where('user_id', auth()->id())->filter($filter)->orderBy('created_at', 'desc')->latest()->get();
         return $this->ok('success', JobResource::collection($jobs));
     }
 
