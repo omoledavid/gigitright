@@ -24,6 +24,9 @@ use App\Http\Controllers\Api\v1\JobController;
 use App\Http\Controllers\Api\v1\CommunityController;
 use App\Http\Controllers\Api\v1\WishlistController;
 use App\Http\Controllers\Api\v1\WithdrawController;
+use App\Http\Controllers\ClientJobInviteController;
+use App\Http\Controllers\ManageClientController;
+use App\Http\Controllers\ManageTalentController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
@@ -92,7 +95,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
 
 
     Route::controller(JobController::class)->group(function () {
-        Route::post('job-application', 'jobApplication');
+        Route::get('job-application', 'jobApplication');
         Route::get('job-application/{id}', 'viewJobApplication');
     });
 
@@ -140,13 +143,24 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
 
     //Job Milestone
     Route::apiResource('milestones', MilestoneController::class);
+
     // Talent
     Route::prefix('talent')->group(function () {
             Route::get('milestone/{milestoneId}', [MilestoneController::class, 'markAsCompleteByTalent']);
+            Route::controller(ManageTalentController::class)->group(function () {
+                Route::get('job-invite', 'jobInvites');
+                Route::post('accept-invite', 'acceptInvite');
+                Route::post('reject-invite', 'rejectInvite');
+            });
     });
+
     // Client
     Route::prefix('client')->group(function () {
+        Route::controller(ManageClientController::class)->group(function () {
+            Route::get('applications', 'jobApplications');
+        });
             Route::get('milestone/{milestoneId}', [MilestoneController::class, 'markAsCompleteByClient']);
+            Route::apiResource('job-invite', ClientJobInviteController::class);
     });
 });
 Route::get('payment/verify/{gateway}', [DepositController::class, 'verify']);

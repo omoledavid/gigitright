@@ -59,7 +59,7 @@ class UserController extends Controller
             'skills' => 'nullable|array',
             'languages' => 'nullable|array',
             'resume' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-            'cover_letter' => 'nullable|string|max:255',
+            'cover_letter' => 'nullable|string',
             'location' => 'nullable|string|max:50',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'bio' => 'nullable|string|max:255',

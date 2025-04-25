@@ -56,9 +56,6 @@ class UserResource extends JsonResource
                 'reviews' => ReviewResource::collection($this->whenLoaded('reviews')),
                 'jobs_applied_for' => JobApplicantResource::collection($this->whenLoaded('jobApplications')),
             ],
-            'dev_purpose_only' => [
-                'verification_code' => $this->ver_code
-            ]
         ];
     }
 }
