@@ -29,7 +29,7 @@ class JobApplicantResource extends JsonResource
                 'updated_at' => $this->updated_at,
                 'created_at' => $this->created_at,
             ],
-            'applicant_profile' => new UserResource($this->whenLoaded('applicant')),
+            'profile' => new UserResource($this->whenLoaded('applicant')),
             'job' => new JobResource($this->whenLoaded('job')),
             'milestones' => MilestoneResource::collection($this->whenLoaded('milestones')),
         ];
