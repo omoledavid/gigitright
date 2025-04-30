@@ -71,7 +71,6 @@ class JobController extends Controller
         $job = Job::query()->findOrFail($id);
         return $this->ok('success', [
             'job' => new JobResource($job),
-            'related_jobs' => JobResource::collection($job->relatedJobs)
         ]);
     }
 
