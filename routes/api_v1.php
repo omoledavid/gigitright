@@ -24,9 +24,13 @@ use App\Http\Controllers\Api\v1\JobController;
 use App\Http\Controllers\Api\v1\CommunityController;
 use App\Http\Controllers\Api\v1\WishlistController;
 use App\Http\Controllers\Api\v1\WithdrawController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ClientJobInviteController;
+use App\Http\Controllers\ClientOrderController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ManageClientController;
 use App\Http\Controllers\ManageTalentController;
+use App\Http\Controllers\TalentOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
@@ -146,22 +150,33 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
 
     // Talent
     Route::prefix('talent')->group(function () {
+        Route::name('talent.')->group(function () {
             Route::get('milestone/{milestoneId}', [MilestoneController::class, 'markAsCompleteByTalent']);
             Route::controller(ManageTalentController::class)->group(function () {
                 Route::get('job-invite', 'jobInvites');
                 Route::post('accept-invite', 'acceptInvite');
                 Route::post('reject-invite', 'rejectInvite');
             });
+            Route::apiResource('coupon', CouponController::class);
+            Route::get('orders', [TalentOrderController::class, 'orders']);
+            Route::post('order-complete/{order}', [TalentOrderController::class, 'markAsComplete']);
+        });
     });
 
     // Client
     Route::prefix('client')->group(function () {
-        Route::controller(ManageClientController::class)->group(function () {
-            Route::get('applications', 'jobApplications');
-        });
+        Route::name('client.')->group(function () {
+            Route::post('apply-coupon', [CouponController::class, 'applyCoupon']);
+            Route::controller(ManageClientController::class)->group(function () {
+                Route::get('applications', 'jobApplications');
+            });
             Route::get('milestone/{milestoneId}', [MilestoneController::class, 'markAsCompleteByClient']);
             Route::apiResource('job-invite', ClientJobInviteController::class);
+            //checkout
+            Route::post('checkout', CheckoutController::class);
+            Route::get('orders', [ClientOrderController::class, 'orders']);
+            Route::post('order-complete/{order}', [ClientOrderController::class, 'markAsComplete']);
+        });
     });
 });
 Route::get('payment/verify/{gateway}', [DepositController::class, 'verify']);
-
