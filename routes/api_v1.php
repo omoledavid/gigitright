@@ -30,6 +30,7 @@ use App\Http\Controllers\ClientOrderController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ManageClientController;
 use App\Http\Controllers\ManageTalentController;
+use App\Http\Controllers\TalentJobController;
 use App\Http\Controllers\TalentOrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -160,6 +161,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
             Route::apiResource('coupon', CouponController::class);
             Route::get('orders', [TalentOrderController::class, 'orders']);
             Route::post('order-complete/{order}', [TalentOrderController::class, 'markAsComplete']);
+            Route::get('on-going-job', [TalentJobController::class, 'onGoingJobs']);
         });
     });
 
