@@ -30,7 +30,16 @@ class ConversationController extends Controller
             'user_id' => 'required|exists:users,id',
         ]);
         $validedData['client_id'] = auth()->id();
-        $exist = Conversation::query()->where('user_id', $validedData['user_id'])->where('client_id', $validedData['user_id'])->exists();
+        $exist = Conversation::query()
+            ->where(function ($query) use ($validedData) {
+            $query->where('user_id', auth()->id())
+                  ->where('client_id', auth()->id());
+            })
+            ->orWhere(function ($query) use ($validedData) {
+            $query->where('user_id', $validedData['user_id'])
+                  ->where('client_id', $validedData['user_id']);
+            })
+            ->first();
         if($exist)
         {
             return $this->ok('conversation already exist between this users', new ConversationResource($exist));
