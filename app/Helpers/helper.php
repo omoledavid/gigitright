@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use App\Lib\ClientInfo;
 use App\Lib\FileManager;
+use App\Models\Notification;
 use Mailtrap\MailtrapClient;
 use Mailtrap\Mime\MailtrapEmail;
 use Symfony\Component\Mime\Address;
@@ -249,6 +250,19 @@ function createTransaction($userId, $transactionType, $amount,$description = '',
     ]);
 }
 
+function createNotification($userId, $type, $data, $is_read = 0)
+{
+    return Notification::create([
+        'user_id' => $userId,
+        'type' => $type,
+        'data' => [
+            'title' => $data['title'] ?? null,
+            'message' => $data['message'] ?? null,
+            'url' => $data['url'] ?? null,
+        ],
+        'is_read' => $is_read,
+    ]);
+}
 function setting($key, $default = null)
 {
     $setting = Setting::where('key', $key)->first();

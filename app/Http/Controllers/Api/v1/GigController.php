@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Api\v1;
 
+use App\Enums\NotificationType;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\v1\GigFilter;
 use App\Http\Resources\v1\GigResource;
@@ -55,6 +56,11 @@ class GigController extends Controller
             'unique_selling_point' => $request->unique_selling_point,
             'plans' => json_encode($request->plans)
         ]);
+        $notifyMsg = [
+            'title' => 'New Gig Created',
+            'message' => 'You have created a new gig',
+        ];
+        createNotification($gig->user_id, NotificationType::GIG_CREATED, $notifyMsg);
 
         return $this->ok('Gig created successfully', new GigResource($gig), Response::HTTP_CREATED);
     }
