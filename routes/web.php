@@ -30,7 +30,7 @@ Route::get('/pusher-credentials', function () {
 
 
 Broadcast::routes(['middleware' => ['auth:api']]);
-Route::post('/broadcasting/auth', [PusherController::class, 'authenticate'])->middleware('auth:api');
+Route::post('/broadcasting/auth', [PusherController::class, 'authenticate'])->middleware('auth:sanctum');
 
 
 

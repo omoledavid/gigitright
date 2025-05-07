@@ -12,6 +12,7 @@ class PusherController extends Controller
 {
     public function authenticate(Request $request)
     {
+        return 45;
         // Ensure the user is authenticated before proceeding
         $user = auth()->user();
         if (!$user) {
