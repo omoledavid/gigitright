@@ -14,7 +14,7 @@ class NotificationController extends Controller
 
     public function index()
     {
-        return $this->ok('success', NotificationResources::collection(auth()->user()->notifications));
+        return $this->ok('success', NotificationResources::collection(auth()->user()->notifications()->latest()->get()));
     }
     public function read($id)
     {

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OrderStatus;
+use App\Enums\TransactionSource;
+use App\Enums\TransactionStatus;
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
@@ -26,6 +29,32 @@ class TalentOrderController extends Controller
         $user = auth()->user();
         $order = Order::with(['client', 'gig'])->where('talent_id', $user->id)->where('id', $id)->firstOrFail();
         return $this->ok('Order retrieved successfully.', data: new OrderResource($order));
+    }
+    public function acceptOrder($id)
+    {
+        $user = auth()->user();
+        $order = Order::where('talent_id', $user->id)->where('id', $id)->firstOrFail();
+        if ($order->status !== OrderStatus::PENDING->value) {
+            return $this->error('Order is not in a state that can be accepted.', 422);
+        }
+        $order->update(['status' => OrderStatus::IN_PROGRESS]);
+        return $this->ok('Order accepted successfully.', data: new OrderResource($order));
+    }
+    public function rejectOrder($id)
+    {
+        $user = auth()->user();
+        $order = Order::where('talent_id', $user->id)->where('id', $id)->firstOrFail();
+        if ($order->status == OrderStatus::COMPLETED->value) {
+            return $this->error('Order is not in a state that can be rejected.', 422);
+        }
+        $order->update(['status' => OrderStatus::REFUNDED]);
+        // Refund the client
+        $user->escrow_wallet->withdraw($order->amount);
+        createTransaction($user->id, TransactionType::DEBIT, $order->amount, 'order_refund', status: TransactionStatus::COMPLETED, source: TransactionSource::ESCROW);
+        $client = $order->client;
+        $client->wallet->deposit($order->amount);
+        createTransaction($client->id, TransactionType::CREDIT, $order->amount, 'order_refund', status: TransactionStatus::COMPLETED, source: TransactionSource::WALLET);
+        return $this->ok('Order rejected successfully.', data: new OrderResource($order));
     }
     public function markAsComplete(Order $order)
     {

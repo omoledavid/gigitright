@@ -18,4 +18,15 @@ class ManageClientController extends Controller
         })->with(['job', 'applicant'])->latest()->get();
         return $this->ok('Applicants Retreived successfully', JobApplicantResource::collection($applicants));
     }
+    public function viewApplication($id)
+    {
+        $applicant = JobApplicants::query()->where('id', $id)->with(['job', 'applicant'])->first();
+        if(!$applicant) {
+            return $this->error('Applicant not found', 404);
+        }
+        if($applicant->job->user_id != auth()->id()) {
+            return $this->error('You are not authorized to view this applicant', 403);
+        }
+        return $this->ok('Applicant Retreived successfully', new JobApplicantResource($applicant));
+    }
 }

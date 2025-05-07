@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\JobStatus;
 use App\Enums\TransactionSource;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
@@ -42,6 +43,7 @@ class ManageTalentController extends Controller
             return $this->error('You have already accepted this invite', 422);
         }
         $invite->update(['status' => 'accepted']);
+        $invite->job->update(['status' => JobStatus::IN_PROGRESS]);
 
         $invite->client->escrow_wallet->withdraw($invite->job->budget);
         createTransaction(userId: $invite->client->id, transactionType: TransactionType::DEBIT ,amount: $invite->job->budget, description: 'Fund Transfer to talent Escrow', source: TransactionSource::ESCROW );

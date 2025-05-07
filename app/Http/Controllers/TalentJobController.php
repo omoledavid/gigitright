@@ -25,4 +25,12 @@ class TalentJobController extends Controller
             $jobs = $jobInvite->pluck('job');
         return $this->ok('success', JobResource::collection($jobs));
     }
+    public function viewOnGoingJob($id)
+    {
+        $job = Job::query()->where('id', $id)->with(['applicants', 'relatedJobs'])->first();
+        if (!$job) {
+            return $this->error('Job not found', 404);
+        }
+        return $this->ok('success', new JobResource($job));
+    }
 }

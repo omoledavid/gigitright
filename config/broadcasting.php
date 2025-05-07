@@ -76,6 +76,8 @@ return [
         'null' => [
             'driver' => 'null',
         ],
+        'guards' => ['sanctum'], // or ['sanctum']
+
 
     ],
 

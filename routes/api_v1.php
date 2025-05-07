@@ -32,6 +32,7 @@ use App\Http\Controllers\ManageClientController;
 use App\Http\Controllers\ManageTalentController;
 use App\Http\Controllers\TalentJobController;
 use App\Http\Controllers\TalentOrderController;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
@@ -162,8 +163,11 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
             Route::apiResource('coupon', CouponController::class);
             Route::get('orders', [TalentOrderController::class, 'orders']);
             Route::get('orders/{id}', [TalentOrderController::class, 'viewOrder']);
+            Route::post('accept-order/{id}', [TalentOrderController::class, 'acceptOrder']);
+            Route::post('reject-order/{id}', [TalentOrderController::class, 'rejectOrder']);
             Route::post('order-complete/{order}', [TalentOrderController::class, 'markAsComplete']);
             Route::get('on-going-job', [TalentJobController::class, 'onGoingJobs']);
+            Route::get('on-going-job/{id}', [TalentJobController::class, 'viewOnGoingJob']);
         });
     });
 
@@ -173,6 +177,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
             Route::post('apply-coupon', [CouponController::class, 'applyCoupon']);
             Route::controller(ManageClientController::class)->group(function () {
                 Route::get('applications', 'jobApplications');
+                Route::get('applications/{id}', 'viewApplication');
             });
             Route::get('milestone/{milestoneId}', [MilestoneController::class, 'markAsCompleteByClient']);
             Route::apiResource('job-invite', ClientJobInviteController::class);
@@ -185,3 +190,9 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     });
 });
 Route::get('payment/verify/{gateway}', [DepositController::class, 'verify']);
+
+Broadcast::routes(['middleware' => ['auth:sanctum']]);
+
+Route::post('/broadcasting/auth', function (\Illuminate\Http\Request $request) {
+    return Broadcast::auth($request);
+})->middleware('auth:sanctum');
