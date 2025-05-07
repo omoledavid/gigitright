@@ -9,6 +9,7 @@ use App\Models\MediaFile;
 use App\Models\Message;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MessageController extends Controller
 {

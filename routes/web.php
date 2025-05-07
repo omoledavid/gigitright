@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\v1\MessageController;
 use App\Http\Controllers\Api\v1\PusherController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -18,8 +19,40 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('pusher');
 });
+Route::get('/login', function () {
+    
+    // Simulate user authentication using Auth::login
+    $user = \App\Models\User::where('email', 'omolekessiena@gmail.com')->first();
 
-Route::post('/send-message', [MessageController::class, 'sendMessage']);
+    // Log in the user
+    Auth::login($user);
+    $token = $user->createToken('auth_token')->plainTextToken;
+    // Store the token in the session with the key 'myapitoken'
+    session(['myapitoken' => $token]);
+
+    return response()->json([
+        'message' => 'Login successful',
+        'user' => [
+            'email' => $user->email,
+        ],
+        'token' => $token,
+    ]);
+});
+Route::get('/check-auth', function() {
+    // Check if the user is authenticated
+    if (Auth::check()) {
+        return response()->json([
+            'message' => 'User is authenticated',
+            'user' => Auth::user(),
+        ]);
+    } else {
+        return response()->json([
+            'message' => 'User is not authenticated',
+        ], 401);
+    }
+})->middleware('auth:sanctum');
+
+Route::post('/send-message', [MessageController::class, 'sendMessage'])->name('send.message');
 Route::get('/conversation/{conversationId}/messages', [MessageController::class, 'getMessages']);
 Route::get('/pusher-credentials', function () {
     return response()->json([
@@ -34,4 +67,4 @@ Route::post('/broadcasting/auth', [PusherController::class, 'authenticate'])->mi
 
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
