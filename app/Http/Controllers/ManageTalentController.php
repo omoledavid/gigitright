@@ -19,6 +19,14 @@ class ManageTalentController extends Controller
         })->with(['client', 'job'])->latest()->get();
         return $this->ok('Job Invites fetched successfully', JobInviteResource::collection($invites));
     }
+    public function viewJobInvite($id)
+    {;
+        $invite = JobInvite::query()->where('id', $id)->with(['client', 'job'])->first();
+        if (!$invite) {
+            return $this->error('Job Invite not found', 404);
+        }
+        return $this->ok('Job Invite fetched successfully', new JobInviteResource($invite));
+    }
     public function acceptInvite(Request $request)
     {
         $request->validate([
@@ -42,7 +50,7 @@ class ManageTalentController extends Controller
         $invite = JobInvite::query()->where('id', $request->invite_id)->first();
         if ($invite->status == 'canceled') {
             return $this->error('This invite has been cancelled', 422);
-        }   
+        }
         if ($invite->status == 'rejected') {
             return $this->error('You have already rejected this invite', 422);
         }

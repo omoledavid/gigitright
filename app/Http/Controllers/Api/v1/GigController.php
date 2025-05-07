@@ -59,6 +59,7 @@ class GigController extends Controller
         $notifyMsg = [
             'title' => 'New Gig Created',
             'message' => 'You have created a new gig',
+            'url' => route('gigs.show', $gig->id),
         ];
         createNotification($gig->user_id, NotificationType::GIG_CREATED, $notifyMsg);
 
@@ -71,7 +72,7 @@ class GigController extends Controller
     public function show($id)
     {
         $gig = Gig::findOrFail($id);
-        return response()->json($gig);
+        return $this->ok('Gig details', new GigResource($gig->load(['user', 'reviews'])));
     }
 
     /**

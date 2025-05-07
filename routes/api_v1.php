@@ -144,7 +144,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::post('buy-griftis', [DepositController::class, 'buyGriftis']);
 
     //Gigs
-    Route::apiResource('gigs', GigController::class);
+    Route::apiResource('gigs', GigController::class);   
 
     //Job Milestone
     Route::apiResource('milestones', MilestoneController::class);
@@ -155,11 +155,13 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
             Route::get('milestone/{milestoneId}', [MilestoneController::class, 'markAsCompleteByTalent']);
             Route::controller(ManageTalentController::class)->group(function () {
                 Route::get('job-invite', 'jobInvites');
+                Route::get('job-invite/{id}', 'viewJobInvite');
                 Route::post('accept-invite', 'acceptInvite');
                 Route::post('reject-invite', 'rejectInvite');
             });
             Route::apiResource('coupon', CouponController::class);
             Route::get('orders', [TalentOrderController::class, 'orders']);
+            Route::get('orders/{id}', [TalentOrderController::class, 'viewOrder']);
             Route::post('order-complete/{order}', [TalentOrderController::class, 'markAsComplete']);
             Route::get('on-going-job', [TalentJobController::class, 'onGoingJobs']);
         });
@@ -177,6 +179,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
             //checkout
             Route::post('checkout', CheckoutController::class);
             Route::get('orders', [ClientOrderController::class, 'orders']);
+            Route::get('orders/{id}', [ClientOrderController::class, 'viewOrder']);
             Route::post('order-complete/{order}', [ClientOrderController::class, 'markAsComplete']);
         });
     });

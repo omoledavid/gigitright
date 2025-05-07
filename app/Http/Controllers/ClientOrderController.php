@@ -24,6 +24,12 @@ class ClientOrderController extends Controller
             ->get();
         return $this->success('Orders retrieved successfully.', data: OrderResource::collection($orders));
     }
+    public function viewOrder($id)
+    {
+        $user = auth()->user();
+        $order = Order::with(['talent', 'gig'])->where('client_id', $user->id)->where('id', $id)->firstOrFail();
+        return $this->success('Order retrieved successfully.', data: new OrderResource($order));
+    }
     public function markAsComplete(Order $order)
     {
         try {

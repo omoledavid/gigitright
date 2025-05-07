@@ -52,7 +52,11 @@ class ClientJobInviteController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $jobInvite = JobInvite::query()->where('id', $id)->with(['talent', 'job'])->firstOrFail();
+        if ($jobInvite->client_id !== auth()->user()->id) {
+            return $this->error('You are not authorized to view this job invite', 403);
+        }
+        return $this->ok('Job Invite fetched successfully', new JobInviteResource($jobInvite));
     }
 
     /**

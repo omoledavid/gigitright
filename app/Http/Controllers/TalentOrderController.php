@@ -21,6 +21,12 @@ class TalentOrderController extends Controller
             ->get();
         return $this->ok('Orders retrieved successfully.', data: OrderResource::collection($orders));
     }
+    public function viewOrder($id)
+    {
+        $user = auth()->user();
+        $order = Order::with(['client', 'gig'])->where('talent_id', $user->id)->where('id', $id)->firstOrFail();
+        return $this->ok('Order retrieved successfully.', data: new OrderResource($order));
+    }
     public function markAsComplete(Order $order)
     {
         $user = auth()->user();
