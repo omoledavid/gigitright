@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TransactionSource;
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\JobInviteResource;
 use App\Models\JobInvite;
@@ -40,6 +42,11 @@ class ManageTalentController extends Controller
             return $this->error('You have already accepted this invite', 422);
         }
         $invite->update(['status' => 'accepted']);
+
+        $invite->client->escrow_wallet->withdraw($invite->job->budget);
+        createTransaction(userId: $invite->client->id, transactionType: TransactionType::DEBIT ,amount: $invite->job->budget, description: 'Fund Transfer to talent Escrow', source: TransactionSource::ESCROW );
+        $invite->talent->escrow_wallet->deposit($invite->job->budget);
+        createTransaction(userId: $invite->talent->id, transactionType: TransactionType::CREDIT ,amount: $invite->job->budget, description: 'Fund Transfer from Client Escrow', source: TransactionSource::ESCROW );
         return $this->ok('Job Invite accepted successfully');
     }
     public function rejectInvite(Request $request)

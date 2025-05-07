@@ -126,10 +126,10 @@ class MilestoneController extends Controller
             $talent = $milestone->talent;
             try {
                 DB::beginTransaction();
-                $client->escrow_wallet->withdraw($milestone->amount);
-                createTransaction(userId: $client->id, transactionType: TransactionType::DEBIT ,amount: $milestone->amount, description: 'Fund Transfer to talent', source: TransactionSource::ESCROW );
+                $talent->escrow_wallet->withdraw($milestone->amount);
+                createTransaction(userId: $talent->id, transactionType: TransactionType::DEBIT ,amount: $milestone->amount, description: 'Fund Transfer to talent', source: TransactionSource::ESCROW );
                 $talent->wallet->deposit($milestone->amount);
-                createTransaction(userId: $talent->id, transactionType: TransactionType::CREDIT ,amount: $milestone->amount, description: 'Fund received from client', source: TransactionSource::WALLET );
+                createTransaction(userId: $talent->id, transactionType: TransactionType::CREDIT ,amount: $milestone->amount, description: 'Fund received from Escrow', source: TransactionSource::WALLET );
                 $milestone->update([
                     'is_paid' => true,
                 ]);
