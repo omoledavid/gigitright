@@ -17,17 +17,17 @@ class TalentJobController extends Controller
     {
         $jobInvite = JobInvite::query()
             ->where('talent_id', auth()->id())
-            ->where('status',  'accepted')
-            ->with(['job', 'client'])
+            ->where('status', 'accepted')
+            ->with(['job.milestones', 'client'])
             ->orderBy('created_at', 'desc')
             ->latest()
             ->get();
-            $jobs = $jobInvite->pluck('job');
+        $jobs = $jobInvite->pluck('job');
         return $this->ok('success', JobResource::collection($jobs));
     }
     public function viewOnGoingJob($id)
     {
-        $job = Job::query()->where('id', $id)->with(['applicants', 'relatedJobs'])->first();
+        $job = Job::query()->where('id', $id)->with(['applicants', 'relatedJobs', 'milestones'])->first();
         if (!$job) {
             return $this->error('Job not found', 404);
         }

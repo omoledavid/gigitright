@@ -68,7 +68,7 @@ class JobController extends Controller
      */
     public function show(string $id)
     {
-        $job = Job::query()->where('id', $id)->with(['applicants.applicant', 'relatedJobs','applicants.applicant.reviews'])->firstOrFail();
+        $job = Job::query()->where('id', $id)->with(['applicants.applicant', 'relatedJobs','applicants.applicant.reviews','milestones'])->firstOrFail();
         return $this->ok('success', [
             'job' => new JobResource($job),
         ]);
