@@ -53,7 +53,7 @@ Route::get('/check-auth', function() {
 })->middleware('auth:sanctum');
 
 Route::post('/send-message', [MessageController::class, 'sendMessage'])->name('send.message')->middleware('auth:sanctum');
-Route::get('/conversation/{conversationId}/messages', [MessageController::class, 'getMessages'])->middleware();
+Route::get('/conversation/{conversationId}/messages', [MessageController::class, 'getMessages'])->middleware(   );
 Route::get('/pusher-credentials', function () {
     return response()->json([
         'PUSHER_APP_KEY' => env('PUSHER_APP_KEY'),

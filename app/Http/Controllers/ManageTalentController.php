@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JobStatus;
+use App\Enums\MilestoneStatus;
 use App\Enums\TransactionSource;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\JobInviteResource;
 use App\Models\JobInvite;
+use App\Models\Milestone;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 
@@ -44,6 +46,10 @@ class ManageTalentController extends Controller
         }
         $invite->update(['status' => 'accepted']);
         $invite->job->update(['status' => JobStatus::IN_PROGRESS]);
+        $milestones = Milestone::query()->where('job_id', $invite->job->id)->where('user_id', auth()->id())->get();
+        foreach ($milestones as $milestone) {
+            $milestone->update(['status' => MilestoneStatus::IN_PROGRESS]);
+        }
 
         $invite->client->escrow_wallet->withdraw($invite->job->budget);
         createTransaction(userId: $invite->client->id, transactionType: TransactionType::DEBIT ,amount: $invite->job->budget, description: 'Fund Transfer to talent Escrow', source: TransactionSource::ESCROW );

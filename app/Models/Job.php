@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\MilestoneStatus;
 use App\Http\Filters\v1\QueryFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -33,5 +34,9 @@ class Job extends Model
             ->where('id', '!=', $this->id)
             ->latest()
             ->limit(5);
+    }
+    public function milestones(): HasMany
+    {
+        return $this->hasMany(Milestone::class)->where('status', MilestoneStatus::IN_PROGRESS);
     }
 }
