@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Enums\JobStatus;
 use App\Enums\MilestoneStatus;
 use App\Enums\TransactionSource;
 use App\Enums\TransactionType;
@@ -132,7 +133,14 @@ class MilestoneController extends Controller
                 createTransaction(userId: $talent->id, transactionType: TransactionType::CREDIT ,amount: $milestone->amount, description: 'Fund received from Escrow', source: TransactionSource::WALLET );
                 $milestone->update([
                     'is_paid' => true,
+                    'status' => MilestoneStatus::COMPLETED,
                 ]);
+                $job = $milestone->job;
+
+                // Check if all milestones for the job are completed
+                if ($job->milestones()->where('status', '!=', MilestoneStatus::COMPLETED)->doesntExist()) {
+                    $job->update(['status' => JobStatus::COMPLETED]);
+                };
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
