@@ -12,7 +12,7 @@
         const messagesDiv = document.getElementById('messages');
 
         const socket = new WebSocket(
-            'wss://api.gigitright.com:6009/app/local?protocol=7&client=js&version=1.1.0'
+            'wss://gigitright.test:' + {{ env('REVERB_SERVER_PORT') }} + '/app/local?protocol=7&client=js&version=1.1.0'
         );
 
         socket.onopen = function (e) {
