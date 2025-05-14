@@ -1,3 +1,6 @@
+cat > /home/gigitjgq/api.gigitright.com/manage-reverb.sh << 'EOL'
+#!/bin/bash
+
 # Path to your Laravel application
 APP_PATH="/home/gigitjgq/api.gigitright.com"
 LOG_FILE="$APP_PATH/storage/logs/reverb-manager.log"
