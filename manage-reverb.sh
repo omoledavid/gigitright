@@ -53,3 +53,7 @@ if [ $REVERB_COUNT -eq 0 ]; then
 else
     log_message "Reverb is already running properly on port $PORT"
 fi
+EOL
+
+# Make it executable
+chmod +x /home/gigitjgq/api.gigitright.com/manage-reverb.sh
