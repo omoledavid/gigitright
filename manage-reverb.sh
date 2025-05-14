@@ -6,8 +6,9 @@ cd $APP_PATH
 
 # Check if Reverb is already running
 if ps aux | grep -v grep | grep "artisan reverb:start" > /dev/null; then
-    # Reverb is running, do nothing
-    echo "Reverb is already running"
+    # Reverb is running, check the port
+    PORT=$(lsof -i -P -n | grep "php" | grep "LISTEN" | awk '{print $9}' | cut -d':' -f2)
+    echo "Reverb is already running on port $PORT"
     exit 0
 else
     # Kill any stuck processes on port 12345
