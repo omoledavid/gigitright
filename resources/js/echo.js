@@ -6,5 +6,5 @@ window.io = io;
 window.Echo = new Echo({
     broadcaster: 'reverb',
     key: import.meta.env.VITE_REVERB_APP_KEY,
-    host: window.location.hostname + ':6001',
+    host: window.location.hostname + ':6002',
 });

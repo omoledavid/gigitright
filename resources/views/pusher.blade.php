@@ -12,7 +12,7 @@
         const messagesDiv = document.getElementById('messages');
 
         const socket = new WebSocket(
-            'wss://gigitright.test:6002/app/local?protocol=7&client=js&version=1.1.0'
+            'wss://api.gigitright.test:6002/app/local?protocol=7&client=js&version=1.1.0'
         );
 
         socket.onopen = function (e) {
