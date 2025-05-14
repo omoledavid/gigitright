@@ -4,7 +4,7 @@ cat > /home/gigitjgq/api.gigitright.com/manage-reverb.sh << 'EOL'
 # Path to your Laravel application
 APP_PATH="/home/gigitjgq/api.gigitright.com"
 LOG_FILE="$APP_PATH/storage/logs/reverb-manager.log"
-PORT=12345  # Set the port Reverb will use
+PORT=6001  # Set the port Reverb will use
 
 # Function to log messages
 log_message() {
