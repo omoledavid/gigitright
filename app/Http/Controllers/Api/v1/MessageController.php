@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Events\MessageSent;
+use App\Events\NewMessageEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\MessageResource;
 use App\Models\MediaFile;
@@ -48,7 +49,9 @@ class MessageController extends Controller
         }
 
         // **Broadcast the message to the conversation participants**
-        broadcast(new MessageSent($message))->toOthers();
+        // broadcast(new MessageSent($message))->toOthers();
+        // Broadcast the message event
+        broadcast(new NewMessageEvent($message))->toOthers();
 
         return $this->ok('Message sent successfully.', new MessageResource($message));
     }

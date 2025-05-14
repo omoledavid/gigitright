@@ -1,9 +1,13 @@
 {
   "devDependencies": {
-    "laravel-echo": "^1.18.0",
-    "pusher-js": "^8.4.0-rc2"
+    "laravel-echo": "^1.19.0",
+    "pusher-js": "^8.4.0"
   },
   "scripts": {
     "dev": "nodemon echo.js"
+  },
+  "dependencies": {
+    "nodemon": "^3.1.10",
+    "socket.io-client": "^4.8.1"
   }
 }

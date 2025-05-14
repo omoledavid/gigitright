@@ -54,7 +54,7 @@ class JobController extends Controller
         ]);
         $validatedData['user_id'] = auth()->id();
         if ($user->bal < $validatedData['budget']) {
-            return $this->error('You do not have enough gft to create this job');
+            return $this->error('You do not have enough money to create this job');
         }
         $job = Job::create($validatedData);
         $user->wallet->withdraw($validatedData['budget']);

@@ -65,6 +65,12 @@ Route::get('/pusher-credentials', function () {
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
 Route::post('/broadcasting/auth', [PusherController::class, 'authenticate'])->middleware('auth:sanctum');
 
+Route::get('/broadcast-test', function () {
+    broadcast(new \App\Events\TestEvent(123))->toOthers();
+    return 'Broadcast sent!';
+});
+
+
 
 
 require __DIR__ . '/auth.php';
