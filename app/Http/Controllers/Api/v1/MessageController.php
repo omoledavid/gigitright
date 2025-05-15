@@ -48,7 +48,7 @@ class MessageController extends Controller
         }
 
         // Broadcast the event
-        event(new NewMessageEvent($message));
+        broadcast(new NewMessageEvent($message))->toOthers();
 
         return $this->ok('Message sent successfully.', new MessageResource($message));
     }
