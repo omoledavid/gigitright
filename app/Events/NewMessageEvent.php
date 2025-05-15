@@ -26,7 +26,7 @@ class NewMessageEvent implements ShouldBroadcastNow
     public function broadcastOn()
     {
         // Use a private channel based on the conversation ID
-        return new PrivateChannel('conversation.' . $this->message->conversation_id);
+        return new Channel('conversation.' . $this->message->conversation_id);
     }
 
     // Optional: Customize the event name

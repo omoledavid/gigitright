@@ -191,5 +191,5 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     });
 });
 Route::get('payment/verify/{gateway}', [DepositController::class, 'verify']);
-Broadcast::routes(['middleware' => ['auth:sanctum']]);
+Broadcast::routes();
 Route::post('/pusher/auth', [PusherController::class, 'authenticate'])->middleware('auth:sanctum');

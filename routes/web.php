@@ -52,8 +52,6 @@ Route::get('/check-auth', function() {
     }
 })->middleware('auth:sanctum');
 
-Route::post('/send-message', [MessageController::class, 'sendMessage'])->name('send.message')->middleware('auth:sanctum');
-Route::get('/conversation/{conversationId}/messages', [MessageController::class, 'getMessages'])->middleware(   );
 Route::get('/pusher-credentials', function () {
     return response()->json([
         'PUSHER_APP_KEY' => env('PUSHER_APP_KEY'),
@@ -61,13 +59,5 @@ Route::get('/pusher-credentials', function () {
     ]);
 });
 
-
-Broadcast::routes(['middleware' => ['auth:sanctum']]);
-Route::post('/pusher/auth', [PusherController::class, 'authenticate'])->middleware('auth:sanctum');
-
-Route::get('/broadcast-test', function () {
-    broadcast(new \App\Events\TestEvent(123))->toOthers();
-    return 'Broadcast sent!';
-});
 
 

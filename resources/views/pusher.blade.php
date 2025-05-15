@@ -76,8 +76,8 @@
             }
 
             // Initialize Pusher
-            var pusher = new Pusher('aab4e652b8566df5d22a', {
-                cluster: 'eu',
+            var pusher = new Pusher('593a2d0d6072bde767e1', {
+                cluster: 'us3',
                 // Important for private channels
                 authEndpoint: 'api/v1/pusher/auth',
                 auth: {
@@ -88,7 +88,7 @@
             });
 
             // Subscribe to the private channel
-            channel = pusher.subscribe(`private-conversation.${conversationId}`);
+            channel = pusher.subscribe(`conversation.${conversationId}`);
 
             // Connection status
             pusher.connection.bind('connected', () => {
@@ -105,7 +105,7 @@
             channel.bind('pusher:subscription_succeeded', () => {
                 const messagesDiv = document.getElementById('messages');
                 const messageElement = document.createElement('div');
-                messageElement.textContent = `Successfully subscribed to private-conversation.${conversationId}`;
+                messageElement.textContent = `Successfully subscribed to conversation.${conversationId}`;
                 messageElement.style.color = 'green';
                 messagesDiv.appendChild(messageElement);
             });
