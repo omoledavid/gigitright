@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\v1\ExperienceController;
 use App\Http\Controllers\Api\v1\EducationController;
 use App\Http\Controllers\Api\v1\JobController;
 use App\Http\Controllers\Api\v1\CommunityController;
+use App\Http\Controllers\Api\v1\PusherController;
 use App\Http\Controllers\Api\v1\WishlistController;
 use App\Http\Controllers\Api\v1\WithdrawController;
 use App\Http\Controllers\CheckoutController;
@@ -190,3 +191,4 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     });
 });
 Route::get('payment/verify/{gateway}', [DepositController::class, 'verify']);
+Route::post('/pusher/auth', [PusherController::class, 'authenticate'])->middleware('auth:sanctum');
