@@ -4,7 +4,7 @@ use App\Models\Conversation;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Log;
 
-Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
+Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
     Log::info('Broadcast auth hit:', ['user' => $user, 'conversation' => $conversationId]);
     return Conversation::where('id', $conversationId)
         ->where(function ($query) use ($user) {

@@ -234,7 +234,6 @@ function loadValidRelationships($model, $relationship, array $validRelationships
         }
     }
 }
-
 function createTransaction($userId, $transactionType, $amount,$description = '', $paymentMethod = PaymentMethod::WALLET, $currency = 'NGN', $status = 'pending', $source = TransactionSource::WALLET)
 {
     return Transaction::create([

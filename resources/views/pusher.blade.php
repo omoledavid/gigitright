@@ -1,51 +1,139 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Reverb WebSocket Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Pusher Private Channel Test</title>
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        #messages {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .status {
+            margin-top: 10px;
+        }
+
+        .connected {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
 </head>
+
 <body>
-    <h2 id="status">Connecting...</h2>
+    <h1>Pusher Private Channel Test</h1>
+    <p>This page tests if Pusher private channels are correctly configured with your Laravel application.</p>
+
+    <div>
+        <label for="conversation">Conversation ID:</label>
+        <input type="number" id="conversation" value="1" min="1">
+        <button onclick="connectToChannel()">Connect to Channel</button>
+    </div>
+
+    <div class="status" id="status">Not connected</div>
+
+    <h2>Messages:</h2>
     <div id="messages"></div>
 
     <script>
-        const statusDiv = document.getElementById('status');
-        const messagesDiv = document.getElementById('messages');
+        // Enable pusher logging for debugging
+        Pusher.logToConsole = true;
 
-        const socket = new WebSocket(
-            'wss://api.gigitright.com:6001/app/local?protocol=7&client=js&version=1.1.0'
-        );
+        let pusher;
+        let channel;
 
-        socket.onopen = function (e) {
-            statusDiv.textContent = "Connected!";
-            console.log("Connection established");
+        function connectToChannel() {
+            const conversationId = document.getElementById('conversation').value;
 
-            // Subscribe to a channel manually
-            const payload = {
-                event: "pusher:subscribe",
-                data: {
-                    auth: "",
-                    channel: "testing"
+            // Clean up existing connection if any
+            if (pusher) {
+                pusher.disconnect();
+            }
+
+            // Initialize Pusher
+            var pusher = new Pusher('aab4e652b8566df5d22a', {
+                cluster: 'eu',
+                // Important for private channels
+                authEndpoint: '/pusher/auth',
+                auth: {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
                 }
-            };
-            socket.send(JSON.stringify(payload));
-        };
+            });
 
-        socket.onmessage = function (event) {
-            const messageEl = document.createElement('p');
-            messageEl.textContent = `Received: ${event.data}`;
-            messagesDiv.appendChild(messageEl);
-            console.log(`Data received: ${event.data}`);
-        };
+            // Subscribe to the private channel
+            channel = pusher.subscribe(`private-conversation.${conversationId}`);
 
-        socket.onclose = function (event) {
-            statusDiv.textContent = "Disconnected";
-            console.log('Connection closed');
-        };
+            // Connection status
+            pusher.connection.bind('connected', () => {
+                document.getElementById('status').textContent = 'Connected to Pusher';
+                document.getElementById('status').className = 'status connected';
+            });
 
-        socket.onerror = function (error) {
-            statusDiv.textContent = "Error occurred";
-            console.error('WebSocket Error:', error);
-        };
+            pusher.connection.bind('disconnected', () => {
+                document.getElementById('status').textContent = 'Disconnected from Pusher';
+                document.getElementById('status').className = 'status';
+            });
+
+            // Channel subscription succeeded
+            channel.bind('pusher:subscription_succeeded', () => {
+                const messagesDiv = document.getElementById('messages');
+                const messageElement = document.createElement('div');
+                messageElement.textContent = `Successfully subscribed to private-conversation.${conversationId}`;
+                messageElement.style.color = 'green';
+                messagesDiv.appendChild(messageElement);
+            });
+
+            // Channel subscription error
+            channel.bind('pusher:subscription_error', (error) => {
+                const messagesDiv = document.getElementById('messages');
+                const messageElement = document.createElement('div');
+                messageElement.textContent = `Error subscribing to channel: ${JSON.stringify(error)}`;
+                messageElement.style.color = 'red';
+                messagesDiv.appendChild(messageElement);
+
+                document.getElementById('status').textContent = 'Error connecting to channel';
+                document.getElementById('status').className = 'status error';
+            });
+
+            // Listen for new messages
+            channel.bind('new.message', (data) => {
+                const messagesDiv = document.getElementById('messages');
+                const messageElement = document.createElement('div');
+                messageElement.innerHTML = `
+                    <p><strong>${data.sender.name}:</strong> ${data.message}</p>
+                    <small>${new Date(data.created_at).toLocaleTimeString()}</small>
+                `;
+                messagesDiv.appendChild(messageElement);
+            });
+        }
     </script>
 </body>
+
 </html>

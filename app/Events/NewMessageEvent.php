@@ -2,62 +2,57 @@
 
 namespace App\Events;
 
+use App\Models\Message;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Message;
 
-class NewMessageEvent implements ShouldBroadcast
+class NewMessageEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
 
-    /**
-     * Create a new event instance.
-     */
     public function __construct(Message $message)
     {
         $this->message = $message;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
-        return [
-            new PrivateChannel('chat.' . $this->message->conversation_id),
-        ];
+        // Use a private channel based on the conversation ID
+        return new PrivateChannel('conversation.' . $this->message->conversation_id);
     }
-    
-    /**
-     * The event's broadcast name.
-     */
-    public function broadcastAs(): string
+
+    // Optional: Customize the event name
+    public function broadcastAs()
     {
         return 'new.message';
     }
-    
-    /**
-     * Get the data to broadcast.
-     *
-     * @return array<string, mixed>
-     */
-    public function broadcastWith(): array
+
+    // Optional: Customize the data that gets broadcast
+    public function broadcastWith()
     {
+        // Load any relationships you need
+        $this->message->load(['sender', 'mediaFiles']);
+        
         return [
             'id' => $this->message->id,
+            'conversation_id' => $this->message->conversation_id,
+            'sender' => [
+                'id' => $this->message->sender->id,
+                'name' => $this->message->sender->name,
+                // Add other sender fields you need
+            ],
             'message' => $this->message->message,
-            'sender_id' => $this->message->sender_id,
-            'sender_name' => $this->message->sender->name,
-            'created_at' => $this->message->created_at->toDateTimeString(),
+            'files' => $this->message->mediaFiles,
+            'created_at' => $this->message->created_at,
+            'read' => $this->message->read,
         ];
     }
 }

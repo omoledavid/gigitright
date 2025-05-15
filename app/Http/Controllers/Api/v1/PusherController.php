@@ -12,6 +12,7 @@ class PusherController extends Controller
 {
     public function authenticate(Request $request)
     {
+        Log::info('auth got here');
         // Ensure the user is authenticated before proceeding
         $user = auth()->user();
         if (!$user) {
@@ -26,11 +27,12 @@ class PusherController extends Controller
                 env('PUSHER_APP_ID'),
                 [
                     'cluster' => env('PUSHER_APP_CLUSTER'),
-                    'useTLS' => true
+                    'useTLS' => false
                 ]
             );
             Log::info($request->channel_name);
             Log::info($request->socket_id);
+            Log::info('just before authorization');
 
             // Generate the authentication string
             $auth = $pusher->authorizeChannel(

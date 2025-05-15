@@ -9,3 +9,4 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::get('/testing', function (Request $request) {
     return 'hello world';
 });
+

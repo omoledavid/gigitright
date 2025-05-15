@@ -190,9 +190,3 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     });
 });
 Route::get('payment/verify/{gateway}', [DepositController::class, 'verify']);
-
-Broadcast::routes(['middleware' => ['auth:sanctum']]);
-
-Route::post('/broadcasting/auth', function (\Illuminate\Http\Request $request) {
-    return Broadcast::auth($request);
-})->middleware('auth:sanctum');
