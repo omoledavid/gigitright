@@ -37,7 +37,7 @@ Route::get('/login', function () {
         ],
         'token' => $token,
     ]);
-});
+})->name('login');
 Route::get('/check-auth', function() {
     // Check if the user is authenticated
     if (Auth::check()) {
