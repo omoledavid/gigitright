@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:3000', 'https://api.gigitright.com'],
+    'allowed_origins' => ['https://gigitright.com', 'https://api.gigitright.com'],
 
     'allowed_origins_patterns' => [],
 
