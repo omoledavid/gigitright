@@ -79,7 +79,7 @@
             var pusher = new Pusher('aab4e652b8566df5d22a', {
                 cluster: 'eu',
                 // Important for private channels
-                authEndpoint: '/pusher/auth',
+                authEndpoint: 'api/v1/pusher/auth',
                 auth: {
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')

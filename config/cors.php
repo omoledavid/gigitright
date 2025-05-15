@@ -15,11 +15,19 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => [
+        'api/*',
+        'login',
+        'logout',
+        'sanctum/csrf-cookie',
+        'pusher/auth',
+    ],
 
-    'allowed_methods' => ['*'],
+    'allowed_origins' => [
+        'http://localhost:5173',
+        'https://api.gigitright.com',
+    ],
 
-    'allowed_origins' => ['*'],
     // 'allowed_origins' => ['https://gigitright.com', 'https://api.gigitright.com'],
 
     'allowed_origins_patterns' => [],
