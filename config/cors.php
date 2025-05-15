@@ -26,6 +26,7 @@ return [
     'allowed_origins' => [
         'http://localhost:5173',
         'https://api.gigitright.com',
+        'https://gigitright.com',
     ],
 
     // 'allowed_origins' => ['https://gigitright.com', 'https://api.gigitright.com'],
