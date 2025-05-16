@@ -75,8 +75,6 @@ class UserController extends Controller
             $location = getFilePath('user_profile');
             $path = fileUploader($request->profile_image, $location);
             $validatedData['profile_image'] = $path;
-        } else {
-            $validatedData['profile_image'] = $existingProfile->profile_image ?? null;
         }
 
         if ($request->hasFile('resume')) {
