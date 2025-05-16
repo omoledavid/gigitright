@@ -15,12 +15,20 @@ use App\Models\Post;
 use App\Models\PostComment;
 use App\Models\PostLike;
 use App\Models\User;
+use App\Services\PaymentGateways\PaystackService;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class GeneralController extends Controller
 {
     use ApiResponses;
+    protected $paystackService;
+
+    public function __construct(PaystackService $paystackService)
+    {
+        $this->paystackService = $paystackService;
+    }
     public function categories()
     {
         $categories = Category::all();
@@ -67,5 +75,36 @@ class GeneralController extends Controller
         $validatedData['user_id'] = $user->id;
         $postComment = PostComment::create($validatedData);
         return $this->ok('Post Comment created successfully', $postComment);
+    }
+    public function banks(){
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
+            'Cache-Control' => 'no-cache',
+        ])->get('https://api.paystack.co/bank');
+
+        if ($response->failed()) {
+            return $this->error($response->json('message') ?? 'something went wrong');
+        } else {
+            return $this->success('All banks retrieved successfully',[
+                'banks_count' => count($response->json('data')),
+                'banks' => $response->json('data')
+            ]);
+//            echo $response->body();;
+        }
+    }
+    public function verifyAccountNumber(Request $request){
+        $request->validate([
+            'account_number' => 'required|max:40',
+            'bank_code' => 'required|string|max:200'
+        ]);
+
+        $accountNumber = $request->input('account_number');
+        $bankCode = $request->input('bank_code');
+
+        $result = $this->paystackService->validateBankAccount($accountNumber, $bankCode);
+        if ($result['error']) {
+            return $this->error('Failed to validate bank account, check account number');
+        }
+        return $this->ok('Account number verified successfully',$result['data']);
     }
 }

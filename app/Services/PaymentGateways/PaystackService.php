@@ -44,4 +44,27 @@ class PaystackService
 
         return ['status' => 'failed'];
     }
+    public function validateBankAccount($accountNumber, $bankCode)
+    {
+        $url = "https://api.paystack.co/bank/resolve";
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->secretKey,
+            'Cache-Control' => 'no-cache',
+        ])->get($url, [
+            'account_number' => $accountNumber,
+            'bank_code' => $bankCode,
+        ]);
+
+        if ($response->failed()) {
+            return [
+                'error' => true,
+                'message' => "HTTP Error: " . $response->body(),
+            ];
+        }
+
+        return [
+            'error' => false,
+            'data' => $response->json(),
+        ];
+    }
 }

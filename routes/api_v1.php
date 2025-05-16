@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\v1\CommunityController;
 use App\Http\Controllers\Api\v1\PusherController;
 use App\Http\Controllers\Api\v1\WishlistController;
 use App\Http\Controllers\Api\v1\WithdrawController;
+use App\Http\Controllers\BankController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ClientJobInviteController;
 use App\Http\Controllers\ClientOrderController;
@@ -45,8 +46,12 @@ Route::controller(ForgotPasswordController::class)->group(function () {
     Route::post('password/verify-code', 'verifyCode');
     Route::post('password/reset', 'reset');
 });
-Route::controller(GeneralController::class)->group(function () {
-    Route::get('categories', 'categories');
+Route::prefix('generals')->group(function () {
+    Route::controller(GeneralController::class)->group(function () {
+        Route::get('banks', 'banks');
+        Route::post('verify-account-number', 'verifyAccountNumber');
+        Route::get('categories', 'categories');
+    });
 });
 Route::post('verify-email', [AuthorizationController::class, 'emailVerification']);
 Route::post('verify-mobile', [AuthorizationController::class, 'mobileVerification']);
@@ -58,6 +63,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::get('authorization', [AuthorizationController::class, 'authorization']);
     Route::post('logout', AuthController::class . '@logout');
     //User Account
+    Route::apiResource('bank', BankController::class);
     Route::apiResource('user', UserController::class);
     Route::post('change-password', AuthController::class . '@changePassword');
     Route::post('change-email', AuthController::class . '@changeEmail');
@@ -146,7 +152,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::post('buy-griftis', [DepositController::class, 'buyGriftis']);
 
     //Gigs
-    Route::apiResource('gigs', GigController::class);   
+    Route::apiResource('gigs', GigController::class);
 
     //Job Milestone
     Route::apiResource('milestones', MilestoneController::class);
