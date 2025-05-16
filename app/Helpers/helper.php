@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Lib\ClientInfo;
 use App\Lib\FileManager;
 use App\Models\Notification;
+use Illuminate\Support\Facades\Log;
 use Mailtrap\MailtrapClient;
 use Mailtrap\Mime\MailtrapEmail;
 use Symfony\Component\Mime\Address;
@@ -184,14 +185,20 @@ function getRealIP()
 
 function fileUploader($file, $location, $size = null, $old = null, $thumb = null, $filename = null)
 {
-    $fileManager = new FileManager($file);
-    $fileManager->path = $location;
-    $fileManager->size = $size;
-    $fileManager->old = $old;
-    $fileManager->thumb = $thumb;
-    $fileManager->filename = $filename;
-    $fileManager->upload();
-    return $fileManager->filename;
+    try {
+        $fileManager = new FileManager($file);
+        $fileManager->path = $location;
+        $fileManager->size = $size;
+        $fileManager->old = $old;
+        $fileManager->thumb = $thumb;
+        $fileManager->filename = $filename;
+        $fileManager->upload();
+        return $fileManager->filename;
+    } catch (\Exception $e) {
+        // Log the error or handle it as needed
+        Log::error('File upload error: ' . $e->getMessage());
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
 }
 
 function fileManager()

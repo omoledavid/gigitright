@@ -34,7 +34,8 @@ class MessageController extends Controller
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
                 try {
-                    $path = fileUploader($file, 'messaging');
+                    $location = getFilePath('messaging');
+                    $path = fileUploader($file, $location);
                     MediaFile::create([
                         'message_id' => $message->id,
                         'file_path' => $path,
@@ -60,6 +61,19 @@ class MessageController extends Controller
             ->get(['message', 'created_at']); // Get only the 'message' and 'created_at' columns
 
         return response()->json($messages);
+    }
+    public function readMessage($id)
+    {
+        $message = Message::query()->where('id', $id)->first()
+        ;
+            if (!$message) {
+                return $this->error('Message not found.', 404);
+            }
+
+            $message->read = true;
+            $message->save();
+
+            return $this->ok('Message marked as read.', new MessageResource($message));
     }
     
 }

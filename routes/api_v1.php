@@ -118,6 +118,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     Route::apiResource('conversation', ConversationController::class);
     Route::prefix('conversation')->group(function () {
         Route::post('message', MessageController::class . '@sendMessage');
+        Route::post('message/{id}/read', MessageController::class . '@readMessage');
     });
     Route::controller(MessageController::class)->group(function () {
         Route::post('message', 'createMessage');
