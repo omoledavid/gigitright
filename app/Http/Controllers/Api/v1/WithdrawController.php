@@ -21,7 +21,7 @@ class WithdrawController extends Controller
     public function store(Request $request) {
         $validated = $request->validate([
             'amount' => 'required|numeric|min:10', // Minimum withdrawal amount
-            'account_detail_id' => 'required|exists:account_details,id',
+            'bank_account_id' => 'required|exists:bank_accounts,id',
         ]);
 
         $user = Auth::user();
@@ -37,7 +37,7 @@ class WithdrawController extends Controller
         // Create withdrawal request
         $withdrawal = Withdraw::create([
             'user_id' => $user->id,
-            'account_detail_id' => $validated['account_detail_id'],
+            'account_detail_id' => $validated['bank_account_id'],
             'amount' => $validated['amount'],
             'status' => WithdrawalStatus::PENDING,
         ]);
