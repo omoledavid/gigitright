@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\v1;
 
+use App\Http\Resources\GigPlanResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,7 +32,8 @@ class GigResource extends JsonResource
             ],
             'creator' => new UserResource($this->whenLoaded('user')),
             'relationships' => [
-                'plans' => json_decode($this->plans, true),
+                // 'plans' => json_decode($this->plans, true),
+                'plans' => GigPlanResource::collection($this->whenLoaded('gigPlan')),
                 'reviews' => ReviewResource::collection($this->whenLoaded('reviews')),
 //            'created_by' => new UserResource($this->user), // Assuming a `creator` relation exists
 //            'plans' => GigPlanResource::collection($this->plans), // Assuming a `plans` relation

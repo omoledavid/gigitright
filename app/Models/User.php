@@ -183,5 +183,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(JobApplicants::class, 'user_id');
     }
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'talent_id');
+    }
 
 }

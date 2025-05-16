@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Gig extends Model
 {
     protected $guarded = ['id'];
+    protected $with = ['gigPlan'];
     protected $casts = [
         'skills' => 'array',
         'previous_works_companies' => 'array',
@@ -28,5 +29,9 @@ class Gig extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class, 'reviewee_id')->where('type', ReviewType::GIG);
+    }
+    public function gigPlan()
+    {
+        return $this->hasMany(GigPlan::class);
     }
 }

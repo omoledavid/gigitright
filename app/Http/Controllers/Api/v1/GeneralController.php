@@ -8,6 +8,7 @@ use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\v1\PostFilter;
 use App\Http\Filters\v1\UserFilter;
+use App\Http\Resources\OrderResource;
 use App\Http\Resources\v1\PostResource;
 use App\Http\Resources\v1\UserResource;
 use App\Models\Category;
@@ -106,5 +107,16 @@ class GeneralController extends Controller
             return $this->error('Failed to validate bank account, check account number');
         }
         return $this->ok('Account number verified successfully',$result['data']);
+    }
+    public function rates()
+    {
+        return $this->ok('success',[
+            'giftis_rate' => '1gt = 1000 NGN'
+        ]);
+    }
+    public function testing()
+    {
+        $user = auth()->user();
+        return OrderResource::collection($user->orders);
     }
 }

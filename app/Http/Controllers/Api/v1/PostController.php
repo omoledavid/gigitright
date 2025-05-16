@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Enums\PostStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\PostResource;
+use App\Models\Community;
 use App\Models\Post;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
@@ -28,15 +29,26 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        $validatedData = $request->validate(
+            [
             'title' => 'required',
             'content' => 'required',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'community_id' => 'required|exists:communities,id'
-        ],
-        [
+            'community_id' => 'nullable|exists:communities,id'
+            ],
+            [
             'community_id.exists' => 'This community does not exist'
-        ]);
+            ]
+        );
+
+        // Check if community_id is set and if user belongs to the community
+        if (isset($validatedData['community_id'])) {
+            $community = Community::find($validatedData['community_id']);
+            if (!$community || !$community->members()->where('user_id', $request->user()->id)->exists()) {
+            return $this->error('You do not belong to this community');
+            }
+        }
+
         $validatedData['user_id'] = $request->user()->id;
         $validatedData['status'] = PostStatus::APPROVED;
         if ($request->hasFile('image')) {
@@ -44,7 +56,12 @@ class PostController extends Controller
             $validatedData['image'] = url('storage/' . $path);
         }
         $post = Post::create($validatedData);
-        $post->load('user', 'community');
+        if (isset($validatedData['community_id'])) {
+            $post->load('community', 'user');
+        } else {
+            $post->load('user');
+        }
+
         return $this->ok('post created successfully', new PostResource($post));
     }
 
@@ -82,11 +99,10 @@ class PostController extends Controller
     public function destroy(string $id)
     {
         $post = Post::query()->findOrFail($id);
-        if($post->user_id !== auth()->id()){
+        if ($post->user_id !== auth()->id()) {
             return $this->error('Not authorized');
         }
         $post->delete();
         return $this->ok('post deleted successfully');
     }
-
 }

@@ -30,6 +30,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ClientJobInviteController;
 use App\Http\Controllers\ClientOrderController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\GigPlanController;
 use App\Http\Controllers\ManageClientController;
 use App\Http\Controllers\ManageTalentController;
 use App\Http\Controllers\TalentJobController;
@@ -51,6 +52,7 @@ Route::prefix('generals')->group(function () {
         Route::get('banks', 'banks');
         Route::post('verify-account-number', 'verifyAccountNumber');
         Route::get('categories', 'categories');
+        Route::get('rates', 'rates');
     });
 });
 Route::post('verify-email', [AuthorizationController::class, 'emailVerification']);
@@ -168,6 +170,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
                 Route::post('reject-invite', 'rejectInvite');
             });
             Route::apiResource('coupon', CouponController::class);
+            Route::apiResource('gig-plan', GigPlanController::class);
             Route::get('orders', [TalentOrderController::class, 'orders']);
             Route::get('orders/{id}', [TalentOrderController::class, 'viewOrder']);
             Route::post('accept-order/{id}', [TalentOrderController::class, 'acceptOrder']);
@@ -195,6 +198,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
             Route::post('order-complete/{order}', [ClientOrderController::class, 'markAsComplete']);
         });
     });
+    Route::get('testing', [GeneralController::class, 'testing']);
 });
 Route::get('payment/verify/{gateway}', [DepositController::class, 'verify']);
 Broadcast::routes();

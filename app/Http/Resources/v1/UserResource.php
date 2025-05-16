@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\v1;
 
+use App\Enums\OrderStatus;
 use App\Http\Resources\ProfileResource;
 use App\Models\JobApplicants;
 use Illuminate\Http\Request;
@@ -26,6 +27,8 @@ class UserResource extends JsonResource
                 'sms_verified' => !(($this->sv === 0)),
                 'status' => $this->status,
                 'role' => $this->role,
+                'gigs_in_progress' => $this->orders()->where('status', OrderStatus::IN_PROGRESS)->count(),
+                'completed_gigs' => $this->orders()->where('status', OrderStatus::COMPLETED)->count(),
                 'profile_image' => $this->profile?->profile_image ? url(getFilePath('user_profile').'/'.$this->profile?->profile_image) : null,
                 $this->mergeWhen($request->routeIs('users.*'), [
                         'emailVerifiedAt' => $this->email_verified_at,
