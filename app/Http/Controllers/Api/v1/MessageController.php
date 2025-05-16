@@ -33,18 +33,18 @@ class MessageController extends Controller
         // Handle file uploads
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-                try {
-                    $location = getFilePath('messaging');
-                    $path = fileUploader($file, $location);
-                    MediaFile::create([
-                        'message_id' => $message->id,
-                        'file_path' => $path,
-                        'file_type' => $file->getMimeType(),
-                        'original_name' => $file->getClientOriginalName(),
-                    ]);
-                } catch (\Exception $exception) {
-                    return $this->error($exception->getMessage());
-                }
+            try {
+                $location = getFilePath('messaging');
+                $path = fileUploader($file, $location);
+                MediaFile::create([
+                'message_id' => $message->id,
+                'file_path' => $path,
+                'file_type' => $file->getMimeType(),
+                'original_name' => $file->getClientOriginalName(),
+                ]);
+            } catch (\Exception $exception) {
+                return $this->error($exception->getMessage());
+            }
             }
         }
 
