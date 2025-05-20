@@ -111,7 +111,7 @@ class GeneralController extends Controller
     public function rates()
     {
         return $this->ok('success',[
-            'giftis_rate' => '1gt = 1000 NGN'
+            'giftis_rate' => 1000
         ]);
     }
     public function testing()
