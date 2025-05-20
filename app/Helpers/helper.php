@@ -256,7 +256,7 @@ function createTransaction($userId, $transactionType, $amount,$description = '',
     ]);
 }
 
-function createNotification($userId, $type, $data, $is_read = 0)
+function createNotification($userId, $type, $data, $is_read = false)
 {
     return Notification::create([
         'user_id' => $userId,
