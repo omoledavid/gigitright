@@ -18,7 +18,7 @@ class MessageController extends Controller
     {
         $validatedData = $request->validate([
             'conversation_id' => 'required|exists:conversations,id',
-            'message' => 'required|string|max:255',
+            'message' => 'nullable|string|max:255',
             'files' => 'nullable|array',
             'files.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,doc,docx|max:2048',
         ], [
