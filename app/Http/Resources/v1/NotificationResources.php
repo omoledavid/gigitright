@@ -20,7 +20,7 @@ class NotificationResources extends JsonResource
             'attributes' => [
                 'type' => $this->type,
                 'data' => $this->data,
-                'is_read' => !(($this->is_read === 0)),
+                'is_read' => $this->is_read,
                 'created_at' => $this->created_at?->diffForHumans(),
                 'updated_at' => $this->updated_at?->diffForHumans(),
             ]

@@ -96,7 +96,7 @@ class GigController extends Controller
         $gig->update([
             'title' => $request->title ?? $gig->title,
             'description' => $request->description ?? $gig->description,
-            'skills' => json_encode($request->skills) ?? $gig->skills,
+            'skills' => $request->skills ?? $gig->skills,
             'location' => $request->location ?? $gig->location,
             'previous_works_companies' => $request->previous_works_companies ?? $gig->previous_works_companies,
             'language' => $request->language ?? $gig->language,
