@@ -12,7 +12,6 @@ class PusherController extends Controller
 {
     public function authenticate(Request $request)
     {
-        Log::info('auth got here');
         // Ensure the user is authenticated before proceeding
         $user = auth()->user();
         if (!$user) {
@@ -30,16 +29,12 @@ class PusherController extends Controller
                     'useTLS' => false
                 ]
             );
-            Log::info($request->channel_name);
-            Log::info($request->socket_id);
-            Log::info('just before authorization');
 
             // Generate the authentication string
             $auth = $pusher->authorizeChannel(
                 $request->channel_name,  // Channel name
                 $request->socket_id      // Socket ID
             );
-            Log::info('got here');
 
             return response()->json(['auth' => $auth]);
         }
@@ -54,13 +49,11 @@ class PusherController extends Controller
         // Check if the user is authenticated and owns the resource (e.g., a conversation)
 
         $channelName = request('channel_name'); // Get the channel name from the request
-        Log::info($channelName);
 
         // Assuming the channel name is something like "private-conversation-{conversation_id}"
         $conversationId = explode('-', $channelName)[1]; // Extract the conversation ID from the channel name
         $conversationId = explode('.', $conversationId)[1]; // Extract the conversation ID from the channel name
-        Log::info($conversationId);
-
+       
         // Check if the user is part of this conversation
         $conversation = Conversation::query()->findOrFail($conversationId);
 

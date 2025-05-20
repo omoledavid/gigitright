@@ -98,11 +98,17 @@ class GigController extends Controller
             'description' => $request->description ?? $gig->description,
             'skills' => json_encode($request->skills) ?? $gig->skills,
             'location' => $request->location ?? $gig->location,
-            'previous_works_companies' => json_encode($request->previous_works_companies) ?? $gig->previous_works_companies,
+            'previous_works_companies' => $request->previous_works_companies ?? $gig->previous_works_companies,
             'language' => $request->language ?? $gig->language,
             'unique_selling_point' => $request->unique_selling_point ?? $gig->unique_selling_point,
             'plans' => json_encode($request->plans) ?? $gig->plans
         ]);
+        $notifyMsg = [
+            'title' => 'Gig Updated',
+            'message' => 'Your gig has been updated successfully',
+            'url' => route('gigs.show', $gig->id),
+        ];
+        createNotification($gig->user_id, NotificationType::GIG_UPDATED, $notifyMsg);
         return $this->ok('Gig updated successfully', new GigResource($gig));
     }
 
@@ -113,6 +119,12 @@ class GigController extends Controller
     {
         $gig = Gig::findOrFail($id);
         $gig->delete();
+        $notifyMsg = [
+            'title' => 'Gig Deleted',
+            'message' => 'Your gig has been deleted successfully',
+            'url' => null,
+        ];
+        createNotification(auth()->id(), NotificationType::GIG_DELETED, $notifyMsg);
 
         return $this->ok('Gig deleted successfully');
     }
