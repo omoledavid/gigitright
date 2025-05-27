@@ -21,6 +21,8 @@ class OrderResource extends JsonResource
             'id' => $this->id,
             'attributes' => [
                 'status' => $this->status,
+                'start_date' => $this->start_date->toDateTimeString(),
+                'end_date' => $this->end_date->toDateTimeString(),
                 'amount' => $this->amount,
                 'plan_name' => $this->plan_name,
                 'client_mark_as_complete' => $this->client_mark_as_complete,

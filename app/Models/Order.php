@@ -11,6 +11,8 @@ class Order extends Model
         'talent_id',
         'gig_id',
         'plan_name',
+        'start_date',
+        'end_date',
         'amount',
         'status',
         'talent_mark_as_complete',
