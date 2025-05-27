@@ -47,6 +47,7 @@ class ClientOrderController extends Controller
             if ($order->talent_mark_as_complete && $order->client_mark_as_complete) {
                 $order->talent->escrow_wallet->withdraw($order->amount);
                 $order->talent->wallet->deposit($order->amount);
+                $order->update(['end_date' => now()]);
                 createTransaction($order->talent_id, TransactionType::CREDIT, $order->amount, 'gig_payment form escrow', status: TransactionStatus::COMPLETED, source: TransactionSource::ESCROW);
             }
             return $this->success('Order marked as complete successfully.', data: new OrderResource($order));

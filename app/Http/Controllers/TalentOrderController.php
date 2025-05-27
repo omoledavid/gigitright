@@ -37,7 +37,7 @@ class TalentOrderController extends Controller
         if ($order->status !== OrderStatus::PENDING->value) {
             return $this->error('Order is not in a state that can be accepted.', 422);
         }
-        $order->update(['status' => OrderStatus::IN_PROGRESS]);
+        $order->update(['status' => OrderStatus::IN_PROGRESS, 'start_date' => now()]);
         return $this->ok('Order accepted successfully.', data: new OrderResource($order));
     }
     public function rejectOrder($id)
