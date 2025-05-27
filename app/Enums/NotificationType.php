@@ -21,4 +21,5 @@ enum NotificationType: string
     case JOB_INVITE_REJECTED = 'job_invite_rejected';
     case ORDER_ACCEPTED = 'order_accepted';
     case ORDER_REJECTED = 'order_rejected';
+    case ORDER_CREATED = 'order_created';
 }

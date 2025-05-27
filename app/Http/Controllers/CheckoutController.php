@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\NotificationType;
 use App\Enums\TransactionSource;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
@@ -68,6 +69,20 @@ class CheckoutController extends Controller
                 'status' => 'pending',
                 'due_date' => now()->addDays(7), // Assuming a 7-day due date for the order
             ]);
+            $notifyMsg = [
+                'title' => 'Order Requested',
+                'message' => "A new order has been requested by {$user->name}",
+                'url' => '',
+                'id' => $order->id
+            ];
+            createNotification($talent->id, NotificationType::ORDER_CREATED, $notifyMsg);
+            $notifyMsg = [
+                'title' => 'Order Created',
+                'message' => "Your order has been created successfully",
+                'url' => '',
+                'id' => $order->id
+            ];
+            createNotification($user->id, NotificationType::ORDER_CREATED, $notifyMsg);
             return $this->ok('Order created successfully', [
                 'order' => new OrderResource($order),
                 'gig' => new GigResource($gig),
