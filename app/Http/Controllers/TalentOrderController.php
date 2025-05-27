@@ -59,7 +59,7 @@ class TalentOrderController extends Controller
     public function markAsComplete(Order $order)
     {
         $user = auth()->user();
-        if ($user->id !== $order->talent_id) {
+        if ($user->id != $order->talent_id) {
             return $this->error('You are not authorized to mark this order as complete.', 403);
         }
         if ($order->talent_mark_as_complete) {
