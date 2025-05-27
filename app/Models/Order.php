@@ -26,6 +26,8 @@ class Order extends Model
         'talent_mark_as_complete' => 'boolean',
         'delivered_at' => 'datetime',
         'due_date' => 'datetime',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
     ];
     public function client()
     {
