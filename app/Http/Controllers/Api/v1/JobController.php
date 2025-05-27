@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\JobApplicantStatus;
+use App\Enums\NotificationType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\v1\JobFilter;
@@ -153,8 +154,15 @@ class JobController extends Controller
             }
         }
 
-        $jobApplicants = JobApplicants::query()->create($validatedData);
-        return $this->ok('success', new JobApplicantResource($jobApplicants));
+        $jobApplicant = JobApplicants::query()->create($validatedData);
+        $notifyMsg = [
+            'title' => 'Job Application',
+            'message' => "You have a new job application",
+            'url' => '',
+            'id' => $jobApplicant->id
+        ];
+        createNotification($job->user_id, NotificationType::JOB_APPLICATION, $notifyMsg);
+        return $this->ok('success', new JobApplicantResource($jobApplicant));
     }
 
     public function viewJobApplication($id)

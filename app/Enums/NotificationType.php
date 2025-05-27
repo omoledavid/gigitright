@@ -22,4 +22,5 @@ enum NotificationType: string
     case ORDER_ACCEPTED = 'order_accepted';
     case ORDER_REJECTED = 'order_rejected';
     case ORDER_CREATED = 'order_created';
+    case JOB_APPLICATION = 'job_application';
 }
