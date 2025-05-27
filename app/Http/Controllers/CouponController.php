@@ -88,10 +88,10 @@ class CouponController extends Controller
 
         $data = $request->validate([
             'code' => 'nullable|string|unique:coupons,code,' . $coupon->id,
-            'gig_id' => 'required|exists:gigs,id', // Assuming you meant to reference `gigs` table, not `users`
-            'type' => ['required', Rule::in(['fixed', 'percent'])],
+            'gig_id' => 'nullable|exists:gigs,id', // Assuming you meant to reference `gigs` table, not `users`
+            'type' => ['nullable', Rule::in(['fixed', 'percent'])],
             'value' => [
-                'required',
+                'nullable',
                 'numeric',
                 'min:0',
                 function ($attribute, $value, $fail) use ($request) {
