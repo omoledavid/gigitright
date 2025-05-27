@@ -34,7 +34,7 @@ class ClientOrderController extends Controller
     {
         try {
             $user = auth()->user();
-            if ($user->id !== $order->client_id) {
+            if ($user->id != $order->client_id) {
                 return $this->error('You are not authorized to mark this order as complete.', 403);
             }
             if ($order->status !== OrderStatus::COMPLETED->value) {
