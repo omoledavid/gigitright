@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\DepositStatus;
+use App\Enums\NotificationType;
 use App\Enums\PaymentStatus;
 use App\Enums\TransactionSource;
 use App\Enums\TransactionType;
@@ -50,6 +51,12 @@ class DepositController extends Controller
         }
 
         $paymentUrl = $service->initiatePayment($user, $amount, $callbackUrl);
+        $notifyMsg = [
+            'title' => 'Deposit Initiated',
+            'message' => "A deposit of {$amount} has been initiated via {$gateway}",
+            'url' => null
+        ];
+        createNotification($user->id, NotificationType::DEPOSIT_INITIATED, $notifyMsg);
 
         return response()->json([
             'message' => 'Payment link generated',
@@ -63,9 +70,9 @@ class DepositController extends Controller
             'reference' => 'nullable|string',
             'tx_ref' => 'nullable|string'
         ]);
-        if(empty($request->reference)) {
+        if (empty($request->reference)) {
             $ref = $request->transaction_id;
-        }else{
+        } else {
             $ref = $request->reference;
         }
         $reference = $ref;
@@ -99,7 +106,13 @@ class DepositController extends Controller
             ]);
             //Deposit money to wallet
             $user->wallet->deposit($paymentStatus['amount']);
-            createTransaction(userId:$user->id,transactionType: TransactionType::CREDIT,amount: $paymentStatus['amount'],paymentMethod: $gateway,status: PaymentStatus::COMPLETED);
+            createTransaction(userId: $user->id, transactionType: TransactionType::CREDIT, amount: $paymentStatus['amount'], paymentMethod: $gateway, status: PaymentStatus::COMPLETED);
+            $notifyMsg = [
+                'title' => 'Deposit Completed',
+                'message' => "Your deposit of {$paymentStatus['amount']} has been completed successfully",
+                'url' => null
+            ];
+            createNotification($user->id, NotificationType::DEPOSIT_COMPLETED, $notifyMsg);
 
             //return response()->json(['message' => 'Payment verified successfully'], 200);
             return redirect()->away($callbackURL ?? 'https://gigitright.com/dashboard/wallet');
@@ -117,14 +130,14 @@ class DepositController extends Controller
         //pay for grifts
         $user = auth()->user();
         //check balance
-        if($user->balance < $griftis){
+        if ($user->balance < $griftis) {
             return $this->error('Insufficient Balance');
         }
         try {
             $user->wallet->withdraw($validatedData['amount']);
-            createTransaction(userId: $user->id,transactionType: TransactionType::DEBIT,amount: $griftis,status: PaymentStatus::COMPLETED);
+            createTransaction(userId: $user->id, transactionType: TransactionType::DEBIT, amount: $griftis, status: PaymentStatus::COMPLETED);
             $user->griftis->deposit($validatedData['amount']);
-            createTransaction(userId: $user->id,transactionType: TransactionType::CREDIT,amount: $validatedData['amount'],currency: 'GFT',status: PaymentStatus::COMPLETED,);
+            createTransaction(userId: $user->id, transactionType: TransactionType::CREDIT, amount: $validatedData['amount'], currency: 'GFT', status: PaymentStatus::COMPLETED,);
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         }

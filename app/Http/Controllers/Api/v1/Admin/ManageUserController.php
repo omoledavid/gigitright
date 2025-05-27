@@ -6,6 +6,7 @@ use App\Enums\TransactionSource;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Enums\UserStatus;
+use App\Enums\NotificationType;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\v1\UserFilter;
 use App\Http\Resources\v1\UserResource;
@@ -28,11 +29,23 @@ class ManageUserController extends Controller
     }
     public function suspend(User $user)
     {
-        if($user->status === UserStatus::BLOCKED){
+        if ($user->status === UserStatus::BLOCKED) {
             $user->update(['status' => UserStatus::ACTIVE]);
+            $notifyMsg = [
+                'title' => 'Account Reactivated',
+                'message' => 'Your account has been reactivated. You can now access all features.',
+                'url' => null
+            ];
+            createNotification($user->id, NotificationType::ACCOUNT_STATUS_CHANGED, $notifyMsg);
             return $this->ok('User unsuspended');
         }
         $user->update(['status' => UserStatus::BLOCKED]);
+        $notifyMsg = [
+            'title' => 'Account Suspended',
+            'message' => 'Your account has been suspended. Please contact support for more information.',
+            'url' => null
+        ];
+        createNotification($user->id, NotificationType::ACCOUNT_STATUS_CHANGED, $notifyMsg);
         return $this->ok('User suspended');
     }
     public function sendEmail(Request $request, User $user)
@@ -50,7 +63,7 @@ class ManageUserController extends Controller
         $totalUsers = User::count();
         $totalActiveUsers = User::where('status', 'active')->count();
         $totalSuspendedUsers = User::where('status', 'suspended')->count();
-        return $this->ok('users stats',[
+        return $this->ok('users stats', [
             'total_users' => $totalUsers,
             'total_active_users' => $totalActiveUsers,
             'total_suspended_users' => $totalSuspendedUsers,
@@ -117,6 +130,4 @@ class ManageUserController extends Controller
 
         return $this->ok($message, $revenueData);
     }
-
-
 }

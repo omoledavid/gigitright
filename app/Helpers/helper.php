@@ -2,6 +2,7 @@
 
 use App\Enums\PaymentMethod;
 use App\Enums\TransactionSource;
+use App\Events\NotificationCreated;
 use App\Models\MailTemplate;
 use App\Models\Setting;
 use App\Models\Transaction;
@@ -70,8 +71,6 @@ function notify($user, $templateName, $shortCodes = [], $sendVia = null, $create
         // Final email body
         $finalEmailBody = str_replace('{{message}}', $content, $globalTemplate);
         $mailtrap = sendMailTrap($user, $template->subject, $finalEmailBody);
-
-
     } catch (\Exception $e) {
         return response($e->getMessage(), 500);
     }
@@ -241,7 +240,7 @@ function loadValidRelationships($model, $relationship, array $validRelationships
         }
     }
 }
-function createTransaction($userId, $transactionType, $amount,$description = '', $paymentMethod = PaymentMethod::WALLET, $currency = 'NGN', $status = 'pending', $source = TransactionSource::WALLET)
+function createTransaction($userId, $transactionType, $amount, $description = '', $paymentMethod = PaymentMethod::WALLET, $currency = 'NGN', $status = 'pending', $source = TransactionSource::WALLET)
 {
     return Transaction::create([
         'user_id' => $userId,
@@ -258,16 +257,22 @@ function createTransaction($userId, $transactionType, $amount,$description = '',
 
 function createNotification($userId, $type, $data, $is_read = false)
 {
-    return Notification::create([
+    $notification = Notification::create([
         'user_id' => $userId,
         'type' => $type,
         'data' => [
             'title' => $data['title'] ?? null,
             'message' => $data['message'] ?? null,
             'url' => $data['url'] ?? null,
+            'id' => $data['id'] ?? null,
         ],
         'is_read' => $is_read,
     ]);
+
+    // Dispatch the notification event
+    broadcast(new NotificationCreated($notification))->toOthers();
+
+    return $notification;
 }
 function setting($key, $default = null)
 {

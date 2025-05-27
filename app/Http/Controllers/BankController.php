@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\NotificationType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BankAccountResource;
 use App\Models\BankAccount;
@@ -41,6 +42,14 @@ class BankController extends Controller
             $validatedData['is_default'] = true;
         }
         $bankAccount = BankAccount::query()->create($validatedData);
+        $notifyMsg = [
+            'title' => 'Bank Account Added',
+            'message' => "Your bank account has been added successfully",
+            'url' => '',
+            'id' => $bankAccount->id
+        ];
+        createNotification(auth()->id(), NotificationType::BANK_ACCOUNT_ADDED, $notifyMsg);
+
         return $this->ok('Bank account created successfully', BankAccountResource::make($bankAccount), 201);
     }
 

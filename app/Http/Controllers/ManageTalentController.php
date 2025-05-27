@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\JobStatus;
 use App\Enums\MilestoneStatus;
+use App\Enums\NotificationType;
 use App\Enums\TransactionSource;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
@@ -55,6 +56,14 @@ class ManageTalentController extends Controller
         createTransaction(userId: $invite->client->id, transactionType: TransactionType::DEBIT ,amount: $invite->job->budget, description: 'Fund Transfer to talent Escrow', source: TransactionSource::ESCROW );
         $invite->talent->escrow_wallet->deposit($invite->job->budget);
         createTransaction(userId: $invite->talent->id, transactionType: TransactionType::CREDIT ,amount: $invite->job->budget, description: 'Fund Transfer from Client Escrow', source: TransactionSource::ESCROW );
+        $notifyMsg = [
+            'title' => 'Job Invite Accepted',
+            'message' => "Your job invite has been accepted by the talent",
+            'url' => '',
+            'id' => $invite->job->id
+        ];
+        $invite->job->update(['start_date' => now()]);
+        createNotification($invite->client->id, NotificationType::JOB_INVITE_ACCEPTED, $notifyMsg);
         return $this->ok('Job Invite accepted successfully');
     }
     public function rejectInvite(Request $request)
@@ -73,6 +82,13 @@ class ManageTalentController extends Controller
             return $this->error('You have already accepted this invite', 422);
         }
         $invite->update(['status' => 'rejected']);
+        $notifyMsg = [
+            'title' => 'Job Invite Rejected',
+            'message' => "Your job invite has been rejected by the talent",
+            'url' => '',
+            'id' => $invite->job->id
+        ];
+        createNotification($invite->client->id, NotificationType::JOB_INVITE_REJECTED, $notifyMsg);
         return $this->ok('Job Invite rejected successfully');
     }
 }

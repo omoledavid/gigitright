@@ -139,7 +139,7 @@ class MilestoneController extends Controller
 
                 // Check if all milestones for the job are completed
                 if ($job->milestones()->where('status', '!=', MilestoneStatus::COMPLETED)->doesntExist()) {
-                    $job->update(['status' => JobStatus::COMPLETED]);
+                    $job->update(['status' => JobStatus::COMPLETED, 'end_date' => now()]);
                 };
                 DB::commit();
             } catch (\Throwable $th) {

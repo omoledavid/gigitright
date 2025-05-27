@@ -18,4 +18,8 @@ class Notification extends Model
         $this->save();
         return $this;
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

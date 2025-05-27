@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\NotificationType;
 use App\Enums\OrderStatus;
 use App\Enums\TransactionSource;
 use App\Enums\TransactionStatus;
@@ -38,6 +39,13 @@ class TalentOrderController extends Controller
             return $this->error('Order is not in a state that can be accepted.', 422);
         }
         $order->update(['status' => OrderStatus::IN_PROGRESS, 'start_date' => now()]);
+        $notifyMsg = [
+            'title' => 'Order Accepted',
+            'message' => "Your order has been accepted by the talent",
+            'url' => '',
+            'id' => $order->id
+        ];
+        createNotification($order->client->id, NotificationType::ORDER_ACCEPTED, $notifyMsg);
         return $this->ok('Order accepted successfully.', data: new OrderResource($order));
     }
     public function rejectOrder($id)
@@ -54,6 +62,13 @@ class TalentOrderController extends Controller
         $client = $order->client;
         $client->wallet->deposit($order->amount);
         createTransaction($client->id, TransactionType::CREDIT, $order->amount, 'order_refund', status: TransactionStatus::COMPLETED, source: TransactionSource::WALLET);
+        $notifyMsg = [
+            'title' => 'Order Rejected',
+            'message' => "Your order has been rejected by the talent",
+            'url' => '',
+            'id' => $order->id
+        ];
+        createNotification($client->id, NotificationType::ORDER_REJECTED, $notifyMsg);
         return $this->ok('Order rejected successfully.', data: new OrderResource($order));
     }
     public function markAsComplete(Order $order)
@@ -70,6 +85,13 @@ class TalentOrderController extends Controller
             'status' => OrderStatus::COMPLETED,
             'delivered_at' => now(),
         ]);
+        $notifyMsg = [
+            'title' => 'Order Completed',
+            'message' => "Your order has been completed by the talent",
+            'url' => '',
+            'id' => $order->id
+        ];
+        createNotification($order->client->id, NotificationType::ORDER_COMPLETED, $notifyMsg);
         return $this->ok('Order marked as complete successfully.', data: new OrderResource($order));
     }
 }

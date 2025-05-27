@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Enums\NotificationType;
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\PortfolioResource;
@@ -26,8 +27,7 @@ class PortfolioController extends Controller
     public function index()
     {
         $name = $this->user->name;
-       return $this->ok("success", PortfolioResource::collection($this->portfolio));
-
+        return $this->ok("success", PortfolioResource::collection($this->portfolio));
     }
 
 
@@ -56,6 +56,13 @@ class PortfolioController extends Controller
             }
         }
         $portfolio = Portfolio::query()->create($validatedData);
+        $notifyMsg = [
+            'title' => 'Portfolio Item Added',
+            'message' => "Your portfolio item '{$portfolio->title}' has been added successfully",
+            'url' => '',
+            'id' => $portfolio->id
+        ];
+        createNotification($this->user->id, NotificationType::PORTFOLIO_ADDED, $notifyMsg);
         return $this->ok('Portfolio added', new PortfolioResource($portfolio));
     }
 
@@ -102,7 +109,7 @@ class PortfolioController extends Controller
     public function destroy(string $id)
     {
         $portfolio = Portfolio::query()->find($id);
-        if(!$portfolio){
+        if (!$portfolio) {
             return $this->error("Portfolio not found or deleted already", 404);
         }
         $portfolio->delete();

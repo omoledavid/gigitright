@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\NotificationType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CouponResource;
 use App\Models\Coupon;
@@ -58,6 +59,13 @@ class CouponController extends Controller
         $data['user_id'] = auth()->id(); // Assuming the user is authenticated and you want to set the user_id to the authenticated user's ID
 
         $coupon = Coupon::create($data);
+        $notifyMsg = [
+            'title' => 'Coupon Created',
+            'message' => "Your coupon has been created successfully",
+            'url' => '',
+            'id' => $coupon->id
+        ];
+        createNotification(auth()->id(), NotificationType::COUPON_CREATED, $notifyMsg);
         return $this->ok('Coupon created successfully', new CouponResource($coupon), 201);
     }
 
@@ -141,6 +149,15 @@ class CouponController extends Controller
         ]);
     
         $coupon = Coupon::where('code', $request->code)->first();
+
+        $couponOwner = $coupon->user;
+        $notifyMsg = [
+            'title' => 'Coupon Applied',
+            'message' => "Your coupon has been applied successfully",
+            'url' => '',
+            'id' => $coupon->id
+        ];
+        createNotification($couponOwner->id, NotificationType::COUPON_APPLIED, $notifyMsg);
     
         if (!$coupon) {
             return $this->error(['message' => 'Invalid coupon code.'], 404);

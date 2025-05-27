@@ -18,7 +18,9 @@ class Job extends Model
         'sub_category_id' => 'integer',
         'deadline' => 'date',
         'skill_requirements' => 'array',
-        'attachments' => 'array'
+        'attachments' => 'array',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
     ];
     public function scopeFilter(Builder $builder, QueryFilter $filters)
     {

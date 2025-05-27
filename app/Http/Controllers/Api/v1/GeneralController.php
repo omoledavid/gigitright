@@ -119,4 +119,35 @@ class GeneralController extends Controller
         $user = auth()->user();
         return OrderResource::collection($user->orders);
     }
+    public function siteInfo()
+    {
+        return $this->ok('success', [
+            'name' => env('APP_NAME'),
+            'description' => env('APP_DESCRIPTION'),
+            'social_links' => [
+                'facebook' => env('FACEBOOK_LINK'),
+                'twitter' => env('TWITTER_LINK'),
+                'instagram' => env('INSTAGRAM_LINK'),
+                'linkedin' => env('LINKEDIN_LINK'),
+                'youtube' => env('YOUTUBE_LINK'),
+            ],
+            'pages' => [
+                'about' => env('ABOUT_PAGE'),
+                'terms' => env('TERMS_PAGE'),
+                'privacy' => env('PRIVACY_POLICY_PAGE'),
+                'faq' => env('FAQ_PAGE'),
+            ],
+            'contact' => [
+                'email' => env('CONTACT_EMAIL'),
+                'phone' => env('PHONE_NUMBER'),
+                'address' => env('ADDRESS'),
+            ],
+            'secions' => [
+                'testimonials' => env('TESTIMONIALS_SECTION', false),
+            ],
+            'currency' => env('CURRENCY', 'NGN'),
+            'currency_symbol' => env('CURRENCY_SYMBOL', '₦'),
+            'currency_code' => env('CURRENCY_CODE', 'NGN'),
+        ]);
+    }
 }

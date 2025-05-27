@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\NotificationType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\JobInviteResource;
 use App\Models\JobApplicants;
@@ -44,6 +45,13 @@ class ClientJobInviteController extends Controller
             'client_id' => auth()->user()->id,
             'talent_id' => $applicant->id,
         ]);
+        $notifyMsg = [
+            'title' => 'Job Invite',
+            'message' => "You have been invited to a job",
+            'url' => '',
+            'id' => $jobInvite->job->id
+        ];
+        createNotification($applicant->id, NotificationType::JOB_INVITE, $notifyMsg);
         return $this->ok('Job Invite sent successfully');
     }
 

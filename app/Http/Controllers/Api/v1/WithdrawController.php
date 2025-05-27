@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Enums\NotificationType;
 use App\Enums\WithdrawalStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\WithdrawalResource;
@@ -41,6 +42,13 @@ class WithdrawController extends Controller
             'amount' => $validated['amount'],
             'status' => WithdrawalStatus::PENDING,
         ]);
+        $notifyMsg = [
+            'title' => 'Withdrawal Request',
+            'message' => "Your withdrawal request of {$validated['amount']} has been sent successfully",
+            'url' => '',
+            'id' => $withdrawal->id
+        ];
+        createNotification($user->id, NotificationType::WITHDRAWAL_REQUESTED, $notifyMsg);
 
         return $this->ok('Withdraw request sent',new WithdrawalResource($withdrawal), Response::HTTP_CREATED);
     }

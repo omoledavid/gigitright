@@ -53,6 +53,7 @@ Route::prefix('generals')->group(function () {
         Route::post('verify-account-number', 'verifyAccountNumber');
         Route::get('categories', 'categories');
         Route::get('rates', 'rates');
+        Route::get('site-info', 'siteInfo');
     });
 });
 Route::post('verify-email', [AuthorizationController::class, 'emailVerification']);

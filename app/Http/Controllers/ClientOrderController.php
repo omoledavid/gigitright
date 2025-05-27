@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\NotificationType;
 use App\Enums\OrderStatus;
 use App\Enums\TransactionSource;
 use App\Enums\TransactionStatus;
@@ -48,9 +49,16 @@ class ClientOrderController extends Controller
                 $order->talent->escrow_wallet->withdraw($order->amount);
                 $order->talent->wallet->deposit($order->amount);
                 $order->update(['end_date' => now()]);
+                $notifyMsg = [
+                    'title' => 'Order Completed',
+                    'message' => "Your order #{$order->id} has been marked as completed by the client",
+                    'url' => '',
+                    'id' => $order->id
+                ];
+                createNotification($order->talent_id, NotificationType::ORDER_COMPLETED, $notifyMsg);
                 createTransaction($order->talent_id, TransactionType::CREDIT, $order->amount, 'gig_payment form escrow', status: TransactionStatus::COMPLETED, source: TransactionSource::ESCROW);
             }
-            return $this->success('Order marked as complete successfully.', data: new OrderResource($order));
+            return $this->ok('Order marked as complete successfully.', data: new OrderResource($order));
         } catch (\Exception $e) {
             return $this->error('An error occurred while marking the order as complete: ' . $e->getMessage(), 500);
         }
