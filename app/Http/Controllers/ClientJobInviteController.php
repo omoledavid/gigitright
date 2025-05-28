@@ -3,8 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Enums\NotificationType;
+use App\Enums\TransactionSource;
+use App\Enums\TransactionStatus;
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\JobInviteResource;
+use App\Http\Resources\v1\JobResource;
+use App\Http\Resources\v1\MilestoneResource;
+use App\Http\Resources\v1\UserResource;
 use App\Models\JobApplicants;
 use App\Models\JobInvite;
 use App\Models\Milestone;
@@ -90,18 +96,25 @@ class ClientJobInviteController extends Controller
             $milestones = Milestone::where('job_id', $jobInvite->job->id)
                 ->where('user_id', $jobInvite->talent_id)
                 ->get();
-            
+
             if ($milestones->isNotEmpty()) {
                 $milestones->each->delete();
             }
 
-            $hasAcceptedInvite = JobInvite::where('job_id', $jobInvite->job->id)
+            $hasAcceptedInvite = JobInvite::whereHas('job', function ($query) use ($jobInvite) {
+                $query->where('jobs.id', $jobInvite->job->id);
+            })
                 ->where('status', 'accepted')
                 ->exists();
 
             if (!$hasAcceptedInvite) {
                 $jobInvite->job->update(['status' => 'open']);
             }
+            $jobInvite->talent->escrow_wallet->withdraw($jobInvite->job->budget);
+            createTransaction(userId: $jobInvite->talent->id, transactionType: TransactionType::DEBIT, amount: $jobInvite->job->budget, description: 'Fund Transfer to client Escrow', source: TransactionSource::ESCROW, status: TransactionStatus::COMPLETED);
+            $jobInvite->client->escrow_wallet->deposit($jobInvite->job->budget);
+            createTransaction(userId: $jobInvite->client->id, transactionType: TransactionType::CREDIT, amount: $jobInvite->job->budget, description: 'Fund Transfer from Talent Escrow', source: TransactionSource::ESCROW, status: TransactionStatus::COMPLETED);
+
             $notifyMsg = [
                 'title' => 'Contract terminated',
                 'message' => "Your contract with {$jobInvite->client->name} has been terminated",
@@ -116,7 +129,12 @@ class ClientJobInviteController extends Controller
                 'id' => $jobInvite->job->id
             ];
             createNotification($jobInvite->client_id, NotificationType::JOB_INVITE, $clientNotifyMsg);
-            return $this->error('You cannot cancel an accepted job invite', 422);
+            return $this->ok('Contract terminated successfully', [
+                'job' => new JobResource($jobInvite->job),
+                'milestones' => MilestoneResource::collection($milestones),
+                'talent' => new UserResource($jobInvite->talent),
+                'client' => new UserResource($jobInvite->client)
+            ]);
         }
         if ($jobInvite->status === 'canceled') {
             return $this->error('This job invite has already been canceled', 422);
