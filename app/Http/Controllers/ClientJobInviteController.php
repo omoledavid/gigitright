@@ -98,7 +98,8 @@ class ClientJobInviteController extends Controller
                 ->get();
 
             if ($milestones->isNotEmpty()) {
-                $milestones->each->delete();
+                // Only delete unpaid milestones
+                $milestones->where('is_paid', false)->each->delete();
             }
 
             $hasAcceptedInvite = JobInvite::whereHas('job', function ($query) use ($jobInvite) {
@@ -110,10 +111,32 @@ class ClientJobInviteController extends Controller
             if (!$hasAcceptedInvite) {
                 $jobInvite->job->update(['status' => 'open']);
             }
-            $jobInvite->talent->escrow_wallet->withdraw($jobInvite->job->budget);
-            createTransaction(userId: $jobInvite->talent->id, transactionType: TransactionType::DEBIT, amount: $jobInvite->job->budget, description: 'Fund Transfer to client Escrow', source: TransactionSource::ESCROW, status: TransactionStatus::COMPLETED);
-            $jobInvite->client->escrow_wallet->deposit($jobInvite->job->budget);
-            createTransaction(userId: $jobInvite->client->id, transactionType: TransactionType::CREDIT, amount: $jobInvite->job->budget, description: 'Fund Transfer from Talent Escrow', source: TransactionSource::ESCROW, status: TransactionStatus::COMPLETED);
+
+            // Calculate remaining budget by subtracting paid milestone amounts
+            $paidMilestoneAmount = $milestones->where('is_paid', true)->sum('amount');
+            $remainingBudget = $jobInvite->job->budget - $paidMilestoneAmount;
+
+            // Only transfer remaining budget if there is any
+            if ($remainingBudget > 0) {
+                $jobInvite->talent->escrow_wallet->withdraw($remainingBudget);
+                createTransaction(
+                    userId: $jobInvite->talent->id,
+                    transactionType: TransactionType::DEBIT,
+                    amount: $remainingBudget,
+                    description: 'Fund Transfer to client Escrow',
+                    source: TransactionSource::ESCROW,
+                    status: TransactionStatus::COMPLETED
+                );
+                $jobInvite->client->escrow_wallet->deposit($remainingBudget);
+                createTransaction(
+                    userId: $jobInvite->client->id,
+                    transactionType: TransactionType::CREDIT,
+                    amount: $remainingBudget,
+                    description: 'Fund Transfer from Talent Escrow',
+                    source: TransactionSource::ESCROW,
+                    status: TransactionStatus::COMPLETED
+                );
+            }
 
             $notifyMsg = [
                 'title' => 'Contract terminated',
@@ -133,7 +156,9 @@ class ClientJobInviteController extends Controller
                 'job' => new JobResource($jobInvite->job),
                 'milestones' => MilestoneResource::collection($milestones),
                 'talent' => new UserResource($jobInvite->talent),
-                'client' => new UserResource($jobInvite->client)
+                'client' => new UserResource($jobInvite->client),
+                'remaining_budget' => $remainingBudget,
+                'paid_milestone_amount' => $paidMilestoneAmount
             ]);
         }
         if ($jobInvite->status === 'canceled') {
