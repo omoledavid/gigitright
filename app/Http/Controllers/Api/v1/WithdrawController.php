@@ -21,7 +21,8 @@ class WithdrawController extends Controller
     /**
      * Request a new withdrawal
      */
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $validated = $request->validate([
             'amount' => 'required|numeric|min:10', // Minimum withdrawal amount
             'bank_account_id' => 'required|exists:bank_accounts,id',
@@ -35,67 +36,73 @@ class WithdrawController extends Controller
                 return $this->error('Insufficient balance');
             }
 
-            try {
-                // Deduct balance and create transaction
-                $user->wallet->withdraw($validated['amount']);
-                createTransaction(
-                    userId: $user->id,
-                    transactionType: TransactionType::DEBIT,
-                    amount: $validated['amount'],
-                    description: 'Withdrawal request',
-                    source: TransactionSource::WALLET
-                );
+            // Verify bank account exists and belongs to user
+            $accountDetail = AccountDetail::where('id', $validated['bank_account_id'])
+                ->where('user_id', $user->id)
+                ->first();
 
-                // Create withdrawal request
-                $withdrawal = Withdraw::create([
-                    'user_id' => $user->id,
-                    'account_detail_id' => $validated['bank_account_id'],
-                    'amount' => $validated['amount'],
-                    'status' => WithdrawalStatus::PENDING,
-                ]);
-
-                $notifyMsg = [
-                    'title' => 'Withdrawal Request',
-                    'message' => "Your withdrawal request of {$validated['amount']} has been sent successfully",
-                    'url' => '',
-                    'id' => $withdrawal->id
-                ];
-                createNotification($user->id, NotificationType::WITHDRAWAL_REQUESTED, $notifyMsg);
-            } catch (\Exception $e) {
-                // Reverse the withdrawal if it was made
-                if (isset($withdrawal)) {
-                    $user->wallet->deposit($validated['amount']);
-                    createTransaction(
-                        userId: $user->id,
-                        transactionType: TransactionType::CREDIT,
-                        amount: $validated['amount'],
-                        description: 'Withdrawal reversal due to error',
-                        source: TransactionSource::WALLET
-                    );
-                    $withdrawal->delete();
-                }
-                throw $e;
+            if (!$accountDetail) {
+                return $this->error('Invalid bank account', Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
+            // Deduct balance and create transaction
+            $user->wallet->withdraw($validated['amount']);
+            createTransaction(
+                userId: $user->id,
+                transactionType: TransactionType::DEBIT,
+                amount: $validated['amount'],
+                description: 'Withdrawal request',
+                source: TransactionSource::WALLET
+            );
+
+            // Create withdrawal request
+            $withdrawal = Withdraw::create([
+                'user_id' => $user->id,
+                'account_detail_id' => $accountDetail->id,
+                'amount' => $validated['amount'],
+                'status' => WithdrawalStatus::PENDING,
+            ]);
+
+            $notifyMsg = [
+                'title' => 'Withdrawal Request',
+                'message' => "Your withdrawal request of {$validated['amount']} has been sent successfully",
+                'url' => '',
+                'id' => $withdrawal->id
+            ];
+            createNotification($user->id, NotificationType::WITHDRAWAL_REQUESTED, $notifyMsg);
         } catch (\Exception $e) {
-            return $this->error('Failed to process withdrawal request: ' . $e->getMessage());
+            // Reverse the withdrawal if it was made
+            if (isset($withdrawal)) {
+                $user->wallet->deposit($validated['amount']);
+                createTransaction(
+                    userId: $user->id,
+                    transactionType: TransactionType::CREDIT,
+                    amount: $validated['amount'],
+                    description: 'Withdrawal reversal due to error',
+                    source: TransactionSource::WALLET
+                );
+                $withdrawal->delete();
+            }
+            throw $e;
         }
 
-        return $this->ok('Withdraw request sent',new WithdrawalResource($withdrawal), Response::HTTP_CREATED);
+        return $this->ok('Withdraw request sent', new WithdrawalResource($withdrawal), Response::HTTP_CREATED);
     }
 
     /**
      * Get user's withdrawal history
      */
-    public function index() {
+    public function index()
+    {
         $withdrawals = Withdraw::where('user_id', Auth::id())->latest()->get();
-        return $this->ok('Withdrawals',WithdrawalResource::collection($withdrawals), Response::HTTP_OK);
+        return $this->ok('Withdrawals', WithdrawalResource::collection($withdrawals), Response::HTTP_OK);
     }
 
     /**
      * View a specific withdrawal
      */
-    public function show($id) {
+    public function show($id)
+    {
         $withdrawal = Withdraw::where('user_id', Auth::id())->find($id);
 
         if (!$withdrawal) {
@@ -105,4 +112,3 @@ class WithdrawController extends Controller
         return $this->ok('success', new WithdrawalResource($withdrawal));
     }
 }
-
