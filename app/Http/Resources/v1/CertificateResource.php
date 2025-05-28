@@ -18,7 +18,7 @@ class CertificateResource extends JsonResource
             'type' => 'certificate',
             'id' => $this->id,
             'attributes' => [
-                'title' => $this->id,
+                'title' => $this->title,
                 'description' => $this->description,
                 'organization' => $this->organization,
                 'date_awarded' => $this->date_awarded,

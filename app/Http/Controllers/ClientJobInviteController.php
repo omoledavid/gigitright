@@ -89,7 +89,7 @@ class ClientJobInviteController extends Controller
     {
         $jobInvite = JobInvite::query()->where('id', $id)->firstOrFail();
         if ($jobInvite->client_id !== auth()->user()->id) {
-            return $this->error('You are not authorized to delete this job invite', 403);
+            return $this->error('You are not authorized to cancel this job invite', 403);
         }
         if ($jobInvite->status === 'accepted') {
             $jobInvite->update(['status' => 'canceled']);
