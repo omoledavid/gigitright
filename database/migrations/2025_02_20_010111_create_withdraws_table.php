@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('withdraws', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // User requesting withdrawal
-            $table->foreignId('account_detail_id')->constrained()->onDelete('cascade'); // Bank account details
+            $table->foreignId('bank_account_id')->constrained('bank_accounts')->onDelete('cascade'); // Bank account details
             $table->decimal('amount', 10, 2);
             $table->string('status')->default('pending'); // Status: pending, approved, rejected
             $table->text('admin_note')->nullable(); // Admin remarks (if rejected)

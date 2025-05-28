@@ -11,7 +11,7 @@ class Withdraw extends Model
 
     protected $fillable = [
         'user_id',
-        'account_detail_id',
+        'bank_account_id',
         'amount',
         'status',
         'admin_note'
@@ -22,6 +22,6 @@ class Withdraw extends Model
     }
 
     public function account() {
-        return $this->belongsTo(AccountDetail::class, 'account_detail_id');
+        return $this->belongsTo(BankAccount::class, 'bank_account_id');
     }
 }

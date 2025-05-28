@@ -46,6 +46,13 @@ class WithdrawController extends Controller
                 return $this->error('Invalid bank account', Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
+            // Create withdrawal request
+            $withdrawal = Withdraw::create([
+                'user_id' => $user->id,
+                'bank_account_id' => $accountDetail->id,
+                'amount' => $validated['amount'],
+                'status' => WithdrawalStatus::PENDING,
+            ]);
             // Deduct balance and create transaction
             $user->wallet->withdraw($validated['amount']);
             createTransaction(
@@ -55,14 +62,6 @@ class WithdrawController extends Controller
                 description: 'Withdrawal request',
                 source: TransactionSource::WALLET
             );
-
-            // Create withdrawal request
-            $withdrawal = Withdraw::create([
-                'user_id' => $user->id,
-                'account_detail_id' => $accountDetail->id,
-                'amount' => $validated['amount'],
-                'status' => WithdrawalStatus::PENDING,
-            ]);
 
             $notifyMsg = [
                 'title' => 'Withdrawal Request',
