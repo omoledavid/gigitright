@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\WithdrawalResource;
 use App\Models\Withdraw;
 use App\Models\AccountDetail;
+use App\Models\BankAccount;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -37,7 +38,7 @@ class WithdrawController extends Controller
             }
 
             // Verify bank account exists and belongs to user
-            $accountDetail = AccountDetail::where('id', $validated['bank_account_id'])
+            $accountDetail = BankAccount::where('id', $validated['bank_account_id'])
                 ->where('user_id', $user->id)
                 ->first();
 
