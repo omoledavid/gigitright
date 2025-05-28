@@ -29,6 +29,9 @@ class MilestoneResource extends JsonResource
                 'is_marked_complete_by_client' => $this->is_marked_complete_by_client,
                 'created_at' => $this->created_at->toDateTimeString(),
                 'updated_at' => $this->updated_at->toDateTimeString(),
+            ],
+            'relationships' => [
+                'talent' => new UserResource($this->whenLoaded('talent')),
             ]
         ];
     }

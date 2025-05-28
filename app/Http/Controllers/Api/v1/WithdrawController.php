@@ -65,7 +65,7 @@ class WithdrawController extends Controller
 
             $notifyMsg = [
                 'title' => 'Withdrawal Request',
-                'message' => "Your withdrawal request of {$validated['amount']} has been sent successfully",
+                'message' => "Your withdrawal request of NGN{$validated['amount']} has been sent successfully",
                 'url' => '',
                 'id' => $withdrawal->id
             ];
