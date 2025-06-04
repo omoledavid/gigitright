@@ -32,8 +32,8 @@ class ExperienceController extends Controller
             'job_title' => 'required',
             'company_name' => 'required',
             'start_date' => 'required|date',
-            'end_date' => 'required',
-            'location' => 'required',
+            'end_date' => 'nullable|date',
+            'location' => 'nullable',
             'description' => 'nullable',
         ]);
         $validatedData['user_id'] = auth()->id();

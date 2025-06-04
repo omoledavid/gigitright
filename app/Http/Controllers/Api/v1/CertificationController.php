@@ -35,7 +35,7 @@ class CertificationController extends Controller
             'description' => 'nullable|string|max:255',
             'organization' => 'nullable|string|max:255',
             'date_awarded' => 'required|date',
-            'valid_until' => 'required|date',
+            'valid_until' => 'nullable|date',
             'certificate_file' => ['nullable', new FileTypeValidate(['pdf', 'docx'])],
         ]);
         if ($request->hasFile('certificate_file')) {
@@ -73,8 +73,8 @@ class CertificationController extends Controller
             'description' => 'nullable|string|max:255',
             'organization' => 'nullable|string|max:255',
             'date_awarded' => 'required|date',
-            'valid_until' => 'required|date',
-            'certificate_file' => ['nullable', new FileTypeValidate(['pdf', 'docx'])],
+            'valid_until' => 'nullable|date',
+            'certificate_file' => ['nullable', new FileTypeValidate(['pdf', 'docx', 'png', 'jpeg', 'jpg', 'bmp', 'gif', 'tiff', 'webp'])],
         ]);
         if ($request->hasFile('certificate_file')) {
             try {
