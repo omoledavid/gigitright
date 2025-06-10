@@ -7,6 +7,22 @@ use Illuminate\Support\Facades\Cache;
 
 class GeneralSetting extends Model
 {
+    protected $fillable = [
+        'site_name',
+        'cur_text',
+        'cur_sym',
+        'email_form',
+        'email_template',
+        'mail_config',
+        'global_shortcodes',
+        'kv',
+        'ev',
+        'sm',
+        'register_status',
+        'deposit_status',
+        'withdraw_status',
+        'en'
+    ];
     protected $casts = [
         'mail_config'        => 'object',
         'sms_config'         => 'object',
@@ -15,6 +31,13 @@ class GeneralSetting extends Model
         'wire_transfer_data' => 'object',
         'push_configuration' => 'object',
         'airtime_config'     => 'object',
+        'kv' => 'boolean',
+        'ev' => 'boolean',
+        'sm' => 'boolean',
+        'register_status'    => 'boolean',
+        'deposit_status'     => 'boolean',
+        'withdraw_status'    => 'boolean',
+        'en' => 'boolean'
     ];
     protected $hidden = ['email_template','mail_config','sms_config','system_info'];
 

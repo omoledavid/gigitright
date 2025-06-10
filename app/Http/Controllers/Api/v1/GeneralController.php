@@ -125,9 +125,9 @@ class GeneralController extends Controller
             'name' => env('APP_NAME'),
             'description' => env('APP_DESCRIPTION'),
             'modules' => [
-                'maintenance_mode' => false,
-                'login' => true,
-                'registration' => true,
+                'maintenance_mode' => true,
+                'login' => false,
+                'registration' => false,
             ],
             'social_links' => [
                 'facebook' => env('FACEBOOK_LINK'),
