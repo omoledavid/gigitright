@@ -124,6 +124,11 @@ class GeneralController extends Controller
         return $this->ok('success', [
             'name' => env('APP_NAME'),
             'description' => env('APP_DESCRIPTION'),
+            'modules' => [
+                'maintenance_mode' => false,
+                'login' => true,
+                'registration' => true,
+            ],
             'social_links' => [
                 'facebook' => env('FACEBOOK_LINK'),
                 'twitter' => env('TWITTER_LINK'),
