@@ -122,19 +122,19 @@ class GeneralController extends Controller
     public function siteInfo()
     {
         return $this->ok('success', [
-            'name' => env('APP_NAME'),
-            'description' => env('APP_DESCRIPTION'),
+            'name' => gs('site_name'),
+            'description' => gs('site_description'),
             'modules' => [
-                'maintenance_mode' => true,
-                'login' => false,
-                'registration' => false,
+                'maintenance_mode' => gs('maintenance_mode'),
+                'login' => gs('login_status'),
+                'registration' => gs('register_status'),
             ],
             'social_links' => [
-                'facebook' => env('FACEBOOK_LINK'),
-                'twitter' => env('TWITTER_LINK'),
-                'instagram' => env('INSTAGRAM_LINK'),
-                'linkedin' => env('LINKEDIN_LINK'),
-                'youtube' => env('YOUTUBE_LINK'),
+                'facebook' => gs('facebook'),
+                'twitter' => gs('twitter'),
+                'instagram' => gs('instagram'),
+                'linkedin' => gs('linkedin'),
+                'youtube' => gs('youtube'),
             ],
             'pages' => [
                 'about' => env('ABOUT_PAGE'),
@@ -143,9 +143,10 @@ class GeneralController extends Controller
                 'faq' => env('FAQ_PAGE'),
             ],
             'contact' => [
-                'email' => env('CONTACT_EMAIL'),
-                'phone' => env('PHONE_NUMBER'),
-                'address' => env('ADDRESS'),
+                'email' => gs('email_form'),
+                'phone' => gs('phone_number'),
+                'alt_phone' => gs('alt_phone_number'),
+                'address' => gs('address'),
             ],
             'secions' => [
                 'testimonials' => env('TESTIMONIALS_SECTION', false),

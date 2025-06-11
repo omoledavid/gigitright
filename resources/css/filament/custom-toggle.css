@@ -1,0 +1,28 @@
+.custom-toggle {
+    @apply relative w-32 h-12 rounded-xl cursor-pointer border border-transparent transition-all duration-300;
+    background-color: #ef4444; /* red-500 */
+}
+
+.custom-toggle input:checked + div {
+    background-color: #22c55e; /* green-500 */
+}
+
+.custom-toggle div {
+    @apply absolute top-0 left-0 w-full h-full flex items-center justify-center text-white text-sm font-semibold rounded-xl transition-all duration-300;
+    content: 'Disable';
+}
+
+.custom-toggle input:checked + div {
+    content: 'Enable';
+    justify-content: flex-end;
+    padding-right: 0.75rem;
+}
+
+.custom-toggle input + div::before {
+    content: '';
+    @apply w-6 h-6 bg-[#0f172a] rounded-full absolute left-1 transition-all duration-300;
+}
+
+.custom-toggle input:checked + div::before {
+    @apply left-auto right-1;
+}

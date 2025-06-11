@@ -6,6 +6,7 @@ use App\Enums\MilestoneStatus;
 use App\Http\Filters\v1\QueryFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -41,4 +42,17 @@ class Job extends Model
     {
         return $this->hasMany(Milestone::class)->where('status', MilestoneStatus::IN_PROGRESS);
     }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+public function category(): BelongsTo
+{
+    return $this->belongsTo(Category::class);
+}
+
+public function subCategory(): BelongsTo
+{
+    return $this->belongsTo(Category::class, 'sub_category_id');
+}
 }

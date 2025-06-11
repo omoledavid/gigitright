@@ -20,6 +20,9 @@ class AuthController extends Controller
     use ApiResponses;
     public function register(Request $request)
     {
+        if (!gs('register_status')) {
+            return $this->error('Registration is currently disabled. Please try again later.', 403);
+        }
         $validatedData = request()->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users',
@@ -58,12 +61,18 @@ class AuthController extends Controller
     }
     public function login(LoginUserRequest $request)
     {
+        if (!gs('login_status')) {
+            return $this->error('Login is currently disabled. Please try again later.', 403);
+        }
         $request->validated($request->all());
         if(!Auth::attempt($request->only(['email', 'password']))) {
             return $this->error('Invalid credentials', 401);
         }
 
         $user = User::firstWhere('email', $request->email);
+        if ($user->status === UserStatus::BLOCKED) {
+            return $this->error('Your account has been blocked. Please contact support.', 403);
+        }
         // $token = $user->createToken('auth_token',['*'], now()->addDay())->plainTextToken;
         $token = $user->createToken('auth_token',['*'])->plainTextToken;
 

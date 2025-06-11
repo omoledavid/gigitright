@@ -15,6 +15,7 @@ use App\Lib\ClientInfo;
 use App\Lib\FileManager;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Mailtrap\MailtrapClient;
 use Mailtrap\Mime\MailtrapEmail;
 use Symfony\Component\Mime\Address;
@@ -283,4 +284,26 @@ function setting($key, $default = null)
 function set_setting($key, $value)
 {
     return Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+}
+
+function DarkLogo()
+{
+    if (Schema::hasTable('general_settings')) {
+        return gs('dark_logo') ? env('APP_URL') . '/storage/' . gs('dark_logo') : asset('assets/images/dark_logo.png');
+    }
+    return asset('assets/images/dark_logo.png');
+}
+function WhiteLogo()
+{
+    if (Schema::hasTable('general_settings')) {
+        return gs('logo') ? env('APP_URL') . '/storage/' . gs('logo') : asset('assets/images/logo.png');
+    }
+    return asset('assets/images/logo.png');
+}
+function favicon()
+{
+    if (Schema::hasTable('general_settings')) {
+        return gs('favicon') ? env('APP_URL') . '/storage/' . gs('favicon') : asset('assets/images/favicon.svg');
+    }
+    return asset('assets/images/favicon.svg');
 }

@@ -21,7 +21,22 @@ class GeneralSetting extends Model
         'register_status',
         'deposit_status',
         'withdraw_status',
-        'en'
+        'en',
+        'phone_number',
+        'alt_phone_number',
+        'address',
+        'site_description',
+        'site_keywords',
+        'logo',
+        'dark_logo',
+        'favicon',
+        'facebook',
+        'twitter',
+        'instagram',
+        'linkedin',
+        'youtube',
+        'maintenance_mode',
+        'login_status'
     ];
     protected $casts = [
         'mail_config'        => 'object',
@@ -37,7 +52,9 @@ class GeneralSetting extends Model
         'register_status'    => 'boolean',
         'deposit_status'     => 'boolean',
         'withdraw_status'    => 'boolean',
-        'en' => 'boolean'
+        'en' => 'boolean',
+        'maintenance_mode' => 'boolean',
+        'login_status' => 'boolean'
     ];
     protected $hidden = ['email_template','mail_config','sms_config','system_info'];
 
