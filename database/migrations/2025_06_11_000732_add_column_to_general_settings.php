@@ -36,7 +36,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('general_settings', function (Blueprint $table) {
-            //
+            $table->dropColumn('phone_number', 'alt_phone_number', 'address', 'site_description', 'site_keywords', 'logo', 'dark_logo', 'favicon', 'facebook', 'twitter', 'instagram', 'linkedin', 'youtube', 'maintenance_mode', 'login_status');
         });
     }
 };
