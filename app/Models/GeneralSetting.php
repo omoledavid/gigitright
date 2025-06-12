@@ -26,6 +26,7 @@ class GeneralSetting extends Model
         'phone_number',
         'alt_phone_number',
         'address',
+        'gft_rate',
         'site_description',
         'site_keywords',
         'logo',
@@ -55,11 +56,13 @@ class GeneralSetting extends Model
         'withdraw_status'    => 'boolean',
         'en' => 'boolean',
         'maintenance_mode' => 'boolean',
-        'login_status' => 'boolean'
+        'login_status' => 'boolean',
+        'gft_rate' => 'number',
     ];
     // protected $hidden = ['email_template','mail_config','sms_config','system_info'];
 
-    protected static function boot() {
+    protected static function boot()
+    {
         parent::boot();
         static::saved(function () {
             Cache::forget('GeneralSetting');

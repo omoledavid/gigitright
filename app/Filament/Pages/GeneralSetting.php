@@ -61,6 +61,16 @@ class GeneralSetting extends Page implements HasForms
                                         ->nullable(),
                                 ]),
                         ]),
+                    Forms\Components\Section::make('Rates')
+                        ->schema([
+                            Forms\Components\Grid::make(1)
+                                ->schema([
+                                    Forms\Components\TextInput::make('gft_rate')
+                                        ->label('Enter GTF rate')
+                                        ->numeric()
+                                        ->nullable(),
+                                ]),
+                        ]),
                     Forms\Components\Section::make('Logo and Favicon')
                         ->schema([
                             Forms\Components\Grid::make(3)
