@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 
 class GeneralSetting extends Model
@@ -56,12 +57,13 @@ class GeneralSetting extends Model
         'maintenance_mode' => 'boolean',
         'login_status' => 'boolean'
     ];
-    protected $hidden = ['email_template','mail_config','sms_config','system_info'];
+    // protected $hidden = ['email_template','mail_config','sms_config','system_info'];
 
     protected static function boot() {
         parent::boot();
         static::saved(function () {
             Cache::forget('GeneralSetting');
+            Artisan::call('optimize:clear');
         });
     }
 }

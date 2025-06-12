@@ -119,7 +119,6 @@ class AuthorizationController extends Controller {
             $user->email_verified_at = Carbon::now();
             $user->ver_code         = null;
             $user->save();
-            $notify[] = 'Email verified successfully';
             return $this->ok('Email verified successfully', new UserResource($user));
         }
         return $this->error('Verification code is incorrect');

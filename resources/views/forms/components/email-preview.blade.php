@@ -13,11 +13,11 @@
     // Replace shortcodes with sample data
     $previewContent = str_replace(
         [
-            '{{ logo }}',
-            '{{ site_name }}',
-            '{{ fullname }}',
-            '{{ message }}',
-            '{{ email }}',
+            '{{logo}}',
+            '{{site_name}}',
+            '{{fullname}}',
+            '{{message}}',
+            '{{email}}',
         ],
         [
             WhiteLogo(),
