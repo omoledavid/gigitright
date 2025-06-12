@@ -49,7 +49,7 @@ class ForgotPasswordController extends Controller
             'browser' => @$userBrowserInfo['browser'],
             'ip' => @$userIpInfo['ip'],
             'time' => @$userIpInfo['time'],
-        ], ['email']);
+        ]);
 
         $email = $user->email;
         return $this->ok('Verification code sent to mail', [
@@ -100,7 +100,7 @@ class ForgotPasswordController extends Controller
             'browser' => @$userBrowser['browser'],
             'ip' => @$userIpInfo['ip'],
             'time' => @$userIpInfo['time'],
-        ], ['email']);
+        ]);
         $reset->delete();
 
         return $this->ok('Password changed successfully', [

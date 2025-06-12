@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Lib\ClientInfo;
 use App\Lib\FileManager;
 use App\Models\Notification;
+use App\Models\Page;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Mailtrap\MailtrapClient;
@@ -34,8 +35,16 @@ function gs($key = null)
 
     return $general;
 }
+function getPage($key)
+{
+    $page = Page::where('page_key', $key)->first();
+    if (!$page) {
+        return null; // or throw an exception if you prefer
+    }
+    return $page;
+}
 
-function notify($user, $templateName, $shortCodes = [], $sendVia = null, $createLog = true, $clickValue = null)
+function notify($user, $templateName, $shortCodes = [])
 {
     try {
         $template = MailTemplate::query()->where('name', $templateName)->first();

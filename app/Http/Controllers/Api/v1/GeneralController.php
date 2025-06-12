@@ -137,10 +137,10 @@ class GeneralController extends Controller
                 'youtube' => gs('youtube'),
             ],
             'pages' => [
-                'about' => env('ABOUT_PAGE'),
-                'terms' => env('TERMS_PAGE'),
-                'privacy' => env('PRIVACY_POLICY_PAGE'),
-                'faq' => env('FAQ_PAGE'),
+                'about' => getPage('about'),
+                'terms' => getPage('terms'),
+                'privacy' => getPage('privacy'),
+                'faq' => getPage('FAQ_PAGE'),
             ],
             'contact' => [
                 'email' => gs('email_form'),
@@ -150,6 +150,11 @@ class GeneralController extends Controller
             ],
             'secions' => [
                 'testimonials' => env('TESTIMONIALS_SECTION', false),
+            ],
+            'logos' => [
+                'dark_logo' => DarkLogo(),
+                'white_logo' => WhiteLogo(),
+                'favicon' => favicon(),
             ],
             'currency' => env('CURRENCY', 'NGN'),
             'currency_symbol' => env('CURRENCY_SYMBOL', '₦'),

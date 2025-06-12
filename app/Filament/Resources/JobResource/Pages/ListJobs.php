@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\JobResource\Pages;
 
 use App\Filament\Resources\JobResource;
+use App\Filament\Resources\JobResource\Widgets\JobStatOverview;
 use App\Models\Job;
 use Filament\Actions;
 use Filament\Resources\Components\Tab;
@@ -16,6 +17,12 @@ class ListJobs extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+        ];
+    }
+    public function getHeaderWidgets(): array
+    {
+        return [
+            JobStatOverview::class
         ];
     }
     public function getTabs(): array
