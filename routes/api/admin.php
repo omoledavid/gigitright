@@ -20,6 +20,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->name('admin')->gr
     Route::get('wallet/transaction/{id}', [WalletController::class, 'show']);
     Route::post('wallet/refund/{id}', [WalletController::class, 'refund']);
     Route::post('wallet/set-rates', [WalletController::class, 'setRates']);
+    Route::get('wallet/financial-metrics', [WalletController::class, 'getFinancialMetrics']);
 
     //User Management
     Route::controller(ManageUserController::class)->group(function () {

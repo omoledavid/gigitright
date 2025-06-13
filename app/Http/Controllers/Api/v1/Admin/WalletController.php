@@ -50,7 +50,6 @@ class WalletController extends Controller
             return $this->ok('Wallet refund', new TransactionResource($transaction));
         }
         return $this->error('Wallet refund failed');
-
     }
 
     public function setRates(Request $request)
@@ -63,10 +62,43 @@ class WalletController extends Controller
 
         // Assuming we store these values in a settings table
         set_setting('griftis_to_naira', $request->griftis_to_naira);
-//        set_setting('buyer_percentage', $request->buyer_percentage);
-//        set_setting('seller_percentage', $request->seller_percentage);
+        //        set_setting('buyer_percentage', $request->buyer_percentage);
+        //        set_setting('seller_percentage', $request->seller_percentage);
 
         return $this->ok('Rates updated successfully');
     }
-}
 
+    public function getFinancialMetrics()
+    {
+        // Calculate total inflow (all credit transactions)
+        $totalInflow = Transaction::where('transaction_type', TransactionType::CREDIT)
+            ->where('status', PaymentStatus::COMPLETED)
+            ->sum('amount');
+
+        // Calculate total outflow (all debit transactions)
+        $totalOutflow = Transaction::where('transaction_type', TransactionType::DEBIT)
+            ->where('status', PaymentStatus::COMPLETED)
+            ->sum('amount');
+
+        // Calculate profit (inflow - outflow)
+        $profit = $totalInflow - $totalOutflow;
+
+        // Get transaction counts
+        $totalTransactions = Transaction::count();
+        $completedTransactions = Transaction::where('status', PaymentStatus::COMPLETED)->count();
+        $pendingTransactions = Transaction::where('status', PaymentStatus::PENDING)->count();
+        $refundedTransactions = Transaction::where('status', PaymentStatus::REFUNDED)->count();
+
+        return $this->ok('Financial metrics', [
+            'total_inflow' => $totalInflow,
+            'total_outflow' => $totalOutflow,
+            'profit' => $profit,
+            'transaction_stats' => [
+                'total_transactions' => $totalTransactions,
+                'completed_transactions' => $completedTransactions,
+                'pending_transactions' => $pendingTransactions,
+                'refunded_transactions' => $refundedTransactions
+            ]
+        ]);
+    }
+}

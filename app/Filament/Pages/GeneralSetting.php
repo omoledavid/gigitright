@@ -68,12 +68,23 @@ class GeneralSetting extends Page implements HasForms
                         ]),
                     Forms\Components\Section::make('Rates')
                         ->schema([
-                            Forms\Components\Grid::make(1)
+                            Forms\Components\Grid::make(3)
                                 ->schema([
                                     Forms\Components\TextInput::make('gft_rate')
-                                        ->label('Enter GTF rate')
+                                        ->label('Enter GRIFTIS Charge Percent')
                                         ->numeric()
+                                        ->placeholder('e.g., 10 for 10%')
                                         ->minValue(1),
+                                    Forms\Components\TextInput::make('job_charge')
+                                        ->label('Enter Job Charge Percent')
+                                        ->placeholder('e.g., 10 for 10%')
+                                        ->numeric()
+                                        ->minValue(0),
+                                    Forms\Components\TextInput::make('gig_charge')
+                                        ->label('Enter Gig Charge Percent')
+                                        ->placeholder('e.g., 10 for 10%')
+                                        ->numeric()
+                                        ->minValue(0),
                                 ]),
                         ]),
                     Forms\Components\Section::make('Logo and Favicon')

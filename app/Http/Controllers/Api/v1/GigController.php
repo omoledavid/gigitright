@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\NotificationType;
+use App\Helpers\FileRules;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\v1\GigFilter;
 use App\Http\Resources\v1\GigResource;
@@ -36,7 +37,7 @@ class GigController extends Controller
             'language' => 'nullable|string|max:255',
             'unique_selling_point' => 'nullable|string',
             'plans' => 'nullable|json',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => FileRules::imageOnly(),
         ]);
         if ($request->hasFile('image')) {
             $location = getFilePath('gigs');

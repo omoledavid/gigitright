@@ -29,12 +29,12 @@ class ExperienceController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'job_title' => 'required',
-            'company_name' => 'required',
+            'job_title' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date',
-            'location' => 'nullable',
-            'description' => 'nullable',
+            'location' => 'nullable|string|max:1000',
+            'description' => 'nullable|string|max:1000',
         ]);
         $validatedData['user_id'] = auth()->id();
         $validatedData['status'] = Status::ACTIVE;
@@ -62,9 +62,9 @@ class ExperienceController extends Controller
             'job_title' => 'required',
             'company_name' => 'required',
             'start_date' => 'required|date',
-            'end_date' => 'required',
-            'location' => 'required',
-            'description' => 'nullable',
+            'end_date' => 'nullable|date',
+            'location' => 'nullable|string',
+            'description' => 'nullable|string',
         ]);
         $experience = Experience::findOrFail($id);
         $experience->update($validatedData);

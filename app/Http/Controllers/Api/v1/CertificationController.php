@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\Status;
+use App\Helpers\FileRules;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\CertificateResource;
 use App\Models\Certification;
@@ -36,7 +37,7 @@ class CertificationController extends Controller
             'organization' => 'nullable|string|max:255',
             'date_awarded' => 'required|date',
             'valid_until' => 'nullable|date',
-            'certificate_file' => ['nullable', new FileTypeValidate(['pdf', 'png', 'jpeg', 'jpg', 'webp'])],
+            'certificate_file' => FileRules::general(),
         ]);
         if ($request->hasFile('certificate_file')) {
             try {
@@ -74,7 +75,7 @@ class CertificationController extends Controller
             'organization' => 'nullable|string|max:255',
             'date_awarded' => 'required|date',
             'valid_until' => 'nullable|date',
-            'certificate_file' => ['nullable', new FileTypeValidate(['pdf', 'png', 'jpeg', 'jpg', 'webp'])],
+            'certificate_file' => FileRules::general(),
         ]);
         if ($request->hasFile('certificate_file')) {
             try {
