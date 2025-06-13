@@ -134,7 +134,7 @@ class DepositController extends Controller
             return $this->error('Insufficient Balance');
         }
         try {
-            $user->wallet->withdraw($validatedData['amount']);
+            $user->wallet->withdraw($griftis);
             createTransaction(userId: $user->id, transactionType: TransactionType::DEBIT, amount: $griftis, status: PaymentStatus::COMPLETED);
             $user->griftis->deposit($validatedData['amount']);
             createTransaction(userId: $user->id, transactionType: TransactionType::CREDIT, amount: $validatedData['amount'], currency: 'GFT', status: PaymentStatus::COMPLETED,);
