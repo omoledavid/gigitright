@@ -5,26 +5,30 @@
     $siteName = is_callable($site_name) ? $site_name() : $site_name ?? config('app.name');
     $siteEmail = is_callable($email_from) ? $email_from() : $email_from ?? config('mail.from.address');
 
-    // Debug logging
-    Log::info('Email Template:', ['template' => $emailTemplate]);
-    Log::info('Site Name:', ['name' => $siteName]);
-    Log::info('Site Email:', ['email' => $siteEmail]);
+    // // Debug logging
+    // Log::info('Email Template:', ['template' => $emailTemplate]);
+    // Log::info('Site Name:', ['name' => $siteName]);
+    // Log::info('Site Email:', ['email' => $siteEmail]);
 
     // Replace shortcodes with sample data
     $previewContent = str_replace(
         [
             '{{logo}}',
+            '{{dark_logo}}',
             '{{site_name}}',
             '{{fullname}}',
             '{{message}}',
             '{{email}}',
+            '{{site_url}}',
         ],
         [
             WhiteLogo(),
+            DarkLogo(),
             $siteName,
             'John Doe',
             'This is a sample message to demonstrate how the email template will look with actual content.',
             $siteEmail,
+            env('FRONTEND_URL', 'https://gigitright.com'),
         ],
         $emailTemplate,
     );

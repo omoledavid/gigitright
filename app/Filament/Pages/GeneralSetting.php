@@ -20,6 +20,11 @@ class GeneralSetting extends Page implements HasForms
     protected static ?string $title = 'Edit General Settings';
 
     public ?array $data = [];
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->can('page_GeneralSetting');
+    }
+
     public function mount(): void
     {
         $settings = GeneralSettingModel::first();
@@ -68,6 +73,7 @@ class GeneralSetting extends Page implements HasForms
                                     Forms\Components\TextInput::make('gft_rate')
                                         ->label('Enter GTF rate')
                                         ->numeric()
+                                        ->minValue(1)
                                         ->nullable(),
                                 ]),
                         ]),
@@ -119,7 +125,7 @@ class GeneralSetting extends Page implements HasForms
                         ]),
                     Forms\Components\Section::make('System Configuration')
                         ->schema([
-                            Forms\Components\Grid::make(5)
+                            Forms\Components\Grid::make(6)
                                 ->schema([
                                     Forms\Components\Toggle::make('maintenance_mode')
                                         ->label('Maintenance Mode')
@@ -151,6 +157,13 @@ class GeneralSetting extends Page implements HasForms
                                         ->extraAttributes(['class' => 'rounded-lg']),
                                     Forms\Components\Toggle::make('withdraw_status')
                                         ->label('Withdraw Status')
+                                        ->default(true)
+                                        ->inline(false)
+                                        ->onColor('success')
+                                        ->offColor('danger')
+                                        ->extraAttributes(['class' => 'rounded-lg']),
+                                    Forms\Components\Toggle::make('ev')
+                                        ->label('Email Verification')
                                         ->default(true)
                                         ->inline(false)
                                         ->onColor('success')

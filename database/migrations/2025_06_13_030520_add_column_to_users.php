@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('general_settings', function (Blueprint $table) {
-            $table->integer('gft_rate')->default(1)->after('address');
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('is_admin')->default(false)->after('role');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('general_settings', function (Blueprint $table) {
-            $table->dropColumn('gft_rate');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('is_admin');
         });
     }
 };

@@ -87,7 +87,7 @@ class AuthorizationController extends Controller {
 
         notify($user, $notifyTemplate, [
             '{{code}}' => $user->ver_code,
-        ], [$type]);
+        ]);
 //        Mail::to($user->email)->send(new TestMail());
 
         $notify[] = 'Verification code sent successfully';

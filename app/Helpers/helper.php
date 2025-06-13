@@ -65,6 +65,9 @@ function notify($user, $templateName, $shortCodes = [])
         $globalShortCodes = [
             '{{fullname}}' => $user->name,
             '{{site_name}}' => gs('site_name'),
+            '{{logo}}' => WhiteLogo(),
+            '{{dark_logo}}' => DarkLogo(),
+            '{{site_url}}' => env('FRONTEND_URL'),
         ];
 
         // Replace placeholders in content

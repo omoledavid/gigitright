@@ -21,6 +21,11 @@ class Privacy extends Page implements HasForms
     protected static string $view = 'filament.pages.privacy';
     protected static ?string $navigationGroup = 'Pages';
     public ?array $data = [];
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->can('page_Privacy'); 
+    }
+
 
     public function mount(): void
     {

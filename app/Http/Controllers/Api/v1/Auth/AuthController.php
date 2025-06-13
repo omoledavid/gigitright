@@ -41,22 +41,28 @@ class AuthController extends Controller
         //create user
         $verificationCode = verificationCode(6);
         $user = User::create($validatedData);
-        $user->ver_code         = $verificationCode;
-        $user->ver_code_send_at = Carbon::now();
-        $user->save();
-        notify($user, 'EVER_CODE', [
-            'code' => $user->ver_code,
-        ], ['email']);
+        if (gs('ev') == 1) {
+            $user->ev = UserStatus::ACTIVE;
+            $user->email_verified_at = Carbon::now();
+            $user->save();
+        } else {
+            $user->ver_code         = $verificationCode;
+            $user->ver_code_send_at = Carbon::now();
+            $user->save();
+            notify($user, 'EVER_CODE', [
+                'code' => $user->ver_code,
+            ]);
+        }
 
 
         // Trigger email verification event
         //event(new Registered($user));
-        $token = $user->createToken('auth_token',['*'])->plainTextToken;
-//        $token = $user->createToken('auth_token',['*'], now()->addDay())->plainTextToken;
+        $token = $user->createToken('auth_token', ['*'])->plainTextToken;
+        //        $token = $user->createToken('auth_token',['*'], now()->addDay())->plainTextToken;
         return $this->ok('User registered successfully. Please verify your email address.', [
             'user' => new UserResource($user),
             'token' => $token,
-            'verification_code' => $verificationCode,
+            // 'verification_code' => $verificationCode,
         ]);
     }
     public function login(LoginUserRequest $request)
@@ -65,7 +71,7 @@ class AuthController extends Controller
             return $this->error('Login is currently disabled. Please try again later.', 403);
         }
         $request->validated($request->all());
-        if(!Auth::attempt($request->only(['email', 'password']))) {
+        if (!Auth::attempt($request->only(['email', 'password']))) {
             return $this->error('Invalid credentials', 401);
         }
 
@@ -74,7 +80,7 @@ class AuthController extends Controller
             return $this->error('Your account has been blocked. Please contact support.', 403);
         }
         // $token = $user->createToken('auth_token',['*'], now()->addDay())->plainTextToken;
-        $token = $user->createToken('auth_token',['*'])->plainTextToken;
+        $token = $user->createToken('auth_token', ['*'])->plainTextToken;
 
         return $this->ok(
             'Authenticated',
@@ -83,7 +89,7 @@ class AuthController extends Controller
             ]
         );
     }
-    public function logout(Request $request):JsonResponse
+    public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
         return $this->ok('Logged out');
@@ -100,15 +106,14 @@ class AuthController extends Controller
         ]);
         $user = Auth::user();
         try {
-            if(Hash::check($validatedData['current_password'], $user->password))
-            {
+            if (Hash::check($validatedData['current_password'], $user->password)) {
                 $user->password = Hash::make($validatedData['password']);
                 $user->save();
                 return $this->ok('Password changed');
-            }else{
+            } else {
                 return $this->error('Wrong current password', 401);
             }
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             return $this->error($exception->getMessage(), 401);
         }
     }

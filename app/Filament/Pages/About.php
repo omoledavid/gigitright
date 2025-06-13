@@ -21,6 +21,11 @@ class About extends Page implements HasForms
     protected static string $view = 'filament.pages.about';
     protected static ?string $navigationGroup = 'Pages';
     public ?array $data = [];
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->can('page_About'); // 👈 This must match the permission name
+    }
+
 
     public function mount(): void
     {

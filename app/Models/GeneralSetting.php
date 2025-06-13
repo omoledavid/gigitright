@@ -43,7 +43,6 @@ class GeneralSetting extends Model
     protected $casts = [
         'mail_config'        => 'object',
         'sms_config'         => 'object',
-        'global_shortcodes'  => 'object',
         'modules'            => 'object',
         'wire_transfer_data' => 'object',
         'push_configuration' => 'object',
@@ -57,7 +56,7 @@ class GeneralSetting extends Model
         'en' => 'boolean',
         'maintenance_mode' => 'boolean',
         'login_status' => 'boolean',
-        'gft_rate' => 'number',
+        'gft_rate' => 'integer',
     ];
     // protected $hidden = ['email_template','mail_config','sms_config','system_info'];
 

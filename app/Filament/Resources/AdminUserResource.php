@@ -4,9 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
+use App\Filament\Resources\AdminUserResource\Pages;
+use App\Filament\Resources\AdminUserResource\RelationManagers;
+use App\Models\AdminUser;
 use App\Models\User;
+use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -16,45 +18,19 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 
-class UserResource extends Resource
+class AdminUserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-m-user-group';
+    protected static ?string $navigationIcon = 'heroicon-o-shield-check';
+    protected static ?string $navigationLabel = 'Admins';
     protected static ?string $navigationGroup = 'User Management';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->maxLength(191),
-                Forms\Components\TextInput::make('username')
-                    ->required()
-                    ->maxLength(191),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(191),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
-                Forms\Components\Select::make('status')
-                    ->options([
-                        UserStatus::ACTIVE => 'Active',
-                        UserStatus::INACTIVE => 'Inactive',
-                    ])
-                    ->required()
-                    ->default(UserStatus::ACTIVE),
-                Forms\Components\Toggle::make('ev')
-                    ->label('Email Verified')
-                    ->required()
-                    ->default(false),
-                Forms\Components\Select::make('role')
-                    ->options([
-                        UserRole::CLIENT => 'Client',
-                        UserRole::FREELANCER => 'Freelancer',
-                    ])
-                    ->required()
-                    ->default(UserRole::CLIENT),
+                //
             ]);
     }
 
@@ -122,14 +98,14 @@ class UserResource extends Resource
                         ->action(function (User $record) {
                             $record->update(['status' => UserStatus::ACTIVE]);
                         }),
-                    Tables\Actions\Action::make('make_admin')
-                        ->icon('heroicon-o-shield-check')
-                        ->color('primary')
+                    Tables\Actions\Action::make('remove_admin')
+                        ->icon('heroicon-o-shield-exclamation')
+                        ->color('secondary')
                         ->requiresConfirmation()
-                        ->label('Make Admin')
-                        ->visible(fn(User $record) => $record->role !== UserRole::ADMIN)
+                        ->label('Remove Admin')
+                        ->visible(fn(User $record) => $record->is_admin)
                         ->action(function (User $record) {
-                            $record->update(['is_admin' => true, 'role' => UserRole::ADMIN]);
+                            $record->update(['is_admin' => false, 'role' => UserRole::FREELANCER]);
                         }),
                     Tables\Actions\Action::make('reset_password')
                         ->icon('heroicon-o-key')
@@ -146,6 +122,33 @@ class UserResource extends Resource
                                 ->success()
                                 ->send();
                         }),
+                        Tables\Actions\Action::make('assign_shield_role')
+                            ->icon('heroicon-o-user-plus')
+                            ->color('primary')
+                            ->requiresConfirmation()
+                            ->label('Assign Shield Role')
+                            ->visible(fn(User $record) => true)
+                            ->form([
+                                Forms\Components\Select::make('role')
+                                    ->label('Shield Role')
+                                    ->options(
+                                        collect(Utils::getRoleModel()::all())
+                                            ->pluck('name', 'id')
+                                            ->toArray()
+                                    )
+                                    ->required(),
+                            ])
+                            ->action(function (array $data, User $record) {
+                                $roleModel = Utils::getRoleModel()::find($data['role']);
+                                if ($roleModel) {
+                                    $record->syncRoles([$roleModel->name]);
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Role Assigned')
+                                        ->body("Shield role '{$roleModel->name}' assigned to {$record->username}.")
+                                        ->success()
+                                        ->send();
+                                }
+                            }),
                 ]),
             ])
             ->bulkActions([
@@ -154,36 +157,39 @@ class UserResource extends Resource
                 ]),
             ]);
     }
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()->where('is_admin', false);
-    }
 
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ExperienceRelationManager::class,
-            RelationManagers\EducationRelationManager::class,
-            RelationManagers\PortfolioRelationManager::class,
-            RelationManagers\CertificateRelationManager::class,
-            RelationManagers\JobsRelationManager::class,
-            RelationManagers\PostsRelationManager::class,
-            RelationManagers\CommunitiesRelationManager::class,
-            RelationManagers\NotificationsRelationManager::class,
-            RelationManagers\TransactionsRelationManager::class,
-            RelationManagers\ReviewsRelationManager::class,
-            RelationManagers\JobApplicationsRelationManager::class,
-            RelationManagers\OrdersRelationManager::class,
+            //
         ];
     }
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('is_admin', true);
+    }
+    public static function getNavigationLabel(): string
+    {
+        return 'Admins';
+    }
+    public static function getNavigationBadge(): ?string
+    {
+        return Utils::isResourceNavigationBadgeEnabled()
+            ? strval(static::getEloquentQuery()->count())
+            : null;
+    }
+
+    // public static function getNavigationGroup(): ?string
+    // {
+    //     return 'User Management'; // Optional: custom group
+    // }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'view' => Pages\ViewUser::route('/{record}'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListAdminUsers::route('/'),
+            'create' => Pages\CreateAdminUser::route('/create'),
+            'edit' => Pages\EditAdminUser::route('/{record}/edit'),
         ];
     }
 }

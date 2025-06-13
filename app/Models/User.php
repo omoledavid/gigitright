@@ -7,6 +7,8 @@ use App\Enums\ReviewType;
 use App\Enums\Status;
 use App\Enums\UserStatus;
 use App\Http\Filters\v1\QueryFilter;
+use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
+use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,11 +18,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use MannikJ\Laravel\Wallet\Traits\HasWallet;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens, HasWallet;
+    use HasFactory, Notifiable, HasApiTokens, HasWallet, HasRoles, HasPanelShield;
 
     /**
      * The attributes that are mass assignable.
@@ -47,6 +50,7 @@ class User extends Authenticatable
         'ver_code_send_at'  => 'datetime',
         'skills' => 'array',
         'languages' => 'array',
+        'is_admin' => 'boolean',
 
     ];
 
@@ -61,6 +65,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function canAccessPanel(\Filament\Panel $panel): bool
+    {
+        return $this->is_admin; // or return $this->role === 'admin';
     }
 
     public function scopeFilter(Builder $builder, QueryFilter $filters)

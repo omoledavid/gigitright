@@ -1,5 +1,5 @@
 @php
-    $shortcodes = json_decode($this->data['global_shortcodes'] ?? '{}', true);
+    $shortcodes = json_decode($this->data['global_shortcodes'], true);
 @endphp
 
 @if (!empty($shortcodes))

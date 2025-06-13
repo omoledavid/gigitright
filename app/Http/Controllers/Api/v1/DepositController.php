@@ -125,7 +125,7 @@ class DepositController extends Controller
         $validatedData = $request->validate([
             'amount' => 'required|numeric|min:10',
         ]);
-        $rate = setting('griftis_to_naira',);
+        $rate = gs('gft_rate');
         $griftis = $request->amount * $rate;
         //pay for grifts
         $user = auth()->user();
@@ -138,6 +138,12 @@ class DepositController extends Controller
             createTransaction(userId: $user->id, transactionType: TransactionType::DEBIT, amount: $griftis, status: PaymentStatus::COMPLETED);
             $user->griftis->deposit($validatedData['amount']);
             createTransaction(userId: $user->id, transactionType: TransactionType::CREDIT, amount: $validatedData['amount'], currency: 'GFT', status: PaymentStatus::COMPLETED,);
+            $notifyMsg = [
+                'title' => 'Griftis Purchase Successful',
+                'message' => "You have successfully purchased {$validatedData['amount']} Griftis",
+                'url' => null
+            ];
+            createNotification($user->id, NotificationType::GRIFTIS_PURCHASED, $notifyMsg);
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         }

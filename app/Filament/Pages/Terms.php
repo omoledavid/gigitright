@@ -21,6 +21,10 @@ class Terms extends Page implements HasForms
     protected static string $view = 'filament.pages.terms';
     protected static ?string $navigationGroup = 'Pages';
     public ?array $data = [];
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->can('page_Terms'); 
+    }
 
     public function mount(): void
     {
