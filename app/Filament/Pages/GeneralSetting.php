@@ -73,8 +73,7 @@ class GeneralSetting extends Page implements HasForms
                                     Forms\Components\TextInput::make('gft_rate')
                                         ->label('Enter GTF rate')
                                         ->numeric()
-                                        ->minValue(1)
-                                        ->nullable(),
+                                        ->minValue(1),
                                 ]),
                         ]),
                     Forms\Components\Section::make('Logo and Favicon')
