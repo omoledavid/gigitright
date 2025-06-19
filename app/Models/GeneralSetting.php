@@ -28,6 +28,7 @@ class GeneralSetting extends Model
         'address',
         'gft_rate',
         'site_description',
+        'job_apply_charge',
         'site_keywords',
         'logo',
         'dark_logo',

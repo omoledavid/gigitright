@@ -68,23 +68,31 @@ class GeneralSetting extends Page implements HasForms
                         ]),
                     Forms\Components\Section::make('Rates')
                         ->schema([
-                            Forms\Components\Grid::make(3)
+                            Forms\Components\Grid::make(4)
                                 ->schema([
                                     Forms\Components\TextInput::make('gft_rate')
-                                        ->label('Enter GRIFTIS Charge Percent')
+                                        ->label('Griftis Rate (1 GFT TO NGN)')
                                         ->numeric()
-                                        ->placeholder('e.g., 10 for 10%')
+                                        ->placeholder('e.g., 1000')
+                                        ->suffix('₦')
                                         ->minValue(1),
                                     Forms\Components\TextInput::make('job_charge')
-                                        ->label('Enter Job Charge Percent')
+                                        ->label('Job Charge(Client)')
                                         ->placeholder('e.g., 10 for 10%')
                                         ->numeric()
+                                        ->suffix('%')
                                         ->minValue(0),
                                     Forms\Components\TextInput::make('gig_charge')
                                         ->label('Enter Gig Charge Percent')
                                         ->placeholder('e.g., 10 for 10%')
                                         ->numeric()
+                                        ->suffix('%')
                                         ->minValue(0),
+                                    Forms\Components\TextInput::make('job_apply_charge')
+                                        ->label('Job application charge (Talent)')
+                                        ->placeholder('e.g., 5 or 10 ...')
+                                        ->minValue(1)
+                                        ->suffix('GFT')
                                 ]),
                         ]),
                     Forms\Components\Section::make('Logo and Favicon')

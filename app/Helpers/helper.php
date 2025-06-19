@@ -15,6 +15,7 @@ use App\Lib\ClientInfo;
 use App\Lib\FileManager;
 use App\Models\Notification;
 use App\Models\Page;
+use App\Models\PlatformTransaction;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Mailtrap\MailtrapClient;
@@ -287,6 +288,20 @@ function createNotification($userId, $type, $data, $is_read = false)
 
     return $notification;
 }
+function createPlatformTransaction($amount, $source, $type, $status, $model, $note = null)
+{
+    return PlatformTransaction::create([
+        'amount'      => $amount,
+        'source'      => $source,
+        'type'        => $type,
+        'status'      => $status,
+        'model_type'  => get_class($model),
+        'model_id'    => $model->id,
+        'user_id'     => $model->user_id ?? null,
+        'note'        => $note,
+    ]);
+}
+
 function setting($key, $default = null)
 {
     $setting = Setting::where('key', $key)->first();

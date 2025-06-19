@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 //    ];
 //});
 Route::get('/', function () {
-    return view('pusher');
+    return redirect(env('FRONTEND_URL'));
 });
 Route::get('/login', function () {
     

@@ -31,7 +31,7 @@ class CheckoutController extends Controller
                 'amount' => 'required|numeric|min:0',
                 'coupon_code' => 'nullable|exists:coupons,code',
             ]);
-            if($request->coupon_code) {
+            if ($request->coupon_code) {
                 $coupon = Coupon::query()->where('code', $request->coupon_code)->first();
                 if (!$coupon) {
                     return $this->error('Coupon not found.', 404);
@@ -42,7 +42,7 @@ class CheckoutController extends Controller
                 if ($request->amount < $coupon->min_order_value) {
                     return $this->error('Order amount does not meet the minimum order value for this coupon.', 422);
                 }
-                if($coupon->used_count >= $coupon->usage_limit) {
+                if ($coupon->used_count >= $coupon->usage_limit) {
                     return $this->error('Coupon usage limit has been reached.', 422);
                 }
                 $coupon->increment('used_count');
@@ -56,10 +56,22 @@ class CheckoutController extends Controller
             if ($user->bal < $request->amount) {
                 return $this->error('You do not have enough gft to purchase this gig.', 422);
             }
+
+            // Calculate platform charge and talent amount
+            $gigCharge = gs('gig_charge') ?? 0;
+            $platformCharge = ($request->amount * $gigCharge) / 100;
+            $talentAmount = $request->amount - $platformCharge;
+
             $user->wallet->withdraw($request->amount);
             createTransaction($user->id, TransactionType::DEBIT, $request->amount, 'gig_purchase', status: TransactionStatus::COMPLETED);
-            $talent->escrow_wallet->deposit($request->amount);
-            createTransaction($talent->id, TransactionType::CREDIT, $request->amount, 'gig_sale to escrow', status: TransactionStatus::PENDING, source: TransactionSource::ESCROW);
+
+            // Deposit platform charge to system wallet
+            // createTransaction(1, TransactionType::CREDIT, $platformCharge, 'platform_charge', status: TransactionStatus::COMPLETED);
+
+            // Deposit remaining amount to talent's escrow wallet
+            $talent->escrow_wallet->deposit($talentAmount);
+            createTransaction($talent->id, TransactionType::CREDIT, $talentAmount, 'gig_sale to escrow', status: TransactionStatus::PENDING, source: TransactionSource::ESCROW);
+
             $order = Order::create([
                 'client_id' => $user->id,
                 'talent_id' => $talent->id,

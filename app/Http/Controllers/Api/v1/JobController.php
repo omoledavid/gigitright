@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\JobApplicantStatus;
+use App\Enums\JobStatus;
 use App\Enums\NotificationType;
+use App\Enums\PaymentMethod;
+use App\Enums\PaymentStatus;
+use App\Enums\TransactionSource;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\v1\JobFilter;
@@ -15,6 +19,7 @@ use App\Models\JobApplicants;
 use App\Models\Milestone;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class JobController extends Controller
 {
@@ -54,13 +59,44 @@ class JobController extends Controller
             'location' => 'nullable|string|max:255',
         ]);
         $validatedData['user_id'] = auth()->id();
-        if ($user->bal < $validatedData['budget']) {
+
+        // Get platform job charge percent from settings
+        $jobChargePercent = (float) gs('job_charge');
+        $platformCharge = 0;
+        if ($jobChargePercent > 0) {
+            $platformCharge = ($validatedData['budget'] * $jobChargePercent) / 100;
+        }
+
+        $totalDebit = $validatedData['budget'] + $platformCharge;
+
+        if ($user->bal < $totalDebit) {
             return $this->error('You do not have enough money to create this job');
         }
+
         $job = Job::create($validatedData);
-        $user->wallet->withdraw($validatedData['budget']);
+
+        $user->wallet->withdraw($totalDebit);
         $user->escrow_wallet->deposit($validatedData['budget']);
-        createTransaction(userId: $user->id, transactionType: TransactionType::DEBIT, amount: $validatedData['budget'], description: 'Funds put away for Job');
+
+        createTransaction(
+            userId: $user->id,
+            transactionType: TransactionType::DEBIT,
+            amount: $totalDebit,
+            description: 'Funds put away for Job (including platform charge)'
+        );
+
+        // Record platform charge if any
+        if ($platformCharge > 0) {
+            createPlatformTransaction(
+                amount: $platformCharge,
+                source: TransactionSource::JOB,
+                type: TransactionType::DEBIT,
+                status: PaymentStatus::PENDING,
+                model: $job,
+                note: 'Platform charge for job creation'
+            );
+        }
+
         return $this->ok('success', new JobResource($job));
     }
 
@@ -69,7 +105,7 @@ class JobController extends Controller
      */
     public function show(string $id)
     {
-        $job = Job::query()->where('id', $id)->with(['applicants.applicant', 'relatedJobs','applicants.applicant.reviews','milestones', 'milestones.talent'])->firstOrFail();
+        $job = Job::query()->where('id', $id)->with(['applicants.applicant', 'relatedJobs', 'applicants.applicant.reviews', 'milestones', 'milestones.talent'])->firstOrFail();
         return $this->ok('success', [
             'job' => new JobResource($job),
         ]);
@@ -119,50 +155,114 @@ class JobController extends Controller
             'job_id' => 'required|exists:jobs,id',
             'milestones' => 'nullable|array',
         ]);
-        $job = Job::query()->findOrFail($validatedData['job_id']);
-        $data = new UserResource(auth()->user());
-        $user = $data->toArray(request());
-        $resume = $user['relationships']['profile']['resume'] ?? null;
-        $coverLetter = $user['relationships']['profile']['cover_letter'] ?? null;
+
+        $job = Job::findOrFail($validatedData['job_id']);
+        $user = auth()->user();
+
+        // Check resume and cover letter
+        $resume = $user->profile->resume ?? null;
+        $coverLetter = $user->profile->cover_letter ?? null;
+
         if (is_null($resume) && is_null($coverLetter)) {
             return $this->error('Kindly update your resume and cover letter');
         }
-        $validatedData['user_id'] = $user['id'];
-        $validatedData['resume'] = $resume;
-        $validatedData['cover_letter'] = $coverLetter;
-        $validatedData['status'] = JobApplicantStatus::PENDING;
-        $exist = JobApplicants::query()->where('user_id', $validatedData['user_id'])->where('job_id', $validatedData['job_id'])->first();
-        if (!empty($exist)) {
+
+        // Prevent duplicate application
+        $alreadyApplied = JobApplicants::where('user_id', $user->id)
+            ->where('job_id', $job->id)
+            ->exists();
+
+        if ($alreadyApplied) {
             return $this->error("You already applied for this job");
         }
+
+        // Prevent applying to own job
+        if ($job->user_id === $user->id) {
+            return $this->error("You cannot apply for your own job");
+        }
+
+        // Ensure job is open
+        if ($job->status !== JobStatus::OPEN) {
+            return $this->error("This job is not open for applications");
+        }
+
+        // Check Griftis balance
+        if (optional($user->griftis)->balance <= 0) {
+            return $this->error('You do not have enough Griftis to apply for this job');
+        }
+
+        // If milestones exist, validate total budget
         if (!empty($validatedData['milestones'])) {
-            $milestoneTotalAmount = array_sum(array_column($validatedData['milestones'], 'amount'));
-
-            if ($milestoneTotalAmount > $job->budget) {
-                return $this->error('Total milestone amount cannot be greater than budget');
-            }
-
-            foreach ($validatedData['milestones'] as $milestone) {
-                Milestone::create([
-                    'user_id'    => $user['id'], // Make sure $user is an array or use $user->id
-                    'job_id'     => $validatedData['job_id'],
-                    'title'      => $milestone['title'],
-                    'description'=> $milestone['description'] ?? null,
-                    'amount'     => $milestone['amount'],
-                    'due_date'   => $milestone['date'],
-                ]);
+            $milestoneTotal = array_sum(array_column($validatedData['milestones'], 'amount'));
+            if ($milestoneTotal > $job->budget) {
+                return $this->error('Total milestone amount cannot be greater than the job budget');
             }
         }
 
-        $jobApplicant = JobApplicants::query()->create($validatedData);
-        $notifyMsg = [
-            'title' => 'Job Application',
-            'message' => "You have a new job application",
-            'url' => '',
-            'id' => $jobApplicant->id
-        ];
-        createNotification($job->user_id, NotificationType::JOB_APPLICATION, $notifyMsg);
-        return $this->ok('success', new JobApplicantResource($jobApplicant));
+        // Begin transaction
+        DB::beginTransaction();
+
+        try {
+            // Debit Griftis for job application
+            $applyCharge = gs('job_apply_charge');
+            $user->griftis->withdraw($applyCharge);
+            // Record platform charge for job application
+            createPlatformTransaction(
+                $applyCharge,
+                TransactionSource::JOB_APPLICATION,
+                'charge',
+                'completed',
+                $user,
+                "Job application fee for job #{$job->id}"
+            );
+
+            // Create transaction record
+            createTransaction(
+                $user->id,
+                TransactionType::DEBIT,
+                $applyCharge,
+                "Job application fee for job #{$job->id}",
+                PaymentMethod::GFT,
+                status: PaymentStatus::COMPLETED
+            );
+            // Create job application
+            $jobApplicant = JobApplicants::create([
+                'job_id' => $job->id,
+                'user_id' => $user->id,
+                'resume' => $resume,
+                'cover_letter' => $coverLetter,
+                'status' => JobApplicantStatus::PENDING,
+            ]);
+
+            // Create milestones
+            if (!empty($validatedData['milestones'])) {
+                foreach ($validatedData['milestones'] as $milestone) {
+                    Milestone::create([
+                        'user_id'    => $user->id,
+                        'job_id'     => $job->id,
+                        'title'      => $milestone['title'],
+                        'description' => $milestone['description'] ?? null,
+                        'amount'     => $milestone['amount'],
+                        'due_date'   => $milestone['date'],
+                    ]);
+                }
+            }
+
+            // Create notification for job owner
+            createNotification($job->user_id, NotificationType::JOB_APPLICATION, [
+                'title'   => 'Job Application',
+                'message' => "You have a new job application",
+                'url'     => '',
+                'id'      => $jobApplicant->id,
+            ]);
+
+            DB::commit();
+
+            return $this->ok('Application submitted successfully', new JobApplicantResource($jobApplicant));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->error('An error occurred while submitting your application. Please try again later.'.$e);
+        }
     }
 
     public function viewJobApplication($id)
