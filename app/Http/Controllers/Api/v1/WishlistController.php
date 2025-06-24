@@ -44,7 +44,7 @@ class WishlistController extends Controller
 
     public function destroy(Wishlist $wishlist)
     {
-        if ($wishlist->user_id !== auth()->id()) {
+        if ($wishlist->user_id != auth()->id()) {
             return $this->error('You are not allowed to delete this wishlist', Response::HTTP_FORBIDDEN);
         }
 
