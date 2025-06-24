@@ -17,16 +17,8 @@ class ConversationResource extends JsonResource
         return [
             'type' => 'conversation',
             'id' => $this->id,
-            'client' => [
-                'id' => $this->client->id,
-                'name' => $this->client->name,
-                'email' => $this->client->email,
-            ],
-            'freelancer' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-                'email' => $this->user->email,
-            ],
+            'client' => new UserResource($this->client),
+            'freelancer' => new UserResource($this->user),
             'messages' => MessageResource::collection($this->messages),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -49,6 +49,6 @@ class WishlistController extends Controller
         }
 
         $wishlist->delete();
-        return $this->ok('Job deleted',);
+        return $this->ok('Job removed from wishlist');
     }
 }
