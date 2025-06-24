@@ -24,6 +24,9 @@ class FileInfo {
         $data['certificates'] = [
             'path'      => 'assets/images/user/certificates'
         ];
+        $data['ticket_attachments'] = [
+            'path'      => 'assets/images/user/ticket_attachments'
+        ];
         $data['default'] = [
             'path'      => 'assets/images/default.png',
         ];

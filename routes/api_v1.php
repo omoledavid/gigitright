@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\v1\MessageController;
 use App\Http\Controllers\Api\v1\NotificationController;
 use App\Http\Controllers\Api\v1\PostController;
 use App\Http\Controllers\Api\v1\ReviewController;
+use App\Http\Controllers\Api\v1\SupportTicketController;
 use App\Http\Controllers\Api\v1\UserController;
 use App\Http\Controllers\Api\v1\PortfolioController;
 use App\Http\Controllers\Api\v1\CertificationController;
@@ -157,6 +158,22 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
 
     //Gigs
     Route::apiResource('gigs', GigController::class);
+
+    //Support tickets
+    Route::prefix('support-tickets')->group(function () {
+        Route::name('support-tickets.')->group(function () {
+            Route::get('/', [SupportTicketController::class, 'index']);
+            Route::post('/', [SupportTicketController::class, 'store']);
+            Route::get('/{id}', [SupportTicketController::class, 'show']);
+            Route::post('/{id}/message', [SupportTicketController::class, 'addMessage']);
+            Route::post('/{id}/close', [SupportTicketController::class, 'close']);
+        });
+    });
+    Route::get('get-tickets', [SupportTicketController::class, 'index']);
+    Route::post('/', [SupportTicketController::class, 'store']);
+    Route::get('/{id}', [SupportTicketController::class, 'show']);
+    Route::post('/{id}/message', [SupportTicketController::class, 'addMessage']);
+    Route::post('/{id}/close', [SupportTicketController::class, 'close']);
 
     //Job Milestone
     Route::apiResource('milestones', MilestoneController::class);
