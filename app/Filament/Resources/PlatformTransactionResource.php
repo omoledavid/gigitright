@@ -58,7 +58,7 @@ class PlatformTransactionResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
-                    ->color(fn ($state) => $state === 'charge' ? 'success' : 'danger'),
+                    ->color(fn($state) => $state === 'charge' ? 'success' : 'danger'),
                 Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\TextColumn::make('model_type')
                     ->searchable(),
