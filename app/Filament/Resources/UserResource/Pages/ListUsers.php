@@ -52,6 +52,12 @@ class ListUsers extends ListRecords
                 })
                 ->icon('heroicon-o-trash')
                 ->badge(User::where('status', UserStatus::BLOCKED)->count()),
+            'admin' => Tab::make('Admins')
+                ->modifyQueryUsing(function ($query) {
+                    $query->where('is_admin', true);
+                })
+                ->icon('heroicon-o-shield-check')
+                ->badge(User::where('is_admin', true)->count()),
         ];
 
     }

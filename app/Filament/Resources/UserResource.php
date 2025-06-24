@@ -127,7 +127,7 @@ class UserResource extends Resource
                         ->color('primary')
                         ->requiresConfirmation()
                         ->label('Make Admin')
-                        ->visible(fn(User $record) => $record->role !== UserRole::ADMIN)
+                        ->visible(fn(User $record) => $record->is_admin == false)
                         ->action(function (User $record) {
                             $record->update(['is_admin' => true, 'role' => UserRole::ADMIN]);
                         }),
@@ -154,10 +154,10 @@ class UserResource extends Resource
                 ]),
             ]);
     }
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()->where('is_admin', false);
-    }
+    // public static function getEloquentQuery(): Builder
+    // {
+    //     return parent::getEloquentQuery()->where('is_admin', false);
+    // }
 
     public static function getRelations(): array
     {
