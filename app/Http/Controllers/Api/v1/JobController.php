@@ -17,6 +17,7 @@ use App\Http\Resources\v1\UserResource;
 use App\Models\Job;
 use App\Models\JobApplicants;
 use App\Models\Milestone;
+use App\Models\PlatformTransaction;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -144,8 +145,36 @@ class JobController extends Controller
      */
     public function destroy(string $id)
     {
-        $job = Job::query()->findOrFail($id);
-        $job->delete();
+        try {
+            $job = Job::query()->findOrFail($id);
+            $user = auth()->user();
+
+            if ($job->user_id != $user->id) {
+            return $this->error('You are not authorized to delete this job');
+            }
+
+            $platformcharge = PlatformTransaction::where('model_id', $job->id)->first();
+
+            if ($platformcharge) {
+            $platformcharge->update(['type' => 'refund']);
+            }
+
+            $user->escrow_wallet->withdraw($job->budget);
+
+            $refundAmount = ($platformcharge ? $platformcharge->amount : 0) + $job->budget;
+            $user->wallet->deposit($refundAmount);
+
+            createTransaction(
+            userId: $user->id,
+            transactionType: TransactionType::CREDIT,
+            amount: $refundAmount,
+            description: 'Job Refund'
+            );
+
+            $job->delete();
+        } catch (\Exception $e) {
+            return $this->error('An error occurred while deleting the job. Please try again later.');
+        }
         return $this->ok('successfully deleted');
     }
 
@@ -213,7 +242,7 @@ class JobController extends Controller
                 'charge',
                 'completed',
                 $user,
-                "Job application fee for job GFT{$job->id}"
+                "Job application fee "
             );
 
             // Create transaction record
@@ -262,7 +291,7 @@ class JobController extends Controller
             return $this->ok('Application submitted successfully', new JobApplicantResource($jobApplicant));
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->error('An error occurred while submitting your application. Please try again later.'.$e);
+            return $this->error('An error occurred while submitting your application. Please try again later.' . $e);
         }
     }
 
