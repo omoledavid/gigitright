@@ -17,7 +17,7 @@ class ConversationController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $conversations = Conversation::query()->where('client_id', $user->id)->orWhere('user_id', $user->id)->latest();
+        $conversations = Conversation::query()->where('client_id', $user->id)->orWhere('user_id', $user->id)->latest()->get();
         return $this->ok('success', ['conversations' => ConversationResource::collection($conversations)]);
     }
 
