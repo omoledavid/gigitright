@@ -57,7 +57,6 @@ class GeneralSetting extends Model
         'en' => 'boolean',
         'maintenance_mode' => 'boolean',
         'login_status' => 'boolean',
-        'job_apply_charge'   => 'number'
     ];
     // protected $hidden = ['email_template','mail_config','sms_config','system_info'];
 
