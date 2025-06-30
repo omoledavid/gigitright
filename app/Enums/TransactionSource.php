@@ -9,4 +9,5 @@ enum TransactionSource: string
     const ESCROW = 'escrow';
     const JOB_APPLICATION = 'job_application';
     const JOB = 'job_creation';
+    const GIG = 'gig';
 }

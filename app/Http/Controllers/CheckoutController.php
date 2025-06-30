@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\NotificationType;
+use App\Enums\PaymentStatus;
 use App\Enums\TransactionSource;
 use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
@@ -64,6 +65,14 @@ class CheckoutController extends Controller
 
             $user->wallet->withdraw($request->amount);
             createTransaction($user->id, TransactionType::DEBIT, $request->amount, 'gig_purchase', status: TransactionStatus::COMPLETED);
+            createPlatformTransaction(
+                amount: $platformCharge,
+                source: TransactionSource::GIG,
+                type: 'charge',
+                status: PaymentStatus::PENDING,
+                model: $gig,
+                note: 'Platform charge for job creation'
+            );
 
             // Deposit platform charge to system wallet
             // createTransaction(1, TransactionType::CREDIT, $platformCharge, 'platform_charge', status: TransactionStatus::COMPLETED);
