@@ -87,16 +87,14 @@ class JobController extends Controller
         );
 
         // Record platform charge if any
-        if ($platformCharge > 0) {
-            createPlatformTransaction(
-                amount: $platformCharge,
-                source: TransactionSource::JOB,
-                type: TransactionType::DEBIT,
-                status: PaymentStatus::PENDING,
-                model: $job,
-                note: 'Platform charge for job creation'
-            );
-        }
+        createPlatformTransaction(
+            amount: $platformCharge,
+            source: TransactionSource::JOB,
+            type: 'charge',
+            status: PaymentStatus::PENDING,
+            model: $job,
+            note: 'Platform charge for job creation'
+        );
 
         return $this->ok('success', new JobResource($job));
     }
@@ -150,13 +148,13 @@ class JobController extends Controller
             $user = auth()->user();
 
             if ($job->user_id != $user->id) {
-            return $this->error('You are not authorized to delete this job');
+                return $this->error('You are not authorized to delete this job');
             }
 
             $platformcharge = PlatformTransaction::where('model_id', $job->id)->first();
 
             if ($platformcharge) {
-            $platformcharge->update(['type' => 'refund']);
+                $platformcharge->update(['type' => 'refund']);
             }
 
             $user->escrow_wallet->withdraw($job->budget);
@@ -165,10 +163,15 @@ class JobController extends Controller
             $user->wallet->deposit($refundAmount);
 
             createTransaction(
-            userId: $user->id,
-            transactionType: TransactionType::CREDIT,
-            amount: $refundAmount,
-            description: 'Job Refund'
+                userId: $user->id,
+                transactionType: TransactionType::CREDIT,
+                amount: $refundAmount,
+                description: 'Job Refund'
+            );
+            createNotification(
+                userId: $user->id,
+                title: 'Job Deleted & Refunded',
+                message: "Your job '{$job->title}' has been successfully deleted. A total of {$refundAmount} has been refunded to your wallet."
             );
 
             $job->delete();
