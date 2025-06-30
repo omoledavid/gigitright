@@ -168,11 +168,12 @@ class JobController extends Controller
                 amount: $refundAmount,
                 description: 'Job Refund'
             );
-            createNotification(
-                userId: $user->id,
-                title: 'Job Deleted & Refunded',
-                message: "Your job '{$job->title}' has been successfully deleted. A total of {$refundAmount} has been refunded to your wallet."
-            );
+            createNotification($job->user_id, NotificationType::JOB_DELETED, [
+                'title'   => 'Job Deleted',
+                'message' => "Your job has been deleted",
+                'url'     => '',
+                'id'      => $job->id,
+            ]);
 
             $job->delete();
         } catch (\Exception $e) {
