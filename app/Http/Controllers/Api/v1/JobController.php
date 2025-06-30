@@ -213,7 +213,7 @@ class JobController extends Controller
                 'charge',
                 'completed',
                 $user,
-                "Job application fee for job #{$job->id}"
+                "Job application fee for job GFT{$job->id}"
             );
 
             // Create transaction record
@@ -221,8 +221,9 @@ class JobController extends Controller
                 $user->id,
                 TransactionType::DEBIT,
                 $applyCharge,
-                "Job application fee for job #{$job->id}",
+                "Job application fee for job GFT{$applyCharge}",
                 PaymentMethod::GFT,
+                currency: 'GFT',
                 status: PaymentStatus::COMPLETED
             );
             // Create job application
