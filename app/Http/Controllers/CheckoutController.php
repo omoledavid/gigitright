@@ -85,7 +85,7 @@ class CheckoutController extends Controller
                 'client_id' => $user->id,
                 'talent_id' => $talent->id,
                 'gig_id' => $gig->id,
-                'amount' => $request->amount,
+                'amount' => $talentAmount,
                 'plan_name' => $request->plan_name,
                 'status' => 'pending',
                 'due_date' => now()->addDays(7), // Assuming a 7-day due date for the order
