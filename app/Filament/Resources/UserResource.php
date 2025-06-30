@@ -36,7 +36,7 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(191),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
+                // Forms\Components\DateTimePicker::make('email_verified_at'),
                 Forms\Components\Select::make('status')
                     ->options([
                         UserStatus::ACTIVE => 'Active',
@@ -129,7 +129,7 @@ class UserResource extends Resource
                         ->label('Make Admin')
                         ->visible(fn(User $record) => $record->is_admin == false)
                         ->action(function (User $record) {
-                            $record->update(['is_admin' => true, 'role' => UserRole::ADMIN]);
+                            $record->update(['is_admin' => true]);
                         }),
                     Tables\Actions\Action::make('reset_password')
                         ->icon('heroicon-o-key')
