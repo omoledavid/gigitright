@@ -95,6 +95,12 @@ class JobController extends Controller
             model: $job,
             note: 'Platform charge for job creation'
         );
+        createNotification($job->user_id, NotificationType::JOB_CREATED, [
+            'title'   => 'Job Created',
+            'message' => "Your job has been successfully created",
+            'url'     => '',
+            'id'      => $job->id,
+        ]);
 
         return $this->ok('success', new JobResource($job));
     }

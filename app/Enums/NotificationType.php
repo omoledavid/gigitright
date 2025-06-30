@@ -25,4 +25,5 @@ enum NotificationType: string
     case JOB_APPLICATION = 'job_application';
     case GRIFTIS_PURCHASED = 'griftis_purchase';
     case JOB_DELETED = 'job_deleted';
+    case JOB_CREATED = 'job_created';
 }
