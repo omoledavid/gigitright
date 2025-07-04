@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Events\NewMessageEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\MessageResource;
+use App\Models\Conversation;
 use App\Models\MediaFile;
 use App\Models\Message;
 use App\Traits\ApiResponses;
@@ -59,6 +60,11 @@ class MessageController extends Controller
         $messages = Message::where('conversation_id', $conversationId)
             ->orderBy('created_at', 'asc') // Optional: Order messages by creation date
             ->get(['message', 'created_at']); // Get only the 'message' and 'created_at' columns
+            if (Conversation::where('id', $conversationId)->whereHas('users', function ($query) {
+                $query->where('id', auth()->id());
+            })->exists()) {
+                return $this->error('You do not have access to this conversation.', 403);
+            }
 
         return response()->json($messages);
     }
