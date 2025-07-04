@@ -192,6 +192,7 @@ class JobController extends Controller
             $job->update($validatedData);
 
             // Deposit new budget into escrow
+            $user->wallet->withdraw($validatedData['budget']);
             $user->escrow_wallet->deposit($validatedData['budget']);
 
             // Create debit transaction for total
