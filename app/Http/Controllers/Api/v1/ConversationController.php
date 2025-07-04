@@ -32,18 +32,18 @@ class ConversationController extends Controller
         $validedData['client_id'] = auth()->id();
         $exist = Conversation::query()
             ->where(function ($query) use ($validedData) {
-            $query->where('user_id', auth()->id())
-                  ->where('client_id', $validedData['user_id']);
+                $query->where('user_id', auth()->id())
+                    ->where('client_id', $validedData['user_id']);
             })
             ->orWhere(function ($query) use ($validedData) {
-            $query->where('user_id', $validedData['user_id'])
-                  ->where('client_id', auth()->id());
+                $query->where('user_id', $validedData['user_id'])
+                    ->where('client_id', auth()->id());
             })
             ->first();
 
         if ($exist) {
             return $this->ok('A conversation already exists between these users.', [
-            'conversation' => new ConversationResource($exist)
+                'conversation' => new ConversationResource($exist)
             ]);
         }
         $conversation = Conversation::create($validedData);
@@ -56,6 +56,10 @@ class ConversationController extends Controller
     public function show(string $id)
     {
         $conversation = Conversation::query()->find($id);
+        $user = auth()->user();
+        if (!$conversation || !in_array($user->id, [$conversation->client_id, $conversation->user_id])) {
+            return $this->error('Conversation not found or access denied.', 404);
+        }
         return $this->ok('success', ['conversation' => new ConversationResource($conversation)]);
     }
 
