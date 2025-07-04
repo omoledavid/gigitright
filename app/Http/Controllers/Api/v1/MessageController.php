@@ -34,18 +34,18 @@ class MessageController extends Controller
         // Handle file uploads
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-            try {
-                $location = getFilePath('messaging');
-                $path = fileUploader($file, $location);
-                MediaFile::create([
-                'message_id' => $message->id,
-                'file_path' => $path,
-                'file_type' => $file->getMimeType(),
-                'original_name' => $file->getClientOriginalName(),
-                ]);
-            } catch (\Exception $exception) {
-                return $this->error($exception->getMessage());
-            }
+                try {
+                    $location = getFilePath('messaging');
+                    $path = fileUploader($file, $location);
+                    MediaFile::create([
+                        'message_id' => $message->id,
+                        'file_path' => $path,
+                        'file_type' => $file->getMimeType(),
+                        'original_name' => $file->getClientOriginalName(),
+                    ]);
+                } catch (\Exception $exception) {
+                    return $this->error($exception->getMessage());
+                }
             }
         }
 
@@ -60,26 +60,24 @@ class MessageController extends Controller
         $messages = Message::where('conversation_id', $conversationId)
             ->orderBy('created_at', 'asc') // Optional: Order messages by creation date
             ->get(['message', 'created_at']); // Get only the 'message' and 'created_at' columns
-            if (Conversation::where('id', $conversationId)->whereHas('users', function ($query) {
-                $query->where('id', auth()->id());
-            })->exists()) {
-                return $this->error('You do not have access to this conversation.', 403);
-            }
+        if (Conversation::where('id', $conversationId)->whereHas('users', function ($query) {
+            $query->where('id', auth()->id());
+        })->exists()) {
+            return response()->json($messages);
+        }
+        return $this->error('You do not have access to this conversation.', 403);
 
-        return response()->json($messages);
     }
     public function readMessage($id)
     {
-        $message = Message::query()->where('id', $id)->first()
-        ;
-            if (!$message) {
-                return $this->error('Message not found.', 404);
-            }
+        $message = Message::query()->where('id', $id)->first();
+        if (!$message) {
+            return $this->error('Message not found.', 404);
+        }
 
-            $message->read = true;
-            $message->save();
+        $message->read = true;
+        $message->save();
 
-            return $this->ok('Message marked as read.', new MessageResource($message));
+        return $this->ok('Message marked as read.', new MessageResource($message));
     }
-    
 }
