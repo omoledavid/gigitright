@@ -141,6 +141,12 @@ class JobController extends Controller
             'location' => 'nullable|string|max:255',
         ]);
         $job = Job::query()->findOrFail($id);
+        if($job->status == JobStatus::IN_PROGRESS) {
+            return $this->error('You cannot update a job that is in progress');
+        }
+        if ($job->user_id != $user->id) {
+            return $this->error('You are not authorized to update this job');
+        }
         $job->update($validatedData);
         $platformcharge = PlatformTransaction::where('model_id', $job->id)->first();
         if ($platformcharge) {

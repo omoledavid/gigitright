@@ -56,7 +56,7 @@ class ClientOrderController extends Controller
                     'id' => $order->id
                 ];
                 createNotification($order->talent_id, NotificationType::ORDER_COMPLETED, $notifyMsg);
-                createTransaction($order->talent_id, TransactionType::CREDIT, $order->amount, 'gig_payment form escrow', status: TransactionStatus::COMPLETED, source: TransactionSource::ESCROW);
+                createTransaction($order->talent_id, TransactionType::CREDIT, $order->amount, 'gig_payment from escrow', status: TransactionStatus::COMPLETED, source: TransactionSource::ESCROW);
             }
             return $this->ok('Order marked as complete successfully.', data: new OrderResource($order));
         } catch (\Exception $e) {

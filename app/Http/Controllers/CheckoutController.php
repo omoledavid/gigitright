@@ -71,7 +71,7 @@ class CheckoutController extends Controller
                 type: 'charge',
                 status: PaymentStatus::PENDING,
                 model: $gig,
-                note: 'Platform charge for job creation'
+                note: 'Platform charge for gig purchase'
             );
 
             // Deposit platform charge to system wallet
