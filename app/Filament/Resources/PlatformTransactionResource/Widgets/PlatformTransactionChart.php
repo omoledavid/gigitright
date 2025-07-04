@@ -136,7 +136,7 @@ class PlatformTransactionChart extends ChartWidget
 
     protected function getType(): string
     {
-        return 'doughnut';
+        return 'line';
     }
 
     protected function getOptions(): array
