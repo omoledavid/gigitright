@@ -123,6 +123,7 @@ class JobController extends Controller
     public function update(Request $request, string $id)
     {
         $user = auth()->user();
+
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -131,52 +132,85 @@ class JobController extends Controller
             'budget' => 'required|numeric|min:0',
             'duration' => 'nullable|string|max:50',
             'skill_requirements' => 'nullable|array',
-            'skill_requirements.*' => 'string|max:100', // Validate each skill if it's an array
+            'skill_requirements.*' => 'string|max:100',
             'attachments' => 'nullable|array',
-            'attachments.*' => 'url|max:2048', // Validate each attachment URL
+            'attachments.*' => 'url|max:2048',
             'job_type' => 'required|in:fixed,hourly',
             'status' => 'nullable|in:open,in_progress,completed,cancelled',
             'deadline' => 'nullable|date|after:today',
             'visibility' => 'required|in:public,private',
             'location' => 'nullable|string|max:255',
         ]);
-        $job = Job::query()->findOrFail($id);
-        if($job->status == JobStatus::IN_PROGRESS) {
-            return $this->error('You cannot update a job that is in progress');
-        }
-        if ($job->user_id != $user->id) {
-            return $this->error('You are not authorized to update this job');
-        }
-        $user->escrow_wallet->withdraw($job->budget);
-        $job->update($validatedData);
-        $platformcharge = PlatformTransaction::where('model_id', $job->id)->first();
-        if ($platformcharge) {
-            $platformcharge->update(['amount' => ($validatedData['budget'] * gs('job_charge')) / 100]);
-        } else {
-            $platformcharge = createPlatformTransaction(
-                amount: ($validatedData['budget'] * gs('job_charge')) / 100,
-                source: TransactionSource::JOB,
-                type: 'charge',
-                status: PaymentStatus::PENDING,
-                model: $job,
-                note: 'Platform charge for job update'
+
+        try {
+            $job = Job::query()->findOrFail($id);
+
+            if ($job->status === JobStatus::IN_PROGRESS) {
+                return $this->error('You cannot update a job that is in progress');
+            }
+
+            if ($job->user_id !== $user->id) {
+                return $this->error('You are not authorized to update this job');
+            }
+
+            DB::beginTransaction();
+
+            // Withdraw old budget
+            $user->escrow_wallet->withdraw($job->budget);
+
+            // Update job details
+            $job->update($validatedData);
+
+            // Handle platform charge
+            $platformChargeAmount = ($validatedData['budget'] * gs('job_charge')) / 100;
+
+            $platformCharge = PlatformTransaction::where('model_id', $job->id)->first();
+
+            if ($platformCharge) {
+                // Refund old budget + charge
+                $user->wallet->deposit($job->budget + $platformCharge->amount);
+                // Update platform charge
+                $platformCharge->update(['amount' => $platformChargeAmount]);
+            } else {
+                // Create new platform charge
+                $platformCharge = createPlatformTransaction(
+                    amount: $platformChargeAmount,
+                    source: TransactionSource::JOB,
+                    type: 'charge',
+                    status: PaymentStatus::PENDING,
+                    model: $job,
+                    note: 'Platform charge for job update'
+                );
+            }
+
+            // Deposit new budget into escrow
+            $user->escrow_wallet->deposit($validatedData['budget']);
+
+            // Create debit transaction for total
+            createTransaction(
+                userId: $user->id,
+                transactionType: TransactionType::DEBIT,
+                amount: $validatedData['budget'] + $platformCharge->amount,
+                description: 'Funds put away for Job (including platform charge)'
             );
+
+            // Send notification
+            createNotification($job->user_id, NotificationType::JOB_UPDATED, [
+                'title'   => 'Job Updated',
+                'message' => "Your job has been successfully updated",
+                'url'     => '',
+                'id'      => $job->id,
+            ]);
+
+            DB::commit();
+
+            $job->refresh();
+            return $this->ok('success', new JobResource($job));
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            // \Log::error('Job update failed', ['error' => $e->getMessage()]);
+            return $this->error('An error occurred while updating the job. Please try again.');
         }
-        $user->escrow_wallet->deposit($validatedData['budget']);
-        createTransaction(
-            userId: $user->id,
-            transactionType: TransactionType::DEBIT,
-            amount: $validatedData['budget'] + $platformcharge->amount,
-            description: 'Funds put away for Job (including platform charge)'
-        );
-        createNotification($job->user_id, NotificationType::JOB_UPDATED, [
-            'title'   => 'Job Updated',
-            'message' => "Your job has been successfully updated",
-            'url'     => '',
-            'id'      => $job->id,
-        ]);
-        $job->refresh();
-        return $this->ok('success', new JobResource($job));
     }
 
     /**
