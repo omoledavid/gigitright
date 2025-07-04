@@ -122,6 +122,7 @@ class JobController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $user = auth()->user();
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -141,6 +142,34 @@ class JobController extends Controller
         ]);
         $job = Job::query()->findOrFail($id);
         $job->update($validatedData);
+        $platformcharge = PlatformTransaction::where('model_id', $job->id)->first();
+        if ($platformcharge) {
+            $platformcharge->update(['amount' => ($validatedData['budget'] * gs('job_charge')) / 100]);
+        } else {
+            $platformcharge = createPlatformTransaction(
+                amount: ($validatedData['budget'] * gs('job_charge')) / 100,
+                source: TransactionSource::JOB,
+                type: 'charge',
+                status: PaymentStatus::PENDING,
+                model: $job,
+                note: 'Platform charge for job update'
+            );
+        }
+        $user->escrow_wallet->withdraw($job->budget);
+        $user->escrow_wallet->deposit($validatedData['budget']);
+        createTransaction(
+            userId: $user->id,
+            transactionType: TransactionType::DEBIT,
+            amount: $validatedData['budget'] + $platformcharge->amount,
+            description: 'Funds put away for Job (including platform charge)'
+        );
+        createNotification($job->user_id, NotificationType::JOB_UPDATED, [
+            'title'   => 'Job Updated',
+            'message' => "Your job has been successfully updated",
+            'url'     => '',
+            'id'      => $job->id,
+        ]);
+        $job->refresh();
         return $this->ok('success', new JobResource($job));
     }
 
