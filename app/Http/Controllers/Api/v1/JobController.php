@@ -158,8 +158,6 @@ class JobController extends Controller
             // Withdraw old budget
             $user->escrow_wallet->withdraw($job->budget);
 
-            // Update job details
-            $job->update($validatedData);
 
             // Handle platform charge
             $platformChargeAmount = ($validatedData['budget'] * gs('job_charge')) / 100;
@@ -182,6 +180,8 @@ class JobController extends Controller
                     note: 'Platform charge for job update'
                 );
             }
+            // Update job details
+            $job->update($validatedData);
 
             // Deposit new budget into escrow
             $user->escrow_wallet->deposit($validatedData['budget']);
