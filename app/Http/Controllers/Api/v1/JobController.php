@@ -149,7 +149,7 @@ class JobController extends Controller
                 return $this->error('You cannot update a job that is in progress');
             }
 
-            if ($job->user_id !== $user->id) {
+            if ($job->user_id != $user->id) {
                 return $this->error('You are not authorized to update this job');
             }
 
