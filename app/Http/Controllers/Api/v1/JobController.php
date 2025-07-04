@@ -157,16 +157,24 @@ class JobController extends Controller
 
             // Withdraw old budget
             $user->escrow_wallet->withdraw($job->budget);
-
-
+            
+            
             // Handle platform charge
             $platformChargeAmount = ($validatedData['budget'] * gs('job_charge')) / 100;
-
+            
             $platformCharge = PlatformTransaction::where('model_id', $job->id)->first();
+            $returnAmount = $job->budget + ($platformCharge ? $platformCharge->amount : 0);
 
             if ($platformCharge) {
                 // Refund old budget + charge
-                $user->wallet->deposit($job->budget + $platformCharge->amount);
+                $user->wallet->deposit($returnAmount);
+                createTransaction(
+                    userId: $user->id,
+                    transactionType: TransactionType::CREDIT,
+                    amount: $returnAmount,
+                    description: 'Job budget refund + platform charge',
+                    status: PaymentStatus::COMPLETED
+                );
                 // Update platform charge
                 $platformCharge->update(['amount' => $platformChargeAmount]);
             } else {
