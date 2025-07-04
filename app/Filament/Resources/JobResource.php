@@ -68,87 +68,88 @@ class JobResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('title')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('budget')
-                    ->numeric()
-                    ->prefix('₦')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('deadline')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('category.name')
-                    ->searchable()
-                    ->sortable()
-                    ->color('primary')
-                    ->badge()
-                    ->extraAttributes([
-                        'class' => 'font-medium',
-                    ]),
-                Tables\Columns\TextColumn::make('duration')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('job_type')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('visibility')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->searchable()
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'open' => 'success',
-                        'closed' => 'danger',
-                        default => 'gray',
-                    }),
-                Tables\Columns\TextColumn::make('start_date')
-                    ->dateTime()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('end_date')
-                    ->dateTime()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+            Tables\Columns\TextColumn::make('user.name')
+                ->numeric()
+                ->sortable(),
+            Tables\Columns\TextColumn::make('title')
+                ->searchable(),
+            Tables\Columns\TextColumn::make('budget')
+                ->numeric()
+                ->prefix('₦')
+                ->sortable(),
+            Tables\Columns\TextColumn::make('deadline')
+                ->date()
+                ->sortable(),
+            Tables\Columns\TextColumn::make('category.name')
+                ->searchable()
+                ->sortable()
+                ->color('primary')
+                ->badge()
+                ->extraAttributes([
+                'class' => 'font-medium',
+                ]),
+            Tables\Columns\TextColumn::make('duration')
+                ->searchable(),
+            Tables\Columns\TextColumn::make('job_type')
+                ->searchable(),
+            Tables\Columns\TextColumn::make('visibility')
+                ->searchable(),
+            Tables\Columns\TextColumn::make('status')
+                ->searchable()
+                ->badge()
+                ->color(fn (string $state): string => match ($state) {
+                'open' => 'success',
+                'closed' => 'danger',
+                default => 'gray',
+                }),
+            Tables\Columns\TextColumn::make('start_date')
+                ->dateTime()
+                ->toggleable(isToggledHiddenByDefault: true)
+                ->sortable(),
+            Tables\Columns\TextColumn::make('end_date')
+                ->dateTime()
+                ->toggleable(isToggledHiddenByDefault: true)
+                ->sortable(),
+            Tables\Columns\TextColumn::make('created_at')
+                ->dateTime()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+            Tables\Columns\TextColumn::make('updated_at')
+                ->dateTime()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
-                //
+            //
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\Action::make('close')
-                        ->icon('heroicon-o-x-circle')
-                        ->color('danger')
-                        ->requiresConfirmation()
-                        ->visible(fn ($record) => $record->status === 'open')
-                        ->action(function ($record) {
-                            $record->update(['status' => 'closed']);
-                        }),
-                    Tables\Actions\Action::make('open')
-                        ->icon('heroicon-o-check-circle')
-                        ->color('success')
-                        ->requiresConfirmation()
-                        ->visible(fn ($record) => $record->status === 'closed')
-                        ->action(function ($record) {
-                            $record->update(['status' => 'open']);
-                        }),
-                ]),
+            Tables\Actions\ActionGroup::make([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('close')
+                ->icon('heroicon-o-x-circle')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->visible(fn ($record) => $record->status === 'open')
+                ->action(function ($record) {
+                    $record->update(['status' => 'closed']);
+                }),
+                Tables\Actions\Action::make('open')
+                ->icon('heroicon-o-check-circle')
+                ->color('success')
+                ->requiresConfirmation()
+                ->visible(fn ($record) => $record->status === 'closed')
+                ->action(function ($record) {
+                    $record->update(['status' => 'open']);
+                }),
+            ]),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
             ]);
-    }
+        }
 
     public static function getRelations(): array
     {

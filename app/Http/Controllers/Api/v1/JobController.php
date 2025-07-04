@@ -147,6 +147,7 @@ class JobController extends Controller
         if ($job->user_id != $user->id) {
             return $this->error('You are not authorized to update this job');
         }
+        $user->escrow_wallet->withdraw($job->budget);
         $job->update($validatedData);
         $platformcharge = PlatformTransaction::where('model_id', $job->id)->first();
         if ($platformcharge) {
@@ -161,7 +162,6 @@ class JobController extends Controller
                 note: 'Platform charge for job update'
             );
         }
-        $user->escrow_wallet->withdraw($job->budget);
         $user->escrow_wallet->deposit($validatedData['budget']);
         createTransaction(
             userId: $user->id,
@@ -190,6 +190,9 @@ class JobController extends Controller
 
             if ($job->user_id != $user->id) {
                 return $this->error('You are not authorized to delete this job');
+            }
+            if ($job->status == JobStatus::IN_PROGRESS) {
+                return $this->error('You cannot delete a job that is in progress');
             }
 
             $platformcharge = PlatformTransaction::where('model_id', $job->id)->first();
