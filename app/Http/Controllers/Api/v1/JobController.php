@@ -325,6 +325,7 @@ class JobController extends Controller
             // Debit Griftis for job application
             $applyCharge = gs('job_apply_charge');
             $user->griftis->withdraw($applyCharge);
+            $applyCharge = $applyCharge * gs('gft_rate');
             // Record platform charge for job application
             createPlatformTransaction(
                 $applyCharge,

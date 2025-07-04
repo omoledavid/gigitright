@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PlatformTransactionResource\Pages;
 
 use App\Filament\Resources\PlatformTransactionResource;
+use App\Filament\Resources\PlatformTransactionResource\Widgets\PlatformTransactionChart;
 use App\Filament\Resources\PlatformTransactionResource\Widgets\PlatformTransactionStat;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -20,7 +21,8 @@ class ListPlatformTransactions extends ListRecords
     public function getHeaderWidgets(): array
     {
         return [
-            PlatformTransactionStat::class
+            PlatformTransactionStat::class,
+            PlatformTransactionChart::class
         ];
     }
 }
