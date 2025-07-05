@@ -85,7 +85,8 @@ class AuthController extends Controller
         return $this->ok(
             'Authenticated',
             [
-                'token' => $token
+                'token' => $token,
+                'user' => $user
             ]
         );
     }
