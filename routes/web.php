@@ -59,5 +59,11 @@ Route::get('/pusher-credentials', function () {
     ]);
 });
 
-
+Route::get('/debug-session', function () {
+    dd([
+        'session_id' => session()->getId(),
+        'session_data' => session()->all(),
+        'config' => config('session'),
+    ]);
+});
 
