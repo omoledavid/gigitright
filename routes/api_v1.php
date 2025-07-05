@@ -229,5 +229,5 @@ Route::get('/pusher-credentials', function () {
     ]);
 });
 Route::get('/test-auth-header', function (Request $request) {
-    return $request->header('Authorization') ?? 'No auth header';
+    return $request->header() ?? 'No auth header';
 });
