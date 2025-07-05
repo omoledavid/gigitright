@@ -59,15 +59,10 @@ Route::get('/pusher-credentials', function () {
     ]);
 });
 
-Route::get('/auth-debug', function () {
+Route::get('/debug-header', function (Request $request) {
     return [
-        'auth_check' => Auth::check(),
-        'auth_user' => Auth::user(),
-        'auth_id' => Auth::id(),
-        'session_id' => session()->getId(),
-        'session_all' => session()->all(),
-        'cookie_jar' => request()->cookies->all(),
-        'headers' => request()->headers->all(),
+        'auth_header' => $request->header('Authorization'),
+        'user' => auth('sanctum')->user(),
     ];
 });
 
