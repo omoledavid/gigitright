@@ -228,3 +228,6 @@ Route::get('/pusher-credentials', function () {
         'PUSHER_APP_CLUSTER' => env('PUSHER_APP_CLUSTER'),
     ]);
 });
+Route::get('/test-auth-header', function (Request $request) {
+    return $request->header('Authorization') ?? 'No auth header';
+});
