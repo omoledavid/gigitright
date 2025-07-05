@@ -19,38 +19,38 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect(env('FRONTEND_URL'));
 });
-Route::get('/login', function () {
+// Route::get('/login', function () {
     
-    // Simulate user authentication using Auth::login
-    $user = \App\Models\User::where('email', 'omolekessiena@gmail.com')->first();
+//     // Simulate user authentication using Auth::login
+//     $user = \App\Models\User::where('email', 'omolekessiena@gmail.com')->first();
 
-    // Log in the user
-    Auth::login($user);
-    $token = $user->createToken('auth_token')->plainTextToken;
-    // Store the token in the session with the key 'myapitoken'
-    session(['myapitoken' => $token]);
+//     // Log in the user
+//     Auth::login($user);
+//     $token = $user->createToken('auth_token')->plainTextToken;
+//     // Store the token in the session with the key 'myapitoken'
+//     session(['myapitoken' => $token]);
 
-    return response()->json([
-        'message' => 'Login successful',
-        'user' => [
-            'email' => $user->email,
-        ],
-        'token' => $token,
-    ]);
-})->name('login');
-Route::get('/check-auth', function() {
-    // Check if the user is authenticated
-    if (Auth::check()) {
-        return response()->json([
-            'message' => 'User is authenticated',
-            'user' => Auth::user(),
-        ]);
-    } else {
-        return response()->json([
-            'message' => 'User is not authenticated',
-        ], 401);
-    }
-})->middleware('auth:sanctum');
+//     return response()->json([
+//         'message' => 'Login successful',
+//         'user' => [
+//             'email' => $user->email,
+//         ],
+//         'token' => $token,
+//     ]);
+// })->name('login');
+// Route::get('/check-auth', function() {
+//     // Check if the user is authenticated
+//     if (Auth::check()) {
+//         return response()->json([
+//             'message' => 'User is authenticated',
+//             'user' => Auth::user(),
+//         ]);
+//     } else {
+//         return response()->json([
+//             'message' => 'User is not authenticated',
+//         ], 401);
+//     }
+// })->middleware('auth:sanctum');
 
 Route::get('/pusher-credentials', function () {
     return response()->json([
@@ -59,11 +59,15 @@ Route::get('/pusher-credentials', function () {
     ]);
 });
 
-Route::get('/debug-session', function () {
-    dd([
+Route::get('/auth-debug', function () {
+    return [
+        'auth_check' => Auth::check(),
+        'auth_user' => Auth::user(),
+        'auth_id' => Auth::id(),
         'session_id' => session()->getId(),
-        'session_data' => session()->all(),
-        'config' => config('session'),
-    ]);
+        'session_all' => session()->all(),
+        'cookie_jar' => request()->cookies->all(),
+        'headers' => request()->headers->all(),
+    ];
 });
 
