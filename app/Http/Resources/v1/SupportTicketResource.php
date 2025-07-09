@@ -20,6 +20,7 @@ class SupportTicketResource extends JsonResource
             'attributes' => [
                 'subject' => $this->subject,
                 'priority' => $this->priority,
+                'type' => $this->type, // Added type attribute
                 'status' => $this->status,
                 'created_at' => $this->created_at->toIso8601String(),
                 'updated_at' => $this->updated_at->toIso8601String(),
