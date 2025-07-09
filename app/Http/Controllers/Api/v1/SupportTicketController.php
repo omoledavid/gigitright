@@ -32,6 +32,7 @@ class SupportTicketController extends Controller
             'subject' => 'required|string|max:255',
             'priority' => 'required|in:low,medium,high',
             'message' => 'required|string',
+            'type' => 'nullable|string', // Optional type field
             'attachment' => 'nullable|file|max:2048', // max 2MB, you can adjust
         ]);
         // Check if the user has already opened a ticket with the same subject
@@ -51,6 +52,7 @@ class SupportTicketController extends Controller
             'user_id' => auth()->id(),
             'subject' => $request->subject,
             'priority' => $request->priority,
+            'type' => $request->type ?? 'general', // Default to 'general' if not provided
             'status' => 'open',
         ]);
 
