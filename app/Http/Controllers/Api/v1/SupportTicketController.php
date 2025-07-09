@@ -32,7 +32,20 @@ class SupportTicketController extends Controller
             'subject' => 'required|string|max:255',
             'priority' => 'required|in:low,medium,high',
             'message' => 'required|string',
+            'attachment' => 'nullable|file|max:2048', // max 2MB, you can adjust
         ]);
+        // Check if the user has already opened a ticket with the same subject
+        $existingTicket = SupportTicket::where('user_id', auth()->id())
+            ->where('subject', $request->subject)
+            ->where('status', 'open')
+            ->first();
+        if ($existingTicket) {
+            return $this->error('You have already opened a ticket with this subject.', 422);
+        }
+        $attachmentPath = null;
+        if ($request->hasFile('attachment')) {
+            $attachmentPath = $request->file('attachment')->store('ticket_attachments', 'public');
+        }
 
         $ticket = SupportTicket::create([
             'user_id' => auth()->id(),
@@ -46,6 +59,7 @@ class SupportTicketController extends Controller
             'sender_id' => auth()->id(),
             'sender_type' => User::class,
             'message' => $request->message,
+            'attachment' => $attachmentPath,
         ]);
 
         return $this->ok('Ticket created successfully', new SupportTicketResource($ticket), 201);

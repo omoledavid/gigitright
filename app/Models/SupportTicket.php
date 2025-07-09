@@ -10,6 +10,7 @@ class SupportTicket extends Model
         'user_id',
         'subject',
         'priority',
+        'type', // Added type column
         'status',
     ];
 
