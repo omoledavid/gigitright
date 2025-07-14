@@ -21,7 +21,7 @@ class TicketMessageResource extends JsonResource
                 'message' => $this->message,
                 'sender_id' => $this->sender_id,
                 'sender_type' => $this->sender_type,
-                'attachment' => $this->attachment,
+                'attachment' => $this->attachment ? asset('storage/' . $this->attachment) : null,
                 'created_at' => $this->created_at->toIso8601String(),
                 'updated_at' => $this->updated_at->toIso8601String(),
             ],
