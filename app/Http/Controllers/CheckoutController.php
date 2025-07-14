@@ -55,7 +55,7 @@ class CheckoutController extends Controller
                 return $this->error('You cannot purchase your own gig.', 422);
             }
             if ($user->bal < $request->amount) {
-                return $this->error('You do not have enough gft to purchase this gig.', 422);
+                return $this->error('You do not have enough money to purchase this gig.', 422);
             }
 
             // Calculate platform charge and talent amount
