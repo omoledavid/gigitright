@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\PostStatus;
+use App\Helpers\FileRules;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\PostResource;
 use App\Models\Community;
@@ -33,7 +34,7 @@ class PostController extends Controller
             [
             'title' => 'required',
             'content' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => FileRules::imageOnly(),
             'community_id' => 'nullable|exists:communities,id'
             ],
             [
@@ -84,7 +85,7 @@ class PostController extends Controller
         $validatedData = $request->validate([
             'title' => 'required',
             'content' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => FileRules::imageOnly(),
         ]);
         $validatedData['status'] = PostStatus::PENDING;
         $post = Post::query()->findOrFail($id);

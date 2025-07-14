@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Enums\NotificationType;
 use App\Enums\Status;
+use App\Helpers\FileRules;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\PortfolioResource;
 use App\Models\Portfolio;
@@ -39,7 +40,7 @@ class PortfolioController extends Controller
         $validatedData = $request->validate([
             'title' => 'required',
             'description' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => FileRules::imageOnly(),
             'link' => 'required|url',
             'technologies' => 'required|array|min:1',
             'date' => 'required|date',

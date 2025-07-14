@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Events\NewMessageEvent;
+use App\Helpers\FileRules;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\MessageResource;
 use App\Models\MediaFile;
@@ -19,8 +20,7 @@ class MessageController extends Controller
         $validatedData = $request->validate([
             'conversation_id' => 'required|exists:conversations,id',
             'message' => 'nullable|string|max:255',
-            'files' => 'nullable|array',
-            'files.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,doc,docx|max:2048',
+            'files' => FileRules::general(),
         ], [
             'conversation_id.exists' => 'This conversation does not exist',
         ]);

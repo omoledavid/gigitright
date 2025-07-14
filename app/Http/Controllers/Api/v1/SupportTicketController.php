@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Helpers\FileRules;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\SupportTicketResource;
 use App\Http\Resources\v1\TicketMessageResource;
@@ -33,7 +34,7 @@ class SupportTicketController extends Controller
             'priority' => 'required|in:low,medium,high',
             'message' => 'required|string',
             'type' => 'nullable|string', // Optional type field
-            'attachment' => 'nullable|file|max:2048', // max 2MB, you can adjust
+            'attachment' => FileRules::general(), // max 2MB, you can adjust
         ]);
         // Check if the user has already opened a ticket with the same subject
         $existingTicket = SupportTicket::where('user_id', auth()->id())
