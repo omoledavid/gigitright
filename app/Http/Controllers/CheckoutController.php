@@ -25,6 +25,9 @@ class CheckoutController extends Controller
      */
     public function __invoke(Request $request)
     {
+        $user = auth()->user();
+        $gig = Gig::findOrFail($request->gig_id);
+        $talent = $gig->user;
         try {
             $request->validate([
                 'gig_id' => 'required|numeric|exists:gigs,id',
@@ -46,16 +49,13 @@ class CheckoutController extends Controller
                 if ($coupon->used_count >= $coupon->usage_limit) {
                     return $this->error('Coupon usage limit has been reached.', 422);
                 }
+                if ($user->id === $gig->user_id) {
+                    return $this->error('You cannot purchase your own gig.', 422);
+                }
+                if ($user->bal < $request->amount) {
+                    return $this->error('You do not have enough money to purchase this gig.', 422);
+                }
                 $coupon->increment('used_count');
-            }
-            $user = auth()->user();
-            $gig = Gig::findOrFail($request->gig_id);
-            $talent = $gig->user;
-            if ($user->id === $gig->user_id) {
-                return $this->error('You cannot purchase your own gig.', 422);
-            }
-            if ($user->bal < $request->amount) {
-                return $this->error('You do not have enough money to purchase this gig.', 422);
             }
 
             // Calculate platform charge and talent amount

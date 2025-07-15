@@ -149,7 +149,22 @@ class CouponController extends Controller
         ]);
     
         $coupon = Coupon::where('code', $request->code)->first();
-
+        if(!$coupon)
+        {
+            return $this->error(['message' => 'Invalid coupon code.'], 404);
+        }
+        if($coupon->expires_at < now())
+        {
+            return $this->error(['message' => 'Coupon has expired.'], 400);
+        }
+        if($coupon->usage_limit <= $coupon->used_count)
+        {
+            return $this->error(['message' => 'Coupon has reached its usage limit.'], 400);
+        }
+        if($coupon->min_order_value > $request->order_total)
+        {
+            return $this->error(['message' => 'Order total is less than the minimum order value.'], 400);
+        }
         $couponOwner = $coupon->user;
         $notifyMsg = [
             'title' => 'Coupon Applied',
