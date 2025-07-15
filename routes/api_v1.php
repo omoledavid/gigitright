@@ -43,6 +43,14 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/register', 'register');
     Route::post('/login', 'login');
 });
+
+Route::get('/pusher-credentials', function () {
+    return response()->json([
+        'PUSHER_APP_KEY' => env('PUSHER_APP_KEY'),
+        'PUSHER_APP_CLUSTER' => env('PUSHER_APP_CLUSTER'),
+    ]);
+});
+
 Route::controller(ForgotPasswordController::class)->group(function () {
     Route::post('password/email', 'sendResetCodeEmail');
     Route::post('password/verify-code', 'verifyCode');
@@ -222,12 +230,7 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
 Route::get('payment/verify/{gateway}', [DepositController::class, 'verify']);
 Broadcast::routes();
 Route::post('/pusher/auth', [PusherController::class, 'authenticate'])->middleware('auth:sanctum');
-Route::get('/pusher-credentials', function () {
-    return response()->json([
-        'PUSHER_APP_KEY' => env('PUSHER_APP_KEY'),
-        'PUSHER_APP_CLUSTER' => env('PUSHER_APP_CLUSTER'),
-    ]);
-});
+
 Route::get('/debug-session', function () {
     dd([
         'session_id' => session()->getId(),
