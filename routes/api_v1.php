@@ -177,11 +177,6 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
             Route::post('/{id}/close', [SupportTicketController::class, 'close']);
         });
     });
-    Route::get('get-tickets', [SupportTicketController::class, 'index']);
-    Route::post('/', [SupportTicketController::class, 'store']);
-    Route::get('/{id}', [SupportTicketController::class, 'show']);
-    Route::post('/{id}/message', [SupportTicketController::class, 'addMessage']);
-    Route::post('/{id}/close', [SupportTicketController::class, 'close']);
 
     //Job Milestone
     Route::apiResource('milestones', MilestoneController::class);

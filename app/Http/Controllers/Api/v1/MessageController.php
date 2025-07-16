@@ -20,7 +20,8 @@ class MessageController extends Controller
         $validatedData = $request->validate([
             'conversation_id' => 'required|exists:conversations,id',
             'message' => 'nullable|string|max:255',
-            'files' => FileRules::general(),
+            'files' => 'nullable|array',
+            'files.*' => FileRules::general(),
         ], [
             'conversation_id.exists' => 'This conversation does not exist',
         ]);
@@ -32,19 +33,30 @@ class MessageController extends Controller
 
         // Handle file uploads
         if ($request->hasFile('files')) {
-            foreach ($request->file('files') as $file) {
-            try {
-                $location = getFilePath('messaging');
-                $path = fileUploader($file, $location);
-                MediaFile::create([
-                'message_id' => $message->id,
-                'file_path' => $path,
-                'file_type' => $file->getMimeType(),
-                'original_name' => $file->getClientOriginalName(),
-                ]);
-            } catch (\Exception $exception) {
-                return $this->error($exception->getMessage());
+            $files = $request->file('files');
+            if (!is_array($files)) {
+                $files = [$files];
             }
+            foreach ($files as $file) {
+                try {
+                    $mimeType = null;
+                    try {
+                        $mimeType = $file->getMimeType();
+                    } catch (\Exception $e) {
+                        Log::warning('Mime detection failed: ' . $e->getMessage());
+                    }
+                    $location = getFilePath('messaging');
+                    $path = fileUploader($file, $location);
+                    // dd($file);
+                    MediaFile::create([
+                        'message_id' => $message->id,
+                        'file_path' => $path,
+                        'file_type' => $mimeType,
+                        'original_name' => $file?->getClientOriginalName(),
+                    ]);
+                } catch (\Exception $exception) {
+                    return $this->error($exception->getMessage());
+                }
             }
         }
 
@@ -64,16 +76,14 @@ class MessageController extends Controller
     }
     public function readMessage($id)
     {
-        $message = Message::query()->where('id', $id)->first()
-        ;
-            if (!$message) {
-                return $this->error('Message not found.', 404);
-            }
+        $message = Message::query()->where('id', $id)->first();
+        if (!$message) {
+            return $this->error('Message not found.', 404);
+        }
 
-            $message->read = true;
-            $message->save();
+        $message->read = true;
+        $message->save();
 
-            return $this->ok('Message marked as read.', new MessageResource($message));
+        return $this->ok('Message marked as read.', new MessageResource($message));
     }
-    
 }
