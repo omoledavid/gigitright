@@ -75,7 +75,7 @@ function notify($user, $templateName, $shortCodes = [])
         $content = $template->content;
 
         foreach ($shortCodes as $key => $value) {
-            $content = str_replace($key, $value, $content);
+            $content = str_replace('{{' . $key . '}}', $value, $content);
         }
 
 
@@ -281,6 +281,11 @@ function createNotification($userId, $type, $data, $is_read = false)
             'id' => $data['id'] ?? null,
         ],
         'is_read' => $is_read,
+    ]);
+    notify($userId, 'NOTIFICATION', [
+        'message' => $data['message'] ?? null,
+        'title' => $data['title'] ?? null,
+        'model_id' => $data['id'] ?? null,
     ]);
 
     // Dispatch the notification event
