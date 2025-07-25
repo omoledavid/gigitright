@@ -48,6 +48,7 @@ class CommunityController extends Controller
         $validatedData['created_by'] = auth()->id();
 
         $community = Community::create($validatedData);
+        $community->members()->attach(auth()->id(), ['role' => CommunityRoleStatus::ADMIN]);
 
         return $this->ok('community created', ['community' => $community], 201);
     }
