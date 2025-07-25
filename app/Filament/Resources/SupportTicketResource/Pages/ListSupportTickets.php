@@ -33,7 +33,7 @@ class ListSupportTickets extends ListRecords
 
             'open' => Tab::make('Open')
                 ->modifyQueryUsing(function ($query) {
-                    $query->where('status', 'open');
+                    $query->where('in_progress', true);
                 })
                 ->icon('heroicon-o-check-badge')
                 ->badge(badge: SupportTicket::where('status', 'open')->count()),
