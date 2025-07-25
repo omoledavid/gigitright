@@ -137,6 +137,8 @@ class CommunityController extends Controller
             return $this->error("You're not a part of this community!");
         }
         $communityMember = CommunityMember::query()->where('community_id', $id)->where('user_id', auth()->id())->delete();
+        $community->members_count = -1;
+        $community->save();
         return $this->ok('You left this community!');
     }
     public function viewAllCommunities(CommunityFilter $filter)

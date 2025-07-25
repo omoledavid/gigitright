@@ -99,14 +99,9 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     });
 
     //community
+    Route::apiResource('community', CommunityController::class);
     Route::prefix('community')->group(function () {
-        Route::apiResource('', CommunityController::class)->names([
-            'index' => 'community.index',  // Avoid conflict
-            'store' => 'community.store',
-            'show' => 'community.show',
-            'update' => 'community.update',
-            'destroy' => 'community.destroy',
-        ]);
+        
         //post
         Route::apiResource('post', PostController::class);
 
