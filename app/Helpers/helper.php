@@ -45,51 +45,6 @@ function getPage($key)
     return $page;
 }
 
-function notify($user, $templateName, $shortCodes = [])
-{
-    try {
-        $template = MailTemplate::query()->where('name', $templateName)->first();
-        if (!$template) {
-            throw new \Exception("Mail template '$templateName' not found.");
-        }
-
-        $globalTemplate = gs('email_template');
-        if (!$globalTemplate) {
-            throw new \Exception("Global email template not found.");
-        }
-
-        // Ensure $shortCodes is always an array
-        if (!is_array($shortCodes)) {
-            $shortCodes = [];
-        }
-
-        $globalShortCodes = [
-            '{{fullname}}' => $user->name,
-            '{{site_name}}' => gs('site_name'),
-            '{{logo}}' => WhiteLogo(),
-            '{{dark_logo}}' => DarkLogo(),
-            '{{site_url}}' => env('FRONTEND_URL'),
-        ];
-
-        // Replace placeholders in content
-        $content = $template->content;
-
-        foreach ($shortCodes as $key => $value) {
-            $content = str_replace('{{' . $key . '}}', $value, $content);
-        }
-
-
-        // Replace placeholders in global template
-        $globalTemplate = str_replace(array_keys($globalShortCodes), array_values($globalShortCodes), $globalTemplate);
-
-        // Final email body
-        $finalEmailBody = str_replace('{{message}}', $content, $globalTemplate);
-        $mailtrap = sendMailTrap($user, $template->subject, $finalEmailBody);
-    } catch (\Exception $e) {
-        return response($e->getMessage(), 500);
-    }
-}
-
 
 function sendMailTrap($user, $subject, $finalMessage)
 {
@@ -338,4 +293,48 @@ function favicon()
         return gs('favicon') ? env('APP_URL') . '/storage/' . gs('favicon') : asset('assets/images/favicon.svg');
     }
     return asset('assets/images/favicon.svg');
+}
+function notify($user, $templateName, $shortCodes = [])
+{
+    try {
+        $template = MailTemplate::query()->where('name', $templateName)->first();
+        if (!$template) {
+            throw new \Exception("Mail template '$templateName' not found.");
+        }
+
+        $globalTemplate = gs('email_template');
+        if (!$globalTemplate) {
+            throw new \Exception("Global email template not found.");
+        }
+
+        // Ensure $shortCodes is always an array
+        if (!is_array($shortCodes)) {
+            $shortCodes = [];
+        }
+
+        $globalShortCodes = [
+            '{{fullname}}' => $user->name,
+            '{{site_name}}' => gs('site_name'),
+            '{{logo}}' => WhiteLogo(),
+            '{{dark_logo}}' => DarkLogo(),
+            '{{site_url}}' => env('FRONTEND_URL'),
+        ];
+
+        // Replace placeholders in content
+        $content = $template->content;
+
+        foreach ($shortCodes as $key => $value) {
+            $content = str_replace('{{' . $key . '}}', $value, $content);
+        }
+
+
+        // Replace placeholders in global template
+        $globalTemplate = str_replace(array_keys($globalShortCodes), array_values($globalShortCodes), $globalTemplate);
+
+        // Final email body
+        $finalEmailBody = str_replace('{{message}}', $content, $globalTemplate);
+        $mailtrap = sendMailTrap($user, $template->subject, $finalEmailBody);
+    } catch (\Exception $e) {
+        return response($e->getMessage(), 500);
+    }
 }
