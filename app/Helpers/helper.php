@@ -237,7 +237,8 @@ function createNotification($userId, $type, $data, $is_read = false)
         ],
         'is_read' => $is_read,
     ]);
-    notify($userId, 'NOTIFICATION', [
+    $user = User::find($userId);
+    notify($user, 'NOTIFICATION', [
         'message' => $data['message'] ?? null,
         'title' => $data['title'] ?? null,
         'model_id' => $data['id'] ?? null,
