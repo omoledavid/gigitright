@@ -54,6 +54,8 @@ class CommunityController extends Controller
             'user_id' => auth()->id(),
             'role' => CommunityRoleStatus::ADMIN,
         ]);
+        $community->members_count = $community->members_count + 1;
+        $community->save();
 
         return $this->ok('community created', ['community' => $community], 201);
     }
