@@ -48,7 +48,12 @@ class CommunityController extends Controller
         $validatedData['created_by'] = auth()->id();
 
         $community = Community::create($validatedData);
-        $community->members()->attach(auth()->id(), ['role' => CommunityRoleStatus::ADMIN]);
+        
+        CommunityMember::create([
+            'community_id' => $community->id,
+            'user_id' => auth()->id(),
+            'role' => CommunityRoleStatus::ADMIN,
+        ]);
 
         return $this->ok('community created', ['community' => $community], 201);
     }
@@ -88,6 +93,10 @@ class CommunityController extends Controller
      */
     public function destroy(Community $community)
     {
+        //check if the user is the owner of the community
+        if ($community->created_by !== auth()->id()) {
+            return $this->error('You are not the owner of this community');
+        }
         $community->delete();
 
         return response()->json([
