@@ -112,7 +112,7 @@ class CommunityController extends Controller
         $community = Community::query()->findOrFail($communityMember->community_id);
         $community->members_count = $community->members_count + 1;
         $community->save();
-        return $this->ok('community member created', ['communityMember' => new CommunityMemberResource($communityMember)]);
+        return $this->ok('You\'ve successfully joined this community!', ['communityMember' => new CommunityMemberResource($communityMember)]);
     }
     public function leaveCommunity($id)
     {
