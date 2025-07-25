@@ -99,18 +99,17 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     });
 
     //community
+    Route::get('community/suggested', [CommunityController::class, 'suggestedCommunities']);
     Route::apiResource('community', CommunityController::class);
     Route::prefix('community')->group(function () {
-        
         //post
         Route::apiResource('post', PostController::class);
 
-        Route::get('member/{community}', [CommunityController::class, 'member'])->name('community.member');
-        Route::post('join', [CommunityController::class, 'joinCommunity'])->name('community.join');
-        Route::get('leave/{id}', [CommunityController::class, 'leaveCommunity'])->name('community.leave');
-        Route::get('all', [CommunityController::class, 'viewAllCommunities'])->name('community.all');
-        Route::get('suggested', [CommunityController::class, 'suggestedCommunities'])->name('community.suggested');
-        Route::get('joined', [CommunityController::class, 'joinedCommunities'])->name('community.joined');
+        Route::get('member/{community}', [CommunityController::class, 'member']);
+        Route::post('join', [CommunityController::class, 'joinCommunity']);
+        Route::get('leave/{id}', [CommunityController::class, 'leaveCommunity']);
+        Route::get('all', [CommunityController::class, 'viewAllCommunities']);
+        Route::get('joined', [CommunityController::class, 'joinedCommunities']);
     });
 
 

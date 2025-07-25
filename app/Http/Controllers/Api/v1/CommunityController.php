@@ -93,8 +93,12 @@ class CommunityController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Community $community)
+    public function destroy($id)
     {
+        $community = Community::query()->where('id',$id)->first();
+        if (!$community) {
+            return $this->error('Community not found');
+        }
         //check if the user is the owner of the community
         if ($community->created_by !== auth()->id()) {
             return $this->error('You are not the owner of this community');
@@ -131,6 +135,10 @@ class CommunityController extends Controller
         $community = Community::query()->find($id);
         if (!$community) {
             return $this->error("Community not found");
+        }
+        //can't leave your own community
+        if ($community->created_by == auth()->id()) {
+            return $this->error("You can't leave your own community!");
         }
         $alreadyJoined = CommunityMember::query()->where('community_id', $id)->where('user_id', auth()->id())->exists();
         if (!$alreadyJoined) {
