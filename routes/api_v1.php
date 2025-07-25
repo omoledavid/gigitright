@@ -101,16 +101,16 @@ Route::middleware(['auth:sanctum', 'check.status'])->group(function () {
     //community
     Route::get('community/suggested', [CommunityController::class, 'suggestedCommunities']);
     Route::get('community/joined', [CommunityController::class, 'joinedCommunities']);
-    Route::apiResource('community', CommunityController::class);
     Route::prefix('community')->group(function () {
         //post
         Route::apiResource('post', PostController::class);
-
+        
         Route::get('member/{community}', [CommunityController::class, 'member']);
         Route::post('join', [CommunityController::class, 'joinCommunity']);
         Route::get('leave/{id}', [CommunityController::class, 'leaveCommunity']);
         Route::get('all', [CommunityController::class, 'viewAllCommunities']);
     });
+    Route::apiResource('community', CommunityController::class);
 
 
     Route::controller(JobController::class)->group(function () {
