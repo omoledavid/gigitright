@@ -25,7 +25,7 @@ A Laravel-based platform featuring real-time messaging, notifications, user mana
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/albanny-technologies/gigitright-backend
 cd gigitright
 ```
 
