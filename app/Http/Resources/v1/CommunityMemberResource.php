@@ -21,7 +21,7 @@ class CommunityMemberResource extends JsonResource
                 'attributes' => [
                     'name' => $this->user->name,
                     'role' => $this->role,
-                    'profile_image' => $this->user->profile->profile_image,
+                    'profile_image' => $this->user->profile->profile_image ? url(getFilePath('user_profile').'/'.$this->user->profile->profile_image) : null,
                     'created_at' => $this->created_at->toDateTimeString(),
                     'updated_at' => $this->updated_at->toDateTimeString(),
                 ]
