@@ -29,7 +29,7 @@ class Job extends Model
     }
     public function applicants(): HasMany
     {
-        return $this->hasMany(JobApplicants::class,'job_id','id');
+        return $this->hasMany(JobApplicants::class, 'job_id', 'id');
     }
     public function relatedJobs()
     {
@@ -46,13 +46,13 @@ class Job extends Model
     {
         return $this->belongsTo(User::class);
     }
-public function category(): BelongsTo
-{
-    return $this->belongsTo(Category::class);
-}
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
 
-public function subCategory(): BelongsTo
-{
-    return $this->belongsTo(Category::class, 'sub_category_id');
-}
+    public function subCategory(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'sub_category_id');
+    }
 }

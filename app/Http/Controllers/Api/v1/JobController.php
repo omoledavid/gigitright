@@ -21,6 +21,7 @@ use App\Models\PlatformTransaction;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class JobController extends Controller
 {
@@ -157,11 +158,11 @@ class JobController extends Controller
 
             // Withdraw old budget
             $user->escrow_wallet->withdraw($job->budget);
-            
-            
+
+
             // Handle platform charge
             $platformChargeAmount = ($validatedData['budget'] * gs('job_charge')) / 100;
-            
+
             $platformCharge = PlatformTransaction::where('model_id', $job->id)->first();
             $returnAmount = $job->budget + ($platformCharge ? $platformCharge->amount : 0);
 
@@ -297,9 +298,9 @@ class JobController extends Controller
         }
 
         // Prevent applying to own job
-        if ($job->user_id === $user->id) {
-            return $this->error("You cannot apply for your own job");
-        }
+        // if ($job->user_id === $user->id) {
+        //     return $this->error("You cannot apply for your own job");
+        // }
 
         // Ensure job is open
         if ($job->status !== JobStatus::OPEN) {
@@ -368,6 +369,18 @@ class JobController extends Controller
                         'due_date'   => $milestone['date'],
                     ]);
                 }
+            }
+            //check if total milestone amount is equal to job budget and if not create a milestone with the remaining amount
+            $userMilestones = Milestone::where('user_id', $user->id)->where('job_id', $job->id)->get();
+            if ($userMilestones->sum('amount') != $job->budget) {
+                $remainingAmount = $job->budget - $userMilestones->sum('amount');
+                Milestone::create([
+                    'user_id'    => $user->id,
+                    'job_id'     => $job->id,
+                    'title'      => 'Remaining amount',
+                    'amount'     => $remainingAmount,
+                    'due_date'   => $job->deadline,
+                ]);
             }
 
             // Create notification for job owner
