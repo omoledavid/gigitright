@@ -19,6 +19,7 @@ use App\Models\JobApplicants;
 use App\Models\Milestone;
 use App\Models\PlatformTransaction;
 use App\Traits\ApiResponses;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -379,7 +380,7 @@ class JobController extends Controller
                     'job_id'     => $job->id,
                     'title'      => 'Remaining amount',
                     'amount'     => $remainingAmount,
-                    'due_date'   => $job->deadline->format('Y-m-d'),
+                    'due_date'   => $job->deadline,
                 ]);
             }
 
