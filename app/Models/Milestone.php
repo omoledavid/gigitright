@@ -8,7 +8,8 @@ class Milestone extends Model
 {
     protected $guarded = ['id'];
     protected $casts = [
-        'is_marked_complete_by_talent' => 'boolean'
+        'is_marked_complete_by_talent' => 'boolean',
+        'due_date' => 'date',
     ];
 
     public function job()
