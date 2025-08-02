@@ -375,6 +375,7 @@ class JobController extends Controller
             $userMilestones = Milestone::where('user_id', $user->id)->where('job_id', $job->id)->get();
             if ($userMilestones->sum('amount') != $job->budget) {
                 $remainingAmount = $job->budget - $userMilestones->sum('amount');
+                Log::info('Due Date: ' . $job->deadline);
                 Milestone::create([
                     'user_id'    => $user->id,
                     'job_id'     => $job->id,
