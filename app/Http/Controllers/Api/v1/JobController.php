@@ -298,9 +298,9 @@ class JobController extends Controller
         }
 
         // Prevent applying to own job
-        // if ($job->user_id === $user->id) {
-        //     return $this->error("You cannot apply for your own job");
-        // }
+        if ($job->user_id === $user->id) {
+            return $this->error("You cannot apply for your own job");
+        }
 
         // Ensure job is open
         if ($job->status !== JobStatus::OPEN) {
@@ -379,7 +379,7 @@ class JobController extends Controller
                     'job_id'     => $job->id,
                     'title'      => 'Remaining amount',
                     'amount'     => $remainingAmount,
-                    'due_date'   => $job->deadline,
+                    'due_date'   => $job->deadline->format('Y-m-d'),
                 ]);
             }
 
