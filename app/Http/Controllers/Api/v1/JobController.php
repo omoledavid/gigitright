@@ -361,7 +361,6 @@ class JobController extends Controller
             // Create milestones
             if (!empty($validatedData['milestones'])) {
                 foreach ($validatedData['milestones'] as $milestone) {
-                    Log::info('Milestones date: ' . $milestone['date']);
                     Milestone::create([
                         'user_id'    => $user->id,
                         'job_id'     => $job->id,
@@ -376,7 +375,6 @@ class JobController extends Controller
             $userMilestones = Milestone::where('user_id', $user->id)->where('job_id', $job->id)->get();
             if ($userMilestones->sum('amount') != $job->budget) {
                 $remainingAmount = $job->budget - $userMilestones->sum('amount');
-                Log::info('Due Date: ' . $job->deadline);
                 Milestone::create([
                     'user_id'    => $user->id,
                     'job_id'     => $job->id,
