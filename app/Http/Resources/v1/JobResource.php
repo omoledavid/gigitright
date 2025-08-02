@@ -26,7 +26,7 @@ class JobResource extends JsonResource
                 'budget' => $this->budget,
                 'duration' => $this->duration,
                 'job_type' => $this->job_type,
-                'deadline' => $this->deadline,
+                'deadline' => $this->deadline->toDateString(),
                 'visibility' => $this->visibility,
                 'location' => $this->location,
                 'skill_requirements' => $this->skill_requirements,
