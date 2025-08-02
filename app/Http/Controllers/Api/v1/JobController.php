@@ -361,6 +361,7 @@ class JobController extends Controller
             // Create milestones
             if (!empty($validatedData['milestones'])) {
                 foreach ($validatedData['milestones'] as $milestone) {
+                    Log::info('Milestones date: ' . $milestone['date']);
                     Milestone::create([
                         'user_id'    => $user->id,
                         'job_id'     => $job->id,
